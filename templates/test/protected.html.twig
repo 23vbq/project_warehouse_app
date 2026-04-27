@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Protected page{% endblock %}
+
+{% block body %}
+    <h1>Protected page</h1>
+    <p>Logged in as: {{ app.user.getUserIdentifier() }}</p>
+    <a href="{{ path('app_logout') }}">Log out</a>
+{% endblock %}

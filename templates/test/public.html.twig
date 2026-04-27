@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Public page{% endblock %}
+
+{% block body %}
+    <h1>Public page</h1>
+    <p>This page is accessible without logging in.</p>
+    <a href="{{ path('app_login') }}">Log in</a>
+{% endblock %}
