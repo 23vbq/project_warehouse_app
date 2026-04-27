@@ -1,0 +1,46 @@
+services:
+
+  app:
+    build: .
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8000:80"
+    environment:
+      BUILD_ENV: dev
+      PHP_INI_SCAN_DIR: /usr/local/etc/php/conf.d
+      TZ: "Europe/Warsaw"
+    stdin_open: true
+    tty: true
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_net
+
+  db:
+    image: mysql:8.4
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: felgapol
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ufelgapol", "-pfelgapol"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app_net
+
+volumes:
+  db_data:
+
+networks:
+  app_net:

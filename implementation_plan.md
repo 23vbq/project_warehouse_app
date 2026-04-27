@@ -87,11 +87,9 @@ Oparty na diagramie klas z projektu. W Symfony/Doctrine dziedziczenie `Operacja 
 | Kolumna | Typ | Opis |
 |---|---|---|
 | id | INT PK | |
-| model | VARCHAR(255) | Model felgi |
-| rozmiar | INT | Rozmiar (cale) |
-| szerokosc | INT | Szerokość |
-| rozstaw | INT | Rozstaw śrub (PCD) |
-| wykonczenie | VARCHAR(100) | Wykończenie (np. polerowany, malowany) |
+| name | VARCHAR(255) | Nazwa produktu |
+| type | ENUM | `wheel` (felga) / `material` (surowiec) |
+| unit | VARCHAR(20) | Jednostka miary (szt., kg, m) |
 | min_stock_level | INT | Minimalny poziom stanu magazynowego |
 | created_at | DATETIME | |
 
@@ -168,9 +166,8 @@ Oparty na diagramie klas z projektu. W Symfony/Doctrine dziedziczenie `Operacja 
 
 | Rola | Uprawnienia |
 |---|---|
-| `ROLE_ADMIN` | Pełny dostęp, zarządzanie użytkownikami i produktami |
-| `ROLE_MAGAZYNIER` | PZ, WZ, przeglądanie stanów, inwentaryzacja |
-| `ROLE_KIEROWNIK` | Wszystko co magazynier + raporty i dashboard |
+| `ROLE_WAREHOUSE_EMPLOYEE` | PZ, WZ, relokacje, przeglądanie stanów i produktów, inwentaryzacja |
+| `ROLE_WAREHOUSE_MANAGER` | Wszystko co pracownik + CRUD produktów i lokalizacji, zarządzanie użytkownikami |
 
 ---
 
@@ -208,10 +205,10 @@ Oparty na diagramie klas z projektu. W Symfony/Doctrine dziedziczenie `Operacja 
 - [ ] Widok lokalizacji: jakie produkty i ile na danej lokalizacji
 
 ### 4. Zarządzanie produktami
-- [ ] Lista produktów (filtrowanie po SKU, nazwie, materiale, rozmiarze)
-- [ ] Dodaj / edytuj produkt (formularz z walidacją)
-- [ ] Widok szczegółowy produktu (stan, historia ruchów)
-- [ ] Ustawienie minimalnego poziomu stanu
+- [ ] Lista produktów z filtrowaniem po nazwie i typie (felga / materiał)
+- [ ] Dodaj / edytuj produkt — pole `type` jako select: felga lub materiał
+- [ ] Widok szczegółowy produktu (stan per lokalizacja, historia ruchów)
+- [ ] Ustawienie minimalnego poziomu stanu i jednostki miary
 
 ### 5. Dokumenty PZ (przyjęcie)
 - [ ] Lista PZ z filtrowaniem po dacie i numerze
@@ -280,7 +277,7 @@ Oparty na diagramie klas z projektu. W Symfony/Doctrine dziedziczenie `Operacja 
 │  RAPORTY                │
 │  📋 Inwentaryzacja      │
 ├─────────────────────────┤
-│  ADMIN                  │  ← widoczne tylko dla ROLE_ADMIN
+│  ADMIN                  │  ← widoczne tylko dla ROLE_WAREHOUSE_MANAGER
 │  👤 Użytkownicy         │
 ├─────────────────────────┤
 │  🚪 Wyloguj             │
@@ -288,18 +285,17 @@ Oparty na diagramie klas z projektu. W Symfony/Doctrine dziedziczenie `Operacja 
 ```
 
 ### Zasady widoczności
-| Sekcja | ROLE_MAGAZYNIER | ROLE_KIEROWNIK | ROLE_ADMIN |
-|---|---|---|---|
-| Dashboard | ✓ | ✓ | ✓ |
-| Stany magazynowe | ✓ | ✓ | ✓ |
-| Lokalizacje | podgląd | ✓ | ✓ |
-| Relokacje | ✓ | ✓ | ✓ |
-| Przyjęcia (PZ) | ✓ | ✓ | ✓ |
-| Wydania (WZ) | ✓ | ✓ | ✓ |
-| Lista produktów | podgląd | ✓ | ✓ |
-| Dodaj produkt | ✗ | ✓ | ✓ |
-| Inwentaryzacja | ✓ | ✓ | ✓ |
-| Użytkownicy | ✗ | ✗ | ✓ |
+| Sekcja | ROLE_WAREHOUSE_EMPLOYEE | ROLE_WAREHOUSE_MANAGER |
+|---|---|---|
+| Dashboard | ✓ | ✓ |
+| Stany magazynowe | ✓ | ✓ |
+| Lokalizacje | podgląd | ✓ (CRUD) |
+| Relokacje | ✓ | ✓ |
+| Przyjęcia (PZ) | ✓ | ✓ |
+| Wydania (WZ) | ✓ | ✓ |
+| Lista produktów | podgląd | ✓ (CRUD) |
+| Inwentaryzacja | ✓ | ✓ |
+| Użytkownicy | ✗ | ✓ |
 
 ### Aktywny element
 Bieżąca pozycja menu podświetlona (klasa `active` w Bootstrap), obsługiwana przez Twig:
