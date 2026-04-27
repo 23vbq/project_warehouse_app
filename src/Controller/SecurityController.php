@@ -24,4 +24,10 @@ class SecurityController extends AbstractController
 
     #[Route('/logout', name: 'app_logout')]
     public function logout(): void {}
+
+    #[Route('/no-access', name: 'app_no_access')]
+    public function noAccess(): Response
+    {
+        return $this->render('security/no_access.html.twig');
+    }
 }

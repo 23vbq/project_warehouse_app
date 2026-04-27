@@ -30,7 +30,7 @@ class CreateUserCommand extends Command
 
         $username = $io->ask('Username');
         $password = $io->askHidden('Password');
-        $role = $io->choice('Role', ['ROLE_WAREHOUSE_EMPLOYEE', 'ROLE_WAREHOUSE_MANAGER'], 'ROLE_WAREHOUSE_EMPLOYEE');
+        $role = $io->choice('Role', [User::ROLE_WAREHOUSE_EMPLOYEE, User::ROLE_WAREHOUSE_MANAGER], User::ROLE_WAREHOUSE_EMPLOYEE);
 
         $user = new User();
         $user->setUsername($username);
