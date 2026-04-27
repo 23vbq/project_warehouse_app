@@ -31,6 +31,7 @@ RUN ln -snf /usr/share/zoneinfo/Europe/Warsaw /etc/localtime && \
 WORKDIR /var/www/html
 
 COPY . /var/www/html/
+COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
