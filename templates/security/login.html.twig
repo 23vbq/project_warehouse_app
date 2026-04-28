@@ -3,21 +3,33 @@
 {% block title %}Login{% endblock %}
 
 {% block body %}
-    <h1>Login</h1>
+    <div class="min-h-screen flex items-center justify-center bg-gray-100">
+        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+            <h1 class="text-2xl font-bold mb-6 text-gray-800">Login</h1>
 
-    {% if error %}
-        <p>{{ error.messageKey|trans(error.messageData, 'security') }}</p>
-    {% endif %}
+            {% if error %}
+                <p class="mb-4 p-3 bg-red-100 text-red-700 rounded">{{ error.messageKey|trans(error.messageData, 'security') }}</p>
+            {% endif %}
 
-    <form method="post" action="{{ path('app_login') }}">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="_username" value="{{ last_username }}" autocomplete="username" required>
+            <form method="post" action="{{ path('app_login') }}" class="flex flex-col gap-4">
+                <div class="flex flex-col gap-1">
+                    <label for="username" class="text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" id="username" name="_username" value="{{ last_username }}" autocomplete="username" required
+                           class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="_password" autocomplete="current-password" required>
+                <div class="flex flex-col gap-1">
+                    <label for="password" class="text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" name="_password" autocomplete="current-password" required
+                           class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
 
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-        <button type="submit">Log in</button>
-    </form>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded cursor-pointer">
+                    Log in
+                </button>
+            </form>
+        </div>
+    </div>
 {% endblock %}

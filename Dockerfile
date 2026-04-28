@@ -12,15 +12,6 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-install mbstring pdo pdo_mysql intl zip calendar
 RUN docker-php-ext-enable mbstring pdo pdo_mysql intl zip calendar
 
-# Install Node.js 22.x
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs && \
-    node --version && npm --version
-
-# Install Yarn
-RUN npm install -g yarn && \
-    yarn --version
-
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -32,6 +23,11 @@ WORKDIR /var/www/html
 
 COPY . /var/www/html/
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
+
+RUN if [ "$BUILD_ENV" != "dev" ]; then \
+        composer install --no-interaction --no-scripts --optimize-autoloader --no-dev && \
+        APP_ENV=prod php bin/console tailwind:build; \
+    fi
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
