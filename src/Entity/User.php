@@ -11,6 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: '`user`')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    const ROLE_USER = 'ROLE_USER';
     const ROLE_WAREHOUSE_EMPLOYEE = 'ROLE_WAREHOUSE_EMPLOYEE';
     const ROLE_WAREHOUSE_MANAGER = 'ROLE_WAREHOUSE_MANAGER';
 
@@ -79,7 +80,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return $this->roles;
+        return array_merge($this->roles, [self::ROLE_USER]);
     }
 
     public function setRoles(array $roles): static
