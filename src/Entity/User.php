@@ -11,9 +11,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: '`user`')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    const ROLE_USER = 'ROLE_USER';
-    const ROLE_WAREHOUSE_EMPLOYEE = 'ROLE_WAREHOUSE_EMPLOYEE';
-    const ROLE_WAREHOUSE_MANAGER = 'ROLE_WAREHOUSE_MANAGER';
+    public const ROLE_USER = 'ROLE_USER';
+    public const ROLE_WAREHOUSE_EMPLOYEE = 'ROLE_WAREHOUSE_EMPLOYEE';
+    public const ROLE_WAREHOUSE_MANAGER = 'ROLE_WAREHOUSE_MANAGER';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -90,5 +90,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function eraseCredentials(): void {}
+    public function eraseCredentials(): void
+    {
+    }
 }
