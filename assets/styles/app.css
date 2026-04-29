@@ -62,6 +62,33 @@
   }
 }
 
+@layer base {
+  *, *::before, *::after {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139, 139, 148, 0.42) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: rgba(139, 139, 148, 0.26);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 999px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(139, 139, 148, 0.46);
+  }
+}
+
 @layer components {
   .input-wrap {
     @apply flex items-center gap-2 bg-surface-700 border border-stroke rounded-[10px] px-3 h-[42px];
