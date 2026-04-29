@@ -1,27 +1,14 @@
-{% set route = app.request.attributes.get('_route') %}
-
-{# Nav item class sets #}
-{% set ni         = 'flex items-center gap-2.5 px-2.5 py-2 my-px rounded-md text-[13.5px] w-full border no-underline transition-colors duration-100' %}
-{% set ni_off     = 'text-content-300 border-transparent hover:bg-surface-800 hover:text-content-50' %}
-{% set ni_on      = 'bg-brand-500/16 text-brand-400 border-brand-500/45' %}
-{% set ni_sub     = 'flex items-center gap-2.5 pl-8 pr-2.5 py-2 my-px rounded-md text-[13px] w-full border no-underline transition-colors duration-100' %}
-{% set ni_sub_off = 'text-content-500 border-transparent hover:bg-surface-800 hover:text-content-50' %}
-{% set ico        = 'shrink-0 w-4 h-4' %}
-{% set ico_off    = 'text-content-500' %}
-{% set ico_on     = 'text-brand-400' %}
-{% set badge      = 'ml-auto font-mono text-[10.5px] bg-surface-700 text-content-500 px-1.5 py-px rounded-full border border-stroke font-medium' %}
-{% set badge_on   = 'ml-auto font-mono text-[10.5px] bg-black/25 text-brand-400 px-1.5 py-px rounded-full border border-transparent font-medium' %}
-{% set section_label = 'text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold' %}
-
-<aside class="w-[232px] shrink-0 bg-surface-900 border-r border-stroke flex flex-col h-screen sticky top-0">
+<aside class="w-[232px] shrink-0 bg-surface-900 border-r border-stroke flex flex-col h-screen sticky top-0 select-none">
 
     <div class="h-14 px-[18px] border-b border-stroke flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
-            <div class="w-7 h-7 rounded-[8px] border border-stroke-strong grid place-items-center brand-mark-bg shrink-0">
+            {# <div class="w-7 h-7 rounded-[8px] border border-stroke-strong grid place-items-center brand-mark-bg shrink-0">
                 <div class="w-1.5 h-1.5 rounded-full bg-brand-500 glow-brand-dot"></div>
-            </div>
+            </div> #}
+            <div class="w-7 h-7">{{ source('svg/app_icon.svg') }}</div>
             <div class="font-semibold text-[13.5px] tracking-tight text-content-50 leading-tight">
-                RimFlowMS<span class="block text-[11px] text-content-700 font-medium -mt-0.5">Warehouse</span>
+                RimFlowMS
+                <span class="block text-[11px] text-content-700 font-medium -mt-0.5">Warehouse</span>
             </div>
         </div>
         <button class="w-7 h-7 rounded-md grid place-items-center text-content-500 hover:text-content-50 hover:bg-surface-700 transition-colors">
@@ -32,89 +19,137 @@
     <nav class="flex-1 px-3 py-3.5 overflow-y-auto">
 
         <div class="mb-[18px]">
-            <p class="{{ section_label }}">Magazyn</p>
+            <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">Magazyn</p>
 
-            {% set a = route == 'app_dashboard' %}
-            <a href="{{ path('app_dashboard') }}" class="{{ ni }} {{ a ? ni_on : ni_off }}">
-                <svg class="{{ ico }} {{ a ? ico_on : ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
-                Pulpit
-            </a>
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: 'app_dashboard',
+                path: path('app_dashboard'),
+                label: 'Pulpit',
+                svgContent: source('svg/menu/dashboard.svg')
+            } %}
 
-            <a href="#" class="{{ ni }} {{ ni_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18M9 21V9"></path></svg>
-                Produkty
-                <span class="{{ badge }}">1 348</span>
-            </a>
-            <a href="#" class="{{ ni_sub }} {{ ni_sub_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="4"></circle><circle cx="12" cy="12" r="1"></circle></svg>
-                Felgi gotowe
-            </a>
-            <a href="#" class="{{ ni_sub }} {{ ni_sub_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><path d="M3.27 6.96L12 12l8.73-5.04M12 22V12"></path></svg>
-                Półprodukty
-            </a>
-            <a href="#" class="{{ ni }} {{ ni_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"></path></svg>
-                Surowce
-            </a>
-            <a href="#" class="{{ ni }} {{ ni_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9 5 9-5-9-5-9 5z"></path><path d="M3 12l9 5 9-5"></path><path d="M3 17l9 5 9-5"></path></svg>
-                Materiały eksploatacyjne
-            </a>
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: null,
+                path: '#',
+                label: 'Produkty',
+                svgContent: source('svg/menu/products.svg'),
+                alert: alerts['products'],
+            } %}
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: null,
+                path: '#',
+                label: 'Felgi gotowe',
+                svgContent: source('svg/menu/finished-wheels.svg'),
+                isSubitem: true,
+            } %}
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: null,
+                path: '#',
+                label: 'Półprodukty',
+                svgContent: source('svg/menu/semiproducts.svg'),
+                isSubitem: true,
+                alert: alerts['semiproducts'],
+            } %}
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: null,
+                path: '#',
+                label: 'Surowce',
+                svgContent: source('svg/menu/raw-materials.svg'),
+                isSubitem: true,
+            } %}
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: null,
+                path: '#',
+                label: 'Materiały eksploatacyjne',
+                svgContent: source('svg/menu/consumables.svg'),
+                isSubitem: true,
+            } %}
         </div>
 
         <div class="mb-[18px]">
-            <p class="{{ section_label }}">Operacje</p>
+            <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">Operacje</p>
 
-            <a href="#" class="{{ ni }} {{ ni_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 7v10a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0"></path><path d="M16 16l2 2 4-4"></path></svg>
-                Operacje
-                <span class="{{ badge }}">142</span>
-            </a>
-            <a href="#" class="{{ ni_sub }} {{ ni_sub_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"></path></svg>
-                Przyjęcia
-            </a>
-            <a href="#" class="{{ ni_sub }} {{ ni_sub_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>
-                Wydania
-            </a>
-            <a href="#" class="{{ ni_sub }} {{ ni_sub_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h12"></path><path d="M14 5l3 3-3 3"></path><path d="M19 16H7"></path><path d="M10 13l-3 3 3 3"></path></svg>
-                Przesunięcia MM
-            </a>
-            <a href="#" class="{{ ni }} {{ ni_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-                Inwentaryzacja
-            </a>
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: null,
+                path: '#',
+                label: 'Operacje',
+                svgContent: source('svg/menu/operations.svg')
+            } %}
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: null,
+                path: '#',
+                label: 'Przyjęcia',
+                svgContent: source('svg/menu/receipts.svg')
+            } %}
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: null,
+                path: '#',
+                label: 'Wydania',
+                svgContent: source('svg/menu/issues.svg')
+            } %}
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: null,
+                path: '#',
+                label: 'Przesunięcia MM',
+                svgContent: source('svg/menu/mm-transfers.svg')
+            } %}
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: null,
+                path: '#',
+                label: 'Inwentaryzacja',
+                svgContent: source('svg/menu/inventory.svg')
+            } %}
         </div>
 
         <div class="mb-[18px]">
-            <p class="{{ section_label }}">Zarządzanie</p>
+            <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">Zarządzanie</p>
 
-            <a href="#" class="{{ ni }} {{ ni_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                Lokalizacje
-            </a>
-            <a href="#" class="{{ ni }} {{ ni_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                Kontrahenci
-            </a>
-            <a href="#" class="{{ ni }} {{ ni_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M7 14l4-4 4 4 5-5"></path></svg>
-                Raporty
-            </a>
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: null,
+                path: '#',
+                label: 'Lokalizacje',
+                svgContent: source('svg/menu/locations.svg')
+            } %}
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: null,
+                path: '#',
+                label: 'Kontrahenci',
+                svgContent: source('svg/menu/contractors.svg')
+            } %}
+            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                currentRoute: currentRoute,
+                route: null,
+                path: '#',
+                label: 'Raporty',
+                svgContent: source('svg/menu/reports.svg')
+            } %}
         </div>
 
         {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
-        <div>
-            <p class="{{ section_label }}">System</p>
+            <div>
+                <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">System</p>
 
-            <a href="#" class="{{ ni }} {{ ni_off }}">
-                <svg class="{{ ico }} {{ ico_off }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                Ustawienia
-            </a>
-        </div>
+                {% include 'layout/_partials/sidebar_item.html.twig' with {
+                    currentRoute: currentRoute,
+                    route: null,
+                    path: '#',
+                    label: 'Ustawienia',
+                    svgContent: source('svg/menu/settings.svg')
+                } %}
+            </div>
         {% endif %}
 
     </nav>
@@ -122,6 +157,7 @@
     <div class="border-t border-stroke p-3 shrink-0">
         <div
             data-dropdown-toggle="sidebar-user-dropdown"
+            data-dropdown-placement="right-end"
             class="flex items-center gap-2.5 p-2 rounded-[10px] hover:bg-surface-800 cursor-pointer transition-colors"
         >
             <div class="w-[30px] h-[30px] rounded-full shrink-0 grid place-items-center text-white font-semibold text-[12px] bg-[linear-gradient(135deg,oklch(0.55_0.18_295),oklch(0.65_0.16_320))]">
