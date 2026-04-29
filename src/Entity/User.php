@@ -15,6 +15,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public const ROLE_WAREHOUSE_EMPLOYEE = 'ROLE_WAREHOUSE_EMPLOYEE';
     public const ROLE_WAREHOUSE_MANAGER = 'ROLE_WAREHOUSE_MANAGER';
 
+    public const ROLE_LABELS = [
+        self::ROLE_USER => 'Użytkownik',
+        self::ROLE_WAREHOUSE_EMPLOYEE => 'Pracownik magazynu',
+        self::ROLE_WAREHOUSE_MANAGER => 'Kierownik magazynu',
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

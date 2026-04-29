@@ -7,13 +7,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/dashboard')]
-class DashboardController extends AbstractController
+class DefaultController extends AbstractController
 {
-    #[Route('/', name: 'app_dashboard')]
-    #[IsGranted('ROLE_USER')]
+    #[Route('/', name: 'app_default')]
     public function index(): Response
     {
-        return $this->render('dashboard/index.html.twig');
+        return $this->redirectToRoute('app_dashboard');
     }
 }

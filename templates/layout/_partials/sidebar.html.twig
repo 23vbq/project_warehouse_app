@@ -120,20 +120,21 @@
     </nav>
 
     <div class="border-t border-stroke p-3 shrink-0">
-        <div class="flex items-center gap-2.5 p-2 rounded-[10px] hover:bg-surface-800 cursor-pointer transition-colors">
+        <div
+            data-dropdown-toggle="sidebar-user-dropdown"
+            class="flex items-center gap-2.5 p-2 rounded-[10px] hover:bg-surface-800 cursor-pointer transition-colors"
+        >
             <div class="w-[30px] h-[30px] rounded-full shrink-0 grid place-items-center text-white font-semibold text-[12px] bg-[linear-gradient(135deg,oklch(0.55_0.18_295),oklch(0.65_0.16_320))]">
                 {{ app.user.getUserIdentifier()|replace({'.': ''})|upper|slice(0, 2) }}
             </div>
             <div class="flex flex-col min-w-0 flex-1">
                 <span class="text-[13px] text-content-50 truncate">{{ app.user.getUserIdentifier() }}</span>
-                {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
-                    <span class="text-[11px] text-content-700">Kierownik magazynu</span>
-                {% else %}
-                    <span class="text-[11px] text-content-700">Magazynier</span>
-                {% endif %}
+                <span class="text-[11px] text-content-700 truncate">{{ app.user.roles|map(r => constant('App\\Entity\\User::ROLE_LABELS')[r])|join(', ') }}</span>
             </div>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-content-700 shrink-0"><path d="M9 18l6-6-6-6"></path></svg>
         </div>
+        <div id="sidebar-user-dropdown" class="hidden absolute bottom-full mb-2 w-48 bg-surface-900 border border-stroke rounded-md py-2">
+            <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-sm text-content-500 hover:bg-surface-800 hover:text-content-50">Wyloguj się</a>
+        </div>
     </div>
-
 </aside>
