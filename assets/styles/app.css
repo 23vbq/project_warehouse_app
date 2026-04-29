@@ -47,7 +47,7 @@
     mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 30%, transparent 80%);
   }
   .login-card-shadow {
-    box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 8px 24px -12px rgba(0,0,0,0.6), 0 60px 120px -40px rgba(0,0,0,0.7);
+    @apply shadow-[0_1px_0_rgba(255,255,255,0.03)_inset,_0_8px_24px_-12px_rgba(0,0,0,0.6),_0_60px_120px_-40px_rgba(0,0,0,0.7)];
   }
   .brand-mark-bg {
     background:
@@ -55,37 +55,34 @@
       linear-gradient(180deg, #25212e 0%, #1a1820 100%);
   }
   .glow-brand-dot {
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.4);
+    @apply shadow-[0_0_0_3px_rgba(0,0,0,0.4)];
   }
   .glow-success {
-    box-shadow: 0 0 8px var(--color-success-500);
+    @apply shadow-[0_0_8px_var(--color-success-500)];
   }
 }
 
 @layer components {
   .input-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--color-surface-700);
-    border: 1px solid var(--color-stroke);
-    border-radius: 10px;
-    padding: 0 12px;
-    height: 42px;
+    @apply flex items-center gap-2 bg-surface-700 border border-stroke rounded-[10px] px-3 h-[42px];
     transition: border-color .12s ease, background .12s ease, box-shadow .12s ease;
   }
   .input-wrap:focus-within {
-    border-color: oklch(0.65 0.19 295 / 0.45);
-    background: var(--color-surface-800);
-    box-shadow: 0 0 0 3px rgba(160, 100, 230, 0.12);
+    @apply border-brand-500/45 bg-surface-800 shadow-[0_0_0_3px_rgba(160,100,230,0.12)];
   }
-  .input-wrap svg { color: var(--color-content-700); flex-shrink: 0; }
+  .input-wrap svg {
+    @apply text-content-700 shrink-0;
+  }
   .input-wrap input {
-    flex: 1; min-width: 0;
-    background: transparent; border: 0; outline: none;
-    color: var(--color-content-50); font-size: 14px;
+    @apply flex-1 min-w-0 bg-transparent border-0 outline-none text-content-50 text-[14px];
   }
-  .input-wrap input::placeholder { color: var(--color-content-700); }
-  .input-wrap .toggle-pw { color: var(--color-content-700); padding: 4px; line-height: 0; }
-  .input-wrap .toggle-pw:hover { color: var(--color-content-300); }
+  .input-wrap input::placeholder {
+    @apply text-content-700;
+  }
+  .input-wrap .toggle-pw {
+    @apply text-content-700 p-1 leading-none;
+  }
+  .input-wrap .toggle-pw:hover {
+    @apply text-content-300;
+  }
 }
