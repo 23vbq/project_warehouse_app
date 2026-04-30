@@ -1,0 +1,11 @@
+{% if product.isActive %}
+    <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-400 border-emerald-500/25">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+        Aktywny
+    </span>
+{% else %}
+    <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-surface-800 text-content-500 border-stroke">
+        <span class="w-1.5 h-1.5 rounded-full bg-content-500 shrink-0"></span>
+        Wycofany
+    </span>
+{% endif %}

@@ -31,8 +31,8 @@
 
             {% include 'layout/_partials/sidebar_item.html.twig' with {
                 currentRoute: currentRoute,
-                route: null,
-                path: '#',
+                route: 'app_product_index',
+                path: path('app_product_index'),
                 label: 'Produkty',
                 svgContent: source('svg/menu/products.svg'),
                 alert: alerts['products'],

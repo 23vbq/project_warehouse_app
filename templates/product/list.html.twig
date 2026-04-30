@@ -1,0 +1,172 @@
+<turbo-frame id="product_list">
+
+{# Category tabs #}
+<div class="flex items-center gap-1 mb-4 border-b border-stroke">
+    {% set tabs = [
+        {filter: 'all',         label: 'Wszystkie',                color: null},
+        {filter: 'finished',    label: 'Felgi gotowe',             color: 'bg-violet-400'},
+        {filter: 'semi',        label: 'Półprodukty',              color: 'bg-amber-400'},
+        {filter: 'raw',         label: 'Surowce',                  color: 'bg-teal-400'},
+        {filter: 'consumables', label: 'Materiały eksploatacyjne', color: 'bg-emerald-400'},
+    ] %}
+    {% for tab in tabs %}
+        <button class="flex items-center gap-2 px-3.5 py-2.5 text-[13px] font-medium border-b-2 -mb-px transition-colors
+            {% if loop.first %}text-brand-400 border-brand-400{% else %}text-content-500 border-transparent hover:text-content-50{% endif %}">
+            {% if tab.color %}
+                <span class="w-1.5 h-1.5 rounded-full {{ tab.color }} shrink-0"></span>
+            {% endif %}
+            {{ tab.label }}
+        </button>
+    {% endfor %}
+</div>
+
+{# Filter bar #}
+<div class="flex items-center gap-2 mb-4">
+    <div class="flex items-center gap-2 bg-surface-800 border border-stroke rounded-lg h-[34px] px-3 w-72 text-[13px] text-content-500">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+        <input class="bg-transparent border-0 outline-none flex-1 min-w-0 text-content-50 placeholder:text-content-700 text-[13px]" placeholder="Szukaj po nazwie, SKU, kodzie EAN…">
+    </div>
+
+    <button class="flex items-center gap-1.5 h-[34px] px-3 text-[13px] text-content-500 bg-surface-800 border border-stroke rounded-lg hover:text-content-50 transition-colors">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        Lokalizacja: Wszystkie
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+    </button>
+
+    <button class="flex items-center gap-1.5 h-[34px] px-3 text-[13px] text-content-500 bg-surface-800 border border-stroke rounded-lg hover:text-content-50 transition-colors">
+        Status
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+    </button>
+
+    <button class="flex items-center gap-1.5 h-[34px] px-3 text-[13px] text-content-500 bg-surface-800 border border-stroke rounded-lg hover:text-content-50 transition-colors">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="6" y1="12" x2="18" y2="12"></line><line x1="9" y1="18" x2="15" y2="18"></line></svg>
+        Więcej filtrów
+    </button>
+</div>
+
+{# Products table #}
+<div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
+    <table class="w-full text-[13px]">
+        <thead>
+            <tr class="border-b border-stroke">
+                <th class="px-4 py-3 text-left font-medium text-content-500">
+                    <button class="flex items-center gap-1 hover:text-content-50 transition-colors">
+                        Produkt
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"></path></svg>
+                    </button>
+                </th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">Kategoria</th>
+                <th class="px-4 py-3 text-right font-medium text-content-500">Stan</th>
+                <th class="px-4 py-3 text-right font-medium text-content-500">Wartość</th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">Lokalizacja</th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">Status</th>
+                <th class="w-10 px-4 py-3"></th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-stroke">
+            {% for product in pager %}
+            <tr class="hover:bg-surface-800/50 transition-colors group">
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-[10px] bg-surface-800 border border-stroke flex items-center justify-center shrink-0
+                            {% if product.type.value == 'finished' %}text-violet-400
+                            {% elseif product.type.value == 'semi' %}text-amber-400
+                            {% elseif product.type.value == 'raw' %}text-teal-400
+                            {% else %}text-emerald-400{% endif %}">
+                            <div class="w-5 h-5">
+                                {% if product.type.value in ['finished', 'semi'] %}
+                                    {{ source('svg/products/wheel.svg') }}
+                                {% elseif product.type.value == 'raw' %}
+                                    {{ source('svg/products/raw.svg') }}
+                                {% else %}
+                                    {{ source('svg/products/consumable.svg') }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div>
+                            <div class="font-medium text-content-50">{{ product.name }}</div>
+                            <div class="text-content-500 font-mono text-[12px] mt-0.5">{{ product.sku }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-4 py-3">
+                    {% if product.type.value == 'finished' %}
+                        <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-violet-500/10 text-violet-400 border-violet-500/25">
+                            <span class="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0"></span>
+                            {{ product.type.label() }}
+                        </span>
+                    {% elseif product.type.value == 'semi' %}
+                        <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-amber-500/10 text-amber-400 border-amber-500/25">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
+                            {{ product.type.label() }}
+                        </span>
+                    {% elseif product.type.value == 'raw' %}
+                        <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-teal-500/10 text-teal-400 border-teal-500/25">
+                            <span class="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0"></span>
+                            {{ product.type.label() }}
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-400 border-emerald-500/25">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                            {{ product.type.label() }}
+                        </span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3 text-right text-content-500">—</td>
+                <td class="px-4 py-3 text-right text-content-500">—</td>
+                <td class="px-4 py-3 text-content-500">—</td>
+                <td class="px-4 py-3">
+                    {% include 'product/_partials/status.html.twig' %}
+                </td>
+                <td class="px-4 py-3">
+                    <button class="w-7 h-7 rounded-md grid place-items-center text-content-700 hover:text-content-50 hover:bg-surface-700 opacity-0 group-hover:opacity-100 transition-all">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>
+                    </button>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="px-4 py-16 text-center text-content-500">Brak produktów.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {# Table footer with pagination #}
+    <div class="flex items-center justify-between px-4 py-3 border-t border-stroke">
+        <div class="text-[13px] text-content-500">
+            Wyświetlono
+            <span class="font-medium text-content-50">{{ pager.currentPageResults|length }}</span>
+            z
+            <span class="font-medium text-content-50">{{ pager.nbResults }}</span>
+            produktów
+        </div>
+
+        {% if pager.nbPages > 1 %}
+        <div class="flex items-center gap-1">
+            <a href="{{ path('app_product_index', {page: pager.hasPreviousPage ? pager.previousPage : 1}) }}"
+               class="w-7 h-7 rounded-md grid place-items-center text-content-500 border border-stroke hover:text-content-50 hover:bg-surface-700 transition-colors {{ not pager.hasPreviousPage ? 'pointer-events-none opacity-40' }}">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+            </a>
+
+            {% for page in 1..pager.nbPages %}
+                {% if page == pager.currentPage %}
+                    <span class="w-7 h-7 rounded-md grid place-items-center text-[13px] font-medium bg-brand-500/16 text-brand-400 border border-brand-500/45">{{ page }}</span>
+                {% elseif page == 1 or page == pager.nbPages or (page >= pager.currentPage - 2 and page <= pager.currentPage + 2) %}
+                    <a href="{{ path('app_product_index', {page: page}) }}"
+                       class="w-7 h-7 rounded-md grid place-items-center text-[13px] text-content-500 border border-transparent hover:text-content-50 hover:bg-surface-700 transition-colors">{{ page }}</a>
+                {% elseif page == pager.currentPage - 3 or page == pager.currentPage + 3 %}
+                    <span class="w-7 h-7 grid place-items-center text-content-700 text-[13px]">…</span>
+                {% endif %}
+            {% endfor %}
+
+            <a href="{{ path('app_product_index', {page: pager.hasNextPage ? pager.nextPage : pager.nbPages}) }}"
+               class="w-7 h-7 rounded-md grid place-items-center text-content-500 border border-stroke hover:text-content-50 hover:bg-surface-700 transition-colors {{ not pager.hasNextPage ? 'pointer-events-none opacity-40' }}">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+</turbo-frame>
