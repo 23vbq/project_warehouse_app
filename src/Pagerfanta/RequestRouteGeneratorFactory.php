@@ -8,7 +8,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 final class RequestRouteGeneratorFactory implements RouteGeneratorFactoryInterface
 {
-    public function __construct(private readonly RequestStack $requestStack) {}
+    public function __construct(private readonly RequestStack $requestStack)
+    {
+    }
 
     public function create(array $options = []): RouteGeneratorInterface
     {
@@ -20,15 +22,17 @@ final class RequestRouteGeneratorFactory implements RouteGeneratorFactoryInterfa
             public function __construct(
                 private readonly string $path,
                 private readonly array $params,
-            ) {}
+            ) {
+            }
 
             public function __invoke(int $page): string
             {
                 $params = array_merge($this->params, ['page' => $page]);
-                if ($page === 1) {
+                if (1 === $page) {
                     unset($params['page']);
                 }
-                return $this->path . ($params ? '?' . http_build_query($params) : '');
+
+                return $this->path.($params ? '?'.http_build_query($params) : '');
             }
         };
     }

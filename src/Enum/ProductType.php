@@ -11,10 +11,10 @@ enum ProductType: string
 
     public function label(): string
     {
-        return match($this) {
-            self::FINISHED    => 'Felgi gotowe',
-            self::SEMI        => 'Półprodukty',
-            self::RAW         => 'Surowce',
+        return match ($this) {
+            self::FINISHED => 'Felgi gotowe',
+            self::SEMI => 'Półprodukty',
+            self::RAW => 'Surowce',
             self::CONSUMABLES => 'Materiały eksp.',
         };
     }
