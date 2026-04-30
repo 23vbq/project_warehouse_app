@@ -21,47 +21,47 @@ class ProductType extends AbstractType
         $builder
             ->add('sku', TextType::class, [
                 'constraints' => [
-                    new NotBlank(),
-                    new Length(max: 50),
+                    new NotBlank(message: 'SKU jest wymagany.'),
+                    new Length(max: 50, maxMessage: 'SKU może mieć maksymalnie {{ limit }} znaków.'),
                 ],
             ])
             ->add('ean', TextType::class, [
                 'required' => false,
                 'constraints' => [
-                    new Length(max: 13),
+                    new Length(max: 13, maxMessage: 'EAN może mieć maksymalnie {{ limit }} znaków.'),
                 ],
             ])
             ->add('name', TextType::class, [
                 'constraints' => [
-                    new NotBlank(),
-                    new Length(max: 255),
+                    new NotBlank(message: 'Nazwa jest wymagana.'),
+                    new Length(max: 255, maxMessage: 'Nazwa może mieć maksymalnie {{ limit }} znaków.'),
                 ],
             ])
             ->add('type', EnumType::class, [
                 'class' => ProductTypeEnum::class,
                 'choice_label' => fn(ProductTypeEnum $t) => $t->label(),
                 'constraints' => [
-                    new NotBlank(),
+                    new NotBlank(message: 'Wybierz kategorię.'),
                 ],
             ])
             ->add('unit', TextType::class, [
                 'constraints' => [
-                    new NotBlank(),
-                    new Length(max: 20),
+                    new NotBlank(message: 'Jednostka miary jest wymagana.'),
+                    new Length(max: 20, maxMessage: 'Jednostka może mieć maksymalnie {{ limit }} znaków.'),
                 ],
             ])
             ->add('unitPrice', NumberType::class, [
                 'scale' => 2,
                 'constraints' => [
-                    new NotBlank(),
-                    new Positive(),
+                    new NotBlank(message: 'Cena jest wymagana.'),
+                    new Positive(message: 'Cena musi być większa od zera.'),
                 ],
             ])
             ->add('minStockLevel', NumberType::class, [
                 'required' => false,
                 'scale' => 2,
                 'constraints' => [
-                    new Positive(),
+                    new Positive(message: 'Minimalny stan musi być większy od zera.'),
                 ],
             ]);
     }

@@ -29,7 +29,7 @@ class ProductController extends AbstractController
         $pager->setCurrentPage(max(1, $request->query->getInt('page', 1)));
 
         $view = 'product/index.html.twig';
-        if ($request->headers->has('Turbo-Frame')) {
+        if ($request->headers->get('Turbo-Frame') === 'product_list') {
             $view = 'product/list.html.twig';
         }
 
@@ -54,10 +54,6 @@ class ProductController extends AbstractController
             $em->persist($product);
             $em->flush();
 
-            return $this->redirectToRoute('app_product_index');
-        }
-
-        if (!$request->headers->has('Turbo-Frame')) {
             return $this->redirectToRoute('app_product_index');
         }
 

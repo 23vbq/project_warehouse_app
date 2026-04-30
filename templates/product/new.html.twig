@@ -1,6 +1,6 @@
 <turbo-frame id="product_new">
 
-{{ form_start(form, {attr: {class: 'flex flex-col', novalidate: 'novalidate'}}) }}
+{{ form_start(form, {action: path('app_product_new'), attr: {class: 'flex flex-col', novalidate: 'novalidate', autocomplete: 'off'}}) }}
 
 {% set dotColors = {
     'finished':    'bg-violet-400',
@@ -45,7 +45,8 @@
                 </label>
             {% endfor %}
         </div>
-        {{ form_errors(form.type) }}
+        {% for error in form.type.vars.errors %}<p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>{% endfor %}
+        {% do form.type.setRendered() %}
     </div>
 
     <div>
@@ -55,25 +56,25 @@
         </div>
         <div class="grid grid-cols-2 gap-x-4 gap-y-4">
             <div class="col-span-2">
-                {{ form_label(form.name, 'Nazwa produktu', {label_attr: {class: 'block text-xs font-medium text-content-500 mb-1.5'}}) }}
-                <span class="input-wrap">
+                {{ form_label(form.name, 'Nazwa produktu', {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (form.name.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
+                <span class="input-wrap {{ form.name.vars.errors|length ? 'input-wrap--error' }}">
                     {{ form_widget(form.name, {attr: {placeholder: 'np. Felga aluminiowa 17" ET35'}}) }}
                 </span>
-                {{ form_errors(form.name) }}
+                {% for error in form.name.vars.errors %}<p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>{% endfor %}
             </div>
             <div>
-                {{ form_label(form.sku, 'SKU', {label_attr: {class: 'block text-xs font-medium text-content-500 mb-1.5'}}) }}
-                <span class="input-wrap">
+                {{ form_label(form.sku, 'SKU', {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (form.sku.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
+                <span class="input-wrap {{ form.sku.vars.errors|length ? 'input-wrap--error' }}">
                     {{ form_widget(form.sku, {attr: {placeholder: 'np. ALU-17-ET35'}}) }}
                 </span>
-                {{ form_errors(form.sku) }}
+                {% for error in form.sku.vars.errors %}<p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>{% endfor %}
             </div>
             <div>
-                {{ form_label(form.ean, 'EAN', {label_attr: {class: 'block text-xs font-medium text-content-500 mb-1.5'}}) }}
-                <span class="input-wrap">
+                {{ form_label(form.ean, 'EAN', {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (form.ean.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
+                <span class="input-wrap {{ form.ean.vars.errors|length ? 'input-wrap--error' }}">
                     {{ form_widget(form.ean, {attr: {placeholder: 'np. 5901234123457'}}) }}
                 </span>
-                {{ form_errors(form.ean) }}
+                {% for error in form.ean.vars.errors %}<p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>{% endfor %}
             </div>
         </div>
     </div>
@@ -85,26 +86,26 @@
         </div>
         <div class="grid grid-cols-3 gap-x-4 gap-y-4">
             <div>
-                {{ form_label(form.unit, 'Jednostka miary', {label_attr: {class: 'block text-xs font-medium text-content-500 mb-1.5'}}) }}
-                <span class="input-wrap">
+                {{ form_label(form.unit, 'Jednostka miary', {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (form.unit.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
+                <span class="input-wrap {{ form.unit.vars.errors|length ? 'input-wrap--error' }}">
                     {{ form_widget(form.unit, {attr: {placeholder: 'np. szt., kg, m'}}) }}
                 </span>
-                {{ form_errors(form.unit) }}
+                {% for error in form.unit.vars.errors %}<p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>{% endfor %}
             </div>
             <div>
-                {{ form_label(form.unitPrice, 'Cena jednostkowa', {label_attr: {class: 'block text-xs font-medium text-content-500 mb-1.5'}}) }}
-                <span class="input-wrap">
+                {{ form_label(form.unitPrice, 'Cena jednostkowa', {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (form.unitPrice.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
+                <span class="input-wrap {{ form.unitPrice.vars.errors|length ? 'input-wrap--error' }}">
                     {{ form_widget(form.unitPrice, {attr: {placeholder: '0.00', step: '0.01'}}) }}
                     <span class="text-xs text-content-700 shrink-0">PLN</span>
                 </span>
-                {{ form_errors(form.unitPrice) }}
+                {% for error in form.unitPrice.vars.errors %}<p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>{% endfor %}
             </div>
             <div>
-                {{ form_label(form.minStockLevel, 'Min. stan magazynowy', {label_attr: {class: 'block text-xs font-medium text-content-500 mb-1.5'}}) }}
-                <span class="input-wrap">
+                {{ form_label(form.minStockLevel, 'Min. stan magazynowy', {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (form.minStockLevel.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
+                <span class="input-wrap {{ form.minStockLevel.vars.errors|length ? 'input-wrap--error' }}">
                     {{ form_widget(form.minStockLevel, {attr: {placeholder: '—', step: '0.01'}}) }}
                 </span>
-                {{ form_errors(form.minStockLevel) }}
+                {% for error in form.minStockLevel.vars.errors %}<p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>{% endfor %}
             </div>
         </div>
     </div>
@@ -127,6 +128,6 @@
     </button>
 </div>
 
-{{ form_end(form, {render_rest: false}) }}
+{{ form_end(form) }}
 
 </turbo-frame>

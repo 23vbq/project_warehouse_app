@@ -2,6 +2,8 @@ twig:
     file_name_pattern: '*.twig'
     paths:
         '%kernel.project_dir%/vendor/pagerfanta/pagerfanta/lib/Twig/templates': Pagerfanta
+    form_themes:
+        - 'form/theme.html.twig'
 
 when@test:
     twig:

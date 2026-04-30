@@ -90,12 +90,26 @@
 }
 
 @layer components {
+  .form-errors {
+    @apply list-none m-0 p-0 mt-1.5 flex flex-col gap-0.5;
+  }
+  .form-errors li {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: var(--color-danger-500);
+  }
   .input-wrap {
     @apply flex items-center gap-2 bg-surface-700 border border-stroke rounded-[10px] px-3 h-[42px];
     transition: border-color .12s ease, background .12s ease, box-shadow .12s ease;
   }
   .input-wrap:focus-within {
     @apply border-brand-500/45 bg-surface-800 shadow-[0_0_0_3px_rgba(160,100,230,0.12)];
+  }
+  .input-wrap--error {
+    @apply border-danger-500/50 shadow-[0_0_0_3px_rgba(220,80,50,0.12)];
+  }
+  .input-wrap--error:focus-within {
+    @apply border-danger-500/70 shadow-[0_0_0_3px_rgba(220,80,50,0.18)];
   }
   .input-wrap svg {
     @apply text-content-700 shrink-0;
