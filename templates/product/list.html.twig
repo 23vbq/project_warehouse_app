@@ -68,21 +68,7 @@
             <tr class="hover:bg-surface-800/50 transition-colors group">
                 <td class="px-4 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-[10px] bg-surface-800 border border-stroke flex items-center justify-center shrink-0
-                            {% if product.type.value == 'finished' %}text-violet-400
-                            {% elseif product.type.value == 'semi' %}text-amber-400
-                            {% elseif product.type.value == 'raw' %}text-teal-400
-                            {% else %}text-emerald-400{% endif %}">
-                            <div class="w-5 h-5">
-                                {% if product.type.value in ['finished', 'semi'] %}
-                                    {{ source('svg/products/wheel.svg') }}
-                                {% elseif product.type.value == 'raw' %}
-                                    {{ source('svg/products/raw.svg') }}
-                                {% else %}
-                                    {{ source('svg/products/consumable.svg') }}
-                                {% endif %}
-                            </div>
-                        </div>
+                        {% include 'product/_partials/icon.html.twig' %}
                         <div>
                             <div class="font-medium text-content-50">{{ product.name }}</div>
                             <div class="text-content-500 font-mono text-[12px] mt-0.5">{{ product.sku }}</div>
@@ -90,27 +76,7 @@
                     </div>
                 </td>
                 <td class="px-4 py-3">
-                    {% if product.type.value == 'finished' %}
-                        <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-violet-500/10 text-violet-400 border-violet-500/25">
-                            <span class="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0"></span>
-                            {{ product.type.label() }}
-                        </span>
-                    {% elseif product.type.value == 'semi' %}
-                        <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-amber-500/10 text-amber-400 border-amber-500/25">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
-                            {{ product.type.label() }}
-                        </span>
-                    {% elseif product.type.value == 'raw' %}
-                        <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-teal-500/10 text-teal-400 border-teal-500/25">
-                            <span class="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0"></span>
-                            {{ product.type.label() }}
-                        </span>
-                    {% else %}
-                        <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-400 border-emerald-500/25">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
-                            {{ product.type.label() }}
-                        </span>
-                    {% endif %}
+                    {% include 'product/_partials/type.html.twig' %}
                 </td>
                 <td class="px-4 py-3 text-right text-content-500">—</td>
                 <td class="px-4 py-3 text-right text-content-500">—</td>
@@ -132,41 +98,7 @@
         </tbody>
     </table>
 
-    {# Table footer with pagination #}
-    <div class="flex items-center justify-between px-4 py-3 border-t border-stroke">
-        <div class="text-[13px] text-content-500">
-            Wyświetlono
-            <span class="font-medium text-content-50">{{ pager.currentPageResults|length }}</span>
-            z
-            <span class="font-medium text-content-50">{{ pager.nbResults }}</span>
-            produktów
-        </div>
-
-        {% if pager.nbPages > 1 %}
-        <div class="flex items-center gap-1">
-            <a href="{{ path('app_product_index', {page: pager.hasPreviousPage ? pager.previousPage : 1}) }}"
-               class="w-7 h-7 rounded-md grid place-items-center text-content-500 border border-stroke hover:text-content-50 hover:bg-surface-700 transition-colors {{ not pager.hasPreviousPage ? 'pointer-events-none opacity-40' }}">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
-            </a>
-
-            {% for page in 1..pager.nbPages %}
-                {% if page == pager.currentPage %}
-                    <span class="w-7 h-7 rounded-md grid place-items-center text-[13px] font-medium bg-brand-500/16 text-brand-400 border border-brand-500/45">{{ page }}</span>
-                {% elseif page == 1 or page == pager.nbPages or (page >= pager.currentPage - 2 and page <= pager.currentPage + 2) %}
-                    <a href="{{ path('app_product_index', {page: page}) }}"
-                       class="w-7 h-7 rounded-md grid place-items-center text-[13px] text-content-500 border border-transparent hover:text-content-50 hover:bg-surface-700 transition-colors">{{ page }}</a>
-                {% elseif page == pager.currentPage - 3 or page == pager.currentPage + 3 %}
-                    <span class="w-7 h-7 grid place-items-center text-content-700 text-[13px]">…</span>
-                {% endif %}
-            {% endfor %}
-
-            <a href="{{ path('app_product_index', {page: pager.hasNextPage ? pager.nextPage : pager.nbPages}) }}"
-               class="w-7 h-7 rounded-md grid place-items-center text-content-500 border border-stroke hover:text-content-50 hover:bg-surface-700 transition-colors {{ not pager.hasNextPage ? 'pointer-events-none opacity-40' }}">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-            </a>
-        </div>
-        {% endif %}
-    </div>
+    {{ pagerfanta(pager) }}
 </div>
 
 </turbo-frame>
