@@ -1,0 +1,96 @@
+<turbo-frame id="products_list_table" data-turbo-filter-target="frame">
+<div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
+    <table class="w-full text-[13px]">
+        <thead>
+            <tr class="border-b border-stroke">
+                <th class="px-4 py-3 text-left font-medium text-content-500">
+                    <button class="flex items-center gap-1 hover:text-content-50 transition-colors">
+                        Produkt
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"></path></svg>
+                    </button>
+                </th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">Kategoria</th>
+                <th class="px-4 py-3 text-right font-medium text-content-500">Stan</th>
+                <th class="px-4 py-3 text-right font-medium text-content-500">Cena</th>
+                <th class="px-4 py-3 text-right font-medium text-content-500">Wartość</th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">Lokalizacja</th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">Status</th>
+                <th class="w-10 px-4 py-3"></th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-stroke">
+            {% for product in pager %}
+            <tr class="hover:bg-surface-800/50 transition-colors group">
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        {% include 'product/_partials/icon.html.twig' %}
+                        <div>
+                            <div class="font-medium text-content-50">{{ product.name }}</div>
+                            <div class="text-content-500 font-mono text-[12px] mt-0.5">{{ product.sku }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-4 py-3">
+                    {% include 'product/_partials/type.html.twig' %}
+                </td>
+                <td class="px-4 py-3 text-right text-content-500 uppercase">—</td>
+                <td class="px-4 py-3 text-right font-mono text-[12.5px] text-content-300">{{ product.unitPrice|number_format(2, ',', ' ') }} <span class="text-content-600">PLN</span></td>
+                <td class="px-4 py-3 text-right text-content-500 uppercase">—</td>
+                <td class="px-4 py-3 text-content-500">—</td>
+                <td class="px-4 py-3">
+                    {% include 'product/_partials/status.html.twig' %}
+                </td>
+                <td class="px-4 py-3">
+                    <button
+                        type="button"
+                        data-dropdown-toggle="product-menu-{{ product.id }}"
+                        data-dropdown-placement="left-start"
+                        class="w-7 h-7 rounded-md grid place-items-center text-content-700 hover:text-content-50 hover:bg-surface-700 transition-all cursor-pointer"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>
+                    </button>
+                    <div
+                        id="product-menu-{{ product.id }}"
+                        class="hidden z-20 bg-surface-800 border border-stroke rounded-lg shadow-[0_8px_24px_-8px_rgba(0,0,0,0.5)] py-1 min-w-[140px]"
+                    >
+                        <button
+                            type="button"
+                            data-controller="turbo"
+                            data-action="turbo#open"
+                            data-turbo-frame-id="product_edit"
+                            data-url="{{ path('app_product_edit', {id: product.id}) }}"
+                            data-modal-target="modal-product-edit"
+                            data-modal-toggle="modal-product-edit"
+                            class="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-content-300 hover:bg-surface-700 hover:text-content-50 transition-colors cursor-pointer"
+                        >
+                            <div class="w-[13px] h-[13px] shrink-0">{{ source('svg/edit.svg') }}</div>
+                            Edytuj
+                        </button>
+                        <div class="h-px bg-stroke mx-2 my-1"></div>
+                        <button
+                            type="button"
+                            data-controller="turbo"
+                            data-action="turbo#open"
+                            data-turbo-frame-id="product_delete"
+                            data-url="{{ path('app_product_delete', {id: product.id}) }}"
+                            data-modal-target="modal-product-delete"
+                            data-modal-toggle="modal-product-delete"
+                            class="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-danger-500 hover:bg-surface-700 transition-colors cursor-pointer"
+                        >
+                            <div class="w-[13px] h-[13px] shrink-0">{{ source('svg/delete.svg') }}</div>
+                            Usuń
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="px-4 py-16 text-center text-content-500">Brak produktów.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {{ pagerfanta(pager) }}
+</div>
+</turbo-frame>

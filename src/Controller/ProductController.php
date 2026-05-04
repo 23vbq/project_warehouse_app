@@ -26,6 +26,7 @@ class ProductController extends AbstractController
     {
         $filters = [
             'type' => $request->query->get('type'),
+            'query' => $request->query->get('query'),
         ];
 
         $qb = $repository->createIndexQueryBuilder($filters);
@@ -35,11 +36,12 @@ class ProductController extends AbstractController
         $pager->setCurrentPage(max(1, $request->query->getInt('page', 1)));
 
         $view = 'product/index.html.twig';
-        if ('product_list' === $request->headers->get('Turbo-Frame')) {
+        $turboFrameId = $request->headers->get('Turbo-Frame');
+        if ('product_list' === $turboFrameId) {
             $view = 'product/list.html.twig';
+        } elseif ('product_list_table' === $turboFrameId) {
+            $view = 'product/_list_table.html.twig';
         }
-
-        $this->addFlash('info', 'Wyświetlono '.count($pager->getCurrentPageResults()).' z '.$pager->getNbResults().' produktów.');
 
         return $this->render($view, [
             'pager' => $pager,

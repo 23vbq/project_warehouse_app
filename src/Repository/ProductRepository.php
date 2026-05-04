@@ -32,6 +32,14 @@ class ProductRepository extends ServiceEntityRepository
             $qb->andWhere('p.type = :type')
                 ->setParameter('type', $filters['type']);
         }
+        if (!empty($filters['query'])) {
+            $qb->andWhere('
+                p.name LIKE :query
+                OR p.sku LIKE :query
+                OR p.ean LIKE :query
+            ')
+                ->setParameter('query', '%'.$filters['query'].'%');
+        }
 
         $this->addActiveFilter($qb, 'p');
 
