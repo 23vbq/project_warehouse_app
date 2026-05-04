@@ -23,10 +23,15 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('productIsActive', true);
     }
 
-    public function createIndexQueryBuilder(): QueryBuilder
+    public function createIndexQueryBuilder(array $filters = []): QueryBuilder
     {
         $qb = $this->createQueryBuilder('p')
             ->orderBy('p.name', 'ASC');
+
+        if (!empty($filters['type'])) {
+            $qb->andWhere('p.type = :type')
+                ->setParameter('type', $filters['type']);
+        }
 
         $this->addActiveFilter($qb, 'p');
 

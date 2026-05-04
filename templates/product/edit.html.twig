@@ -21,6 +21,7 @@
             <span class="text-[13px] font-medium text-content-300">{{ product.type.label() }}</span>
             <span class="ml-auto text-[11px] text-content-700 bg-surface-700 border border-stroke rounded px-1.5 py-0.5">Zablokowane</span>
         </div>
+        <input type="hidden" name="{{ form.type.vars.full_name }}" value="{{ product.type.value }}">
         {% do form.type.setRendered() %}
     </div>
 
@@ -43,6 +44,7 @@
                     <span class="text-[13px] font-mono text-content-500">{{ product.sku }}</span>
                     <span class="ml-auto text-[11px] text-content-700 bg-surface-700 border border-stroke rounded px-1.5 py-0.5">Zablokowane</span>
                 </div>
+                <input type="hidden" name="{{ form.sku.vars.full_name }}" value="{{ product.sku }}">
                 {% do form.sku.setRendered() %}
             </div>
             <div>
@@ -67,6 +69,7 @@
                     <span class="text-[13px] text-content-500">{{ product.unit }}</span>
                     <span class="ml-auto text-[11px] text-content-700 bg-surface-700 border border-stroke rounded px-1.5 py-0.5">Zablokowane</span>
                 </div>
+                <input type="hidden" name="{{ form.unit.vars.full_name }}" value="{{ product.unit }}">
                 {% do form.unit.setRendered() %}
             </div>
             <div>

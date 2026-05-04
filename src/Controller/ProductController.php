@@ -21,10 +21,13 @@ class ProductController extends AbstractController
     #[Route('', name: 'app_product_index')]
     public function index(Request $request, ProductRepository $repository): Response
     {
-        $qb = $repository->createIndexQueryBuilder();
-        $adapter = new QueryAdapter($qb);
+        $filters = [
+            'type' => $request->query->get('type'),
+        ];
 
-        $pager = new Pagerfanta($adapter);
+        $qb = $repository->createIndexQueryBuilder($filters);
+
+        $pager = new Pagerfanta(new QueryAdapter($qb));
         $pager->setMaxPerPage(25);
         $pager->setCurrentPage(max(1, $request->query->getInt('page', 1)));
 
@@ -35,6 +38,7 @@ class ProductController extends AbstractController
 
         return $this->render($view, [
             'pager' => $pager,
+            'filters' => $filters,
         ]);
     }
 
