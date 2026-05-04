@@ -1,7 +1,25 @@
-{% if isSubitem is not defined %}
-    {% set isSubitem = false %}
+{% if isSubitem is not defined %}{% set isSubitem = false %}{% endif %}
+
+{% set isActive = false %}
+{% if route is not null and currentRoute == route %}
+    {% if matchParams is defined %}
+        {% set paramsMatch = true %}
+        {% for key, value in matchParams %}
+            {% if value is null %}
+                {% if currentParams[key] is defined and currentParams[key] is not empty %}
+                    {% set paramsMatch = false %}
+                {% endif %}
+            {% else %}
+                {% if currentParams[key] is not defined or currentParams[key] != value %}
+                    {% set paramsMatch = false %}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        {% set isActive = paramsMatch %}
+    {% else %}
+        {% set isActive = true %}
+    {% endif %}
 {% endif %}
-{% set isActive = currentRoute ? currentRoute == route : false %}
 <a
     href="{{ path }}"
     class="flex items-center gap-2.5 px-2.5 py-2 my-px rounded-md text-[13.5px] w-full border no-underline transition-colors duration-100

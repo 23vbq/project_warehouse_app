@@ -26,6 +26,7 @@ class DefaultController extends AbstractController
 
         return $this->render('layout/_partials/sidebar.html.twig', [
             'currentRoute' => $currentRoute,
+            'currentParams' => $request->query->all(),
             'alerts' => $alerts,
         ]);
     }
