@@ -44,6 +44,12 @@ class Product
     #[ORM\ManyToOne]
     private ?User $createdBy = null;
 
+    public function __construct()
+    {
+        $this->setIsActive(true);
+        $this->setCreatedAt(new \DateTimeImmutable());
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -138,7 +144,7 @@ class Product
         return $this->isActive;
     }
 
-    public function setIsActive(bool $isActive): static
+    private function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
 
@@ -150,7 +156,7 @@ class Product
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    private function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 
@@ -165,6 +171,14 @@ class Product
     public function setCreatedBy(?User $createdBy): static
     {
         $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function setInactive(): static
+    {
+        $this->setIsActive(false);
+        $this->setSku('DELETED_'.$this->getSku());
 
         return $this;
     }

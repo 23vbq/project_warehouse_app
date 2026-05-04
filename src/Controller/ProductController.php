@@ -54,9 +54,7 @@ class ProductController extends AbstractController
     public function new(Request $request, EntityManagerInterface $em): Response
     {
         $product = new Product();
-        $product->setCreatedAt(new \DateTimeImmutable());
         $product->setCreatedBy($this->getUser());
-        $product->setIsActive(true);
 
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
@@ -108,7 +106,7 @@ class ProductController extends AbstractController
         EntityManagerInterface $em,
     ): Response {
         if ($request->isMethod('POST') && $this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
-            $product->setIsActive(false);
+            $product->setInactive();
 
             $em->persist($product);
             $em->flush();
