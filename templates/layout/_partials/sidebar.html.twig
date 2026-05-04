@@ -35,7 +35,7 @@
                 path: path('app_product_index'),
                 label: 'Produkty',
                 svgContent: source('svg/menu/products.svg'),
-                alert: alerts['products'],
+                alert: alerts.products,
                 matchParams: {type: null},
             } %}
             {% include 'layout/_partials/sidebar_item.html.twig' with {
@@ -45,6 +45,7 @@
                 label: 'Felgi gotowe',
                 svgContent: source('svg/menu/finished-wheels.svg'),
                 isSubitem: true,
+                alert: alerts.finishedProducts,
                 matchParams: {type: 'finished'},
             } %}
             {% include 'layout/_partials/sidebar_item.html.twig' with {
@@ -54,7 +55,7 @@
                 label: 'Półprodukty',
                 svgContent: source('svg/menu/semiproducts.svg'),
                 isSubitem: true,
-                alert: alerts['semiproducts'],
+                alert: alerts.semiProducts,
                 matchParams: {type: 'semi'},
             } %}
             {% include 'layout/_partials/sidebar_item.html.twig' with {
@@ -64,6 +65,7 @@
                 label: 'Surowce',
                 svgContent: source('svg/menu/raw-materials.svg'),
                 isSubitem: true,
+                alert: alerts.rawProducts,
                 matchParams: {type: 'raw'},
             } %}
             {% include 'layout/_partials/sidebar_item.html.twig' with {
@@ -73,6 +75,7 @@
                 label: 'Materiały eksploatacyjne',
                 svgContent: source('svg/menu/consumables.svg'),
                 isSubitem: true,
+                alert: alerts.consumableProducts,
                 matchParams: {type: 'consumables'},
             } %}
         </div>
