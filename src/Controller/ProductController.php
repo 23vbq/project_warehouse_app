@@ -32,7 +32,7 @@ class ProductController extends AbstractController
         $pager->setCurrentPage(max(1, $request->query->getInt('page', 1)));
 
         $view = 'product/index.html.twig';
-        if ($request->headers->get('Turbo-Frame') === 'product_list') {
+        if ('product_list' === $request->headers->get('Turbo-Frame')) {
             $view = 'product/list.html.twig';
         }
 
@@ -71,9 +71,8 @@ class ProductController extends AbstractController
     public function edit(
         Product $product,
         Request $request,
-        EntityManagerInterface $em
-    ): Response
-    {
+        EntityManagerInterface $em,
+    ): Response {
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
@@ -95,10 +94,9 @@ class ProductController extends AbstractController
     public function delete(
         Request $request,
         Product $product,
-        EntityManagerInterface $em
-    ): Response
-    {
-        if ($request->isMethod('POST') && $this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
+        EntityManagerInterface $em,
+    ): Response {
+        if ($request->isMethod('POST') && $this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
             $product->setIsActive(false);
 
             $em->persist($product);

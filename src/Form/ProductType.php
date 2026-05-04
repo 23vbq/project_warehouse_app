@@ -39,7 +39,7 @@ class ProductType extends AbstractType
             ])
             ->add('type', EnumType::class, [
                 'class' => ProductTypeEnum::class,
-                'choice_label' => fn(ProductTypeEnum $t) => $t->label(),
+                'choice_label' => fn (ProductTypeEnum $t) => $t->label(),
                 'constraints' => [
                     new NotBlank(message: 'Wybierz kategorię.'),
                 ],
