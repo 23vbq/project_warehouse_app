@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
+use App\Traits\TurboTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
@@ -18,6 +19,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 class ProductController extends AbstractController
 {
+    use TurboTrait;
+
     #[Route('', name: 'app_product_index')]
     public function index(Request $request, ProductRepository $repository): Response
     {
@@ -35,6 +38,8 @@ class ProductController extends AbstractController
         if ('product_list' === $request->headers->get('Turbo-Frame')) {
             $view = 'product/list.html.twig';
         }
+
+        $this->addFlash('info', 'Wyświetlono '.count($pager->getCurrentPageResults()).' z '.$pager->getNbResults().' produktów.');
 
         return $this->render($view, [
             'pager' => $pager,
@@ -58,7 +63,9 @@ class ProductController extends AbstractController
             $em->persist($product);
             $em->flush();
 
-            return $this->redirectToRoute('app_product_index');
+            $this->addFlash('success', 'Produkt "'.$product->getName().'" został dodany.');
+
+            return $this->turboRedirectToRoute($request, 'app_product_index');
         }
 
         return $this->render('product/new.html.twig', [
@@ -80,7 +87,9 @@ class ProductController extends AbstractController
             $em->persist($product);
             $em->flush();
 
-            return $this->redirectToRoute('app_product_index');
+            $this->addFlash('success', 'Zmiany w produkcie "'.$product->getName().'" zostały zapisane.');
+
+            return $this->turboRedirectToRoute($request, 'app_product_index');
         }
 
         return $this->render('product/edit.html.twig', [
@@ -102,7 +111,9 @@ class ProductController extends AbstractController
             $em->persist($product);
             $em->flush();
 
-            return $this->redirectToRoute('app_product_index');
+            $this->addFlash('success', 'Produkt "'.$product->getName().'" został dezaktywowany.');
+
+            return $this->turboRedirectToRoute($request, 'app_product_index');
         }
 
         return $this->render('product/delete.html.twig', [

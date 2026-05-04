@@ -1,0 +1,58 @@
+{% set flashTypes = {
+    success: {
+        bar:    'bg-emerald-500',
+        border: 'border-emerald-500/25',
+        icon:   'text-emerald-400',
+        svg:    'check.svg',
+        shadow: '0 8px 24px -4px rgba(16,185,129,0.2)',
+    },
+    error: {
+        bar:    'bg-danger-500',
+        border: 'border-danger-500/25',
+        icon:   'text-danger-400',
+        svg:    'alert-circle.svg',
+        shadow: '0 8px 24px -4px rgba(220,60,50,0.2)',
+    },
+    warning: {
+        bar:    'bg-amber-500',
+        border: 'border-amber-500/25',
+        icon:   'text-amber-400',
+        svg:    'alert-triangle.svg',
+        shadow: '0 8px 24px -4px rgba(245,158,11,0.2)',
+    },
+    info: {
+        bar:    'bg-brand-500',
+        border: 'border-brand-500/25',
+        icon:   'text-brand-400',
+        svg:    'info.svg',
+        shadow: '0 8px 24px -4px rgba(160,100,230,0.2)',
+    },
+} %}
+
+{% for type, messages in app.flashes(['success', 'error', 'warning', 'info']) %}
+    {% set style = flashTypes[type] ?? flashTypes.info %}
+    {% for message in messages %}
+        <div
+            data-controller="toast"
+            data-toast-duration-value="6000"
+            data-turbo-temporary
+            class="flex items-start w-[360px] bg-surface-800 border {{ style.border }} rounded-r-xl overflow-hidden"
+            style="box-shadow: {{ style.shadow }}"
+        >
+            <div class="w-1 self-stretch shrink-0 {{ style.bar }}"></div>
+            <div class="flex items-start gap-3 px-4 py-4 flex-1 min-w-0">
+                <div class="w-[17px] h-[17px] shrink-0 mt-0.5 {{ style.icon }}">
+                    {{ source('svg/' ~ style.svg) }}
+                </div>
+                <p class="text-[13.5px] text-content-50 leading-snug flex-1 min-w-0">{{ message }}</p>
+                <button
+                    type="button"
+                    data-action="toast#dismiss"
+                    class="shrink-0 text-content-600 hover:text-content-200 transition-colors mt-0.5 cursor-pointer"
+                >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        </div>
+    {% endfor %}
+{% endfor %}

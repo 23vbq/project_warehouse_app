@@ -4,15 +4,10 @@ import 'flowbite';
 import * as Turbo from '@hotwired/turbo';
 
 document.addEventListener('turbo:before-fetch-response', (event) => {
-    const fetchResponse = event.detail.fetchResponse;
-
-    if (!fetchResponse.succeeded || !fetchResponse.redirected) return;
-
-    const frame = document.querySelector('turbo-frame[busy]');
-    if (!frame || !frame.dataset.turboFormRedirect) return;
-
+    const location = event.detail.fetchResponse.response.headers.get('X-Turbo-Redirect');
+    if (!location) return;
     event.preventDefault();
-    Turbo.visit(fetchResponse.location);
+    Turbo.visit(location);
 });
 
 document.addEventListener('turbo:frame-load', (event) => {
