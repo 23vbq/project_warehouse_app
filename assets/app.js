@@ -18,3 +18,7 @@ document.addEventListener('turbo:before-fetch-response', (event) => {
 document.addEventListener('turbo:frame-load', (event) => {
     initFlowbite();
 });
+
+document.addEventListener('turbo:load', (event) => {
+    initFlowbite();
+});

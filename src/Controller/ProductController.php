@@ -61,4 +61,50 @@ class ProductController extends AbstractController
             'form' => $form,
         ]);
     }
+
+    #[Route('/{id}/edit', name: 'app_product_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
+    public function edit(
+        Product $product,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response
+    {
+        $form = $this->createForm(ProductType::class, $product);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($product);
+            $em->flush();
+
+            return $this->redirectToRoute('app_product_index');
+        }
+
+        return $this->render('product/edit.html.twig', [
+            'form' => $form,
+            'product' => $product,
+        ]);
+    }
+
+    #[Route('/{id}/delete', name: 'app_product_delete', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
+    public function delete(
+        Request $request,
+        Product $product,
+        EntityManagerInterface $em
+    ): Response
+    {
+        if ($request->isMethod('POST') && $this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
+            $product->setIsActive(false);
+
+            $em->persist($product);
+            $em->flush();
+
+            return $this->redirectToRoute('app_product_index');
+        }
+
+        return $this->render('product/delete.html.twig', [
+            'product' => $product,
+        ]);
+    }
 }

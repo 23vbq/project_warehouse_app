@@ -34,13 +34,15 @@
                 </button>
             </div>
 
-            <div class="flex-1 overflow-y-auto min-h-[360px]">
+            <div class="flex-1 overflow-y-auto">
                 <turbo-frame
                     id="{{ turboFrameId }}"
-                    class="relative block min-h-[360px]"
+                    class="relative block"
                     data-turbo-form-redirect="true"
                 >
-                    {% include 'layout/_partials/loader.html.twig' %}
+                    <div class="min-h-[360px]">
+                        {% include 'layout/_partials/loader.html.twig' %}
+                    </div>
                 </turbo-frame>
             </div>
         </div>

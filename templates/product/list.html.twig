@@ -85,9 +85,46 @@
                     {% include 'product/_partials/status.html.twig' %}
                 </td>
                 <td class="px-4 py-3">
-                    <button class="w-7 h-7 rounded-md grid place-items-center text-content-700 hover:text-content-50 hover:bg-surface-700 opacity-0 group-hover:opacity-100 transition-all">
+                    <button
+                        type="button"
+                        data-dropdown-toggle="product-menu-{{ product.id }}"
+                        data-dropdown-placement="left-start"
+                        class="w-7 h-7 rounded-md grid place-items-center text-content-700 hover:text-content-50 hover:bg-surface-700 transition-all cursor-pointer"
+                    >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>
                     </button>
+                    <div
+                        id="product-menu-{{ product.id }}"
+                        class="hidden z-20 bg-surface-800 border border-stroke rounded-lg shadow-[0_8px_24px_-8px_rgba(0,0,0,0.5)] py-1 min-w-[140px]"
+                    >
+                        <button
+                            type="button"
+                            data-controller="turbo"
+                            data-action="turbo#open"
+                            data-turbo-frame-id="product_edit"
+                            data-url="{{ path('app_product_edit', {id: product.id}) }}"
+                            data-modal-target="modal-product-edit"
+                            data-modal-toggle="modal-product-edit"
+                            class="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-content-300 hover:bg-surface-700 hover:text-content-50 transition-colors cursor-pointer"
+                        >
+                            <div class="w-[13px] h-[13px] shrink-0">{{ source('svg/edit.svg') }}</div>
+                            Edytuj
+                        </button>
+                        <div class="h-px bg-stroke mx-2 my-1"></div>
+                        <button
+                            type="button"
+                            data-controller="turbo"
+                            data-action="turbo#open"
+                            data-turbo-frame-id="product_delete"
+                            data-url="{{ path('app_product_delete', {id: product.id}) }}"
+                            data-modal-target="modal-product-delete"
+                            data-modal-toggle="modal-product-delete"
+                            class="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-danger-500 hover:bg-surface-700 transition-colors cursor-pointer"
+                        >
+                            <div class="w-[13px] h-[13px] shrink-0">{{ source('svg/delete.svg') }}</div>
+                            Usuń
+                        </button>
+                    </div>
                 </td>
             </tr>
             {% else %}
