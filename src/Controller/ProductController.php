@@ -25,11 +25,16 @@ class ProductController extends AbstractController
     public function index(Request $request, ProductRepository $repository): Response
     {
         $filters = [
-            'type' => $request->query->get('type'),
-            'query' => $request->query->get('query'),
+            'type'     => $request->query->get('type'),
+            'query'    => $request->query->get('query'),
+            'showInactive' => $request->query->getBoolean('showInactive'),
+        ];
+        $orderBy = [
+            'field' => $request->query->get('sort'),
+            'direction' => $request->query->get('direction', 'asc'),
         ];
 
-        $qb = $repository->createIndexQueryBuilder($filters);
+        $qb = $repository->createIndexQueryBuilder($filters, [$orderBy['field'] => $orderBy['direction']]);
 
         $pager = new Pagerfanta(new QueryAdapter($qb));
         $pager->setMaxPerPage(25);
@@ -46,6 +51,7 @@ class ProductController extends AbstractController
         return $this->render($view, [
             'pager' => $pager,
             'filters' => $filters,
+            'orderBy' => $orderBy,
         ]);
     }
 

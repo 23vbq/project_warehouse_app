@@ -24,10 +24,9 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('productIsActive', true);
     }
 
-    public function createIndexQueryBuilder(array $filters = []): QueryBuilder
+    public function createIndexQueryBuilder(array $filters = [], array $orderBy = []): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('p')
-            ->orderBy('p.name', 'ASC');
+        $qb = $this->createQueryBuilder('p');
 
         if (!empty($filters['type'])) {
             $qb->andWhere('p.type = :type')
@@ -41,8 +40,24 @@ class ProductRepository extends ServiceEntityRepository
             ')
                 ->setParameter('query', '%'.$filters['query'].'%');
         }
+        if (!isset($filters['showInactive']) || !$filters['showInactive']) {
+            $this->addActiveFilter($qb, 'p');
+        }
 
-        $this->addActiveFilter($qb, 'p');
+        $orderMap = [
+            'name' => 'p.name',
+            'type' => 'p.type',
+            'createdAt' => 'p.createdAt',
+            'sku' => 'p.sku',
+            'unitPrice' => 'p.unitPrice',
+            'status' => 'p.isActive',
+        ];
+        if (!empty($orderBy)) {
+            foreach ($orderBy as $field => $direction) {
+                $qb->addOrderBy($orderMap[$field] ?? 'p.name', $direction);
+            }
+        }
+        $qb->addOrderBy('p.name', 'ASC');
 
         return $qb;
     }

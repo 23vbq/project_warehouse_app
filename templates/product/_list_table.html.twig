@@ -1,9 +1,38 @@
+{% macro sortLink(label, field, align, orderBy, filters) %}
+    {% set isActive = orderBy.field == field %}
+    {% set nextDir = isActive and orderBy.direction == 'asc' ? 'desc' : 'asc' %}
+    {% set href = path('app_product_index', {
+        type: filters.type ?: null,
+        query: filters.query ?: null,
+        showInactive: filters.showInactive ?: null,
+        sort: field,
+        direction: nextDir,
+    }) %}
+    <a
+        href="{{ href }}"
+        data-turbo-action="advance"
+        class="flex items-center gap-1 {{ align == 'right' ? 'justify-end' : '' }} transition-colors {{ isActive ? 'text-content-50' : 'hover:text-content-50' }}"
+    >
+        {{ label }}
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            {% if isActive and orderBy.direction == 'asc' %}
+                <path d="M7 10l5-5 5 5"></path>
+            {% elseif isActive and orderBy.direction == 'desc' %}
+                <path d="M7 14l5 5 5-5"></path>
+            {% else %}
+                <path d="M7 10l5-5 5 5M7 14l5 5 5-5"></path>
+            {% endif %}
+        </svg>
+    </a>
+{% endmacro %}
+
 <turbo-frame id="products_list_table" data-turbo-filter-target="frame">
 <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
     <table class="w-full text-[13px] table-fixed">
         <colgroup>
             <col class="w-[34%]">
-            <col class="w-[15%]">
+            <col class="w-[10%]">
+            <col class="w-[10%]">
             <col class="w-[8%]">
             <col class="w-[11%]">
             <col class="w-[11%]">
@@ -14,17 +43,23 @@
         <thead>
             <tr class="border-b border-stroke">
                 <th class="px-4 py-3 text-left font-medium text-content-500">
-                    <button class="flex items-center gap-1 hover:text-content-50 transition-colors">
-                        Produkt
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"></path></svg>
-                    </button>
+                    {{ _self.sortLink('Produkt', 'name', 'left', orderBy, filters) }}
                 </th>
-                <th class="px-4 py-3 text-left font-medium text-content-500">Kategoria</th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">
+                    {{ _self.sortLink('Kategoria', 'type', 'left', orderBy, filters) }}
+                </th>
+                <th class="px-4 py-3 text-right font-medium text-content-500">
+                    {{ _self.sortLink('Utworzony', 'createdAt', 'right', orderBy, filters) }}
+                </th>
                 <th class="px-4 py-3 text-right font-medium text-content-500">Stan</th>
-                <th class="px-4 py-3 text-right font-medium text-content-500">Cena</th>
+                <th class="px-4 py-3 text-right font-medium text-content-500">
+                    {{ _self.sortLink('Cena', 'unitPrice', 'right', orderBy, filters) }}
+                </th>
                 <th class="px-4 py-3 text-right font-medium text-content-500">Wartość</th>
                 <th class="px-4 py-3 text-left font-medium text-content-500">Lokalizacja</th>
-                <th class="px-4 py-3 text-left font-medium text-content-500">Status</th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">
+                    {{ _self.sortLink('Status', 'isActive', 'left', orderBy, filters) }}
+                </th>
                 <th class="px-4 py-3"></th>
             </tr>
         </thead>
@@ -43,6 +78,7 @@
                 <td class="px-4 py-3">
                     {% include 'product/_partials/type.html.twig' %}
                 </td>
+                <td class="px-4 py-3 text-right text-content-500 uppercase">{{ product.createdAt|date('d.m.Y H:i') }}</td>
                 <td class="px-4 py-3 text-right text-content-500 uppercase">—</td>
                 <td class="px-4 py-3 text-right font-mono text-[12.5px] text-content-300">{{ product.unitPrice|number_format(2, ',', ' ') }} <span class="text-content-600">PLN</span></td>
                 <td class="px-4 py-3 text-right text-content-500 uppercase">—</td>

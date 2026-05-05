@@ -50,7 +50,7 @@ export default class extends Controller {
         const url = this.urlValue + (this.urlValue.includes('?') ? '&' : '?') + new URLSearchParams(filters).toString();
 
         this.frameTarget.src = url;
-        console.log('Filtering with URL:', url);
+        window.history.pushState({}, '', url);
     }
 
     #getFilters() {
