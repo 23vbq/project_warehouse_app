@@ -125,8 +125,8 @@
 
             {% include 'layout/_partials/sidebar_item.html.twig' with {
                 currentRoute: currentRoute,
-                route: null,
-                path: '#',
+                route: 'app_location_index',
+                path: path('app_location_index'),
                 label: 'Lokalizacje',
                 svgContent: source('svg/menu/locations.svg')
             } %}

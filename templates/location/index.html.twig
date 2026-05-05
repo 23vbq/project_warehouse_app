@@ -1,0 +1,60 @@
+{% extends 'layout/app.html.twig' %}
+
+{% block title %}Lokalizacje — RimFlowMS{% endblock %}
+
+{% block breadcrumb_current %}Lokalizacje{% endblock %}
+
+{% block content %}
+<turbo-frame id="page_content" data-turbo="true">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-[22px] font-semibold tracking-tight text-content-50 mb-1">Lokalizacje</h1>
+            <p class="text-content-500 text-[13px]">Wszystkie miejsca składowania · {{ pager.nbResults }} pozycji</p>
+        </div>
+        <div class="flex items-center gap-2">
+            {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
+                <button
+                    type="button"
+                    data-controller="turbo"
+                    data-action="click->turbo#open"
+                    data-turbo-frame-id="location_new"
+                    data-url="{{ path('app_location_new') }}"
+                    data-modal-target="modal-location-new"
+                    data-modal-toggle="modal-location-new"
+                    class="flex items-center gap-2 h-[34px] px-4 text-[13px] font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-400 transition-colors cursor-pointer"
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+                    Nowa lokalizacja
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    {% include 'location/list.html.twig' %}
+
+    {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
+        {% include 'layout/_partials/modal.html.twig' with {
+            elementId: 'modal-location-new',
+            turboFrameId: 'location_new',
+            title: 'Nowa lokalizacja',
+            subtitle: 'Dodaj miejsce składowania do magazynu',
+            icon: source('svg/menu/locations.svg'),
+        } %}
+
+        {% include 'layout/_partials/modal.html.twig' with {
+            elementId: 'modal-location-edit',
+            turboFrameId: 'location_edit',
+            title: 'Edytuj lokalizację',
+            subtitle: 'Zmień dane miejsca składowania',
+            icon: source('svg/edit.svg'),
+        } %}
+
+        {% include 'layout/_partials/modal.html.twig' with {
+            elementId: 'modal-location-delete',
+            turboFrameId: 'location_delete',
+            title: 'Usuń lokalizację',
+            icon: source('svg/delete.svg'),
+        } %}
+    {% endif %}
+</turbo-frame>
+{% endblock %}

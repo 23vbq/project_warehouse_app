@@ -22,4 +22,32 @@ class LocationRepository extends ServiceEntityRepository
         return $qb->andWhere("$alias.isActive = :locationIsActive")
             ->setParameter('locationIsActive', true);
     }
+
+    public function createIndexQueryBuilder(array $filters = [], array $orderBy = []): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('l');
+
+        if (!empty($filters['query'])) {
+            $qb->andWhere('l.code LIKE :query OR l.name LIKE :query')
+                ->setParameter('query', '%'.$filters['query'].'%');
+        }
+        if (!isset($filters['showInactive']) || !$filters['showInactive']) {
+            $this->addActiveFilter($qb, 'l');
+        }
+
+        $orderMap = [
+            'code' => 'l.code',
+            'name' => 'l.name',
+            'createdAt' => 'l.createdAt',
+            'status' => 'l.isActive',
+        ];
+        if (!empty($orderBy)) {
+            foreach ($orderBy as $field => $direction) {
+                $qb->addOrderBy($orderMap[$field] ?? 'l.code', $direction);
+            }
+        }
+        $qb->addOrderBy('l.code', 'ASC');
+
+        return $qb;
+    }
 }
