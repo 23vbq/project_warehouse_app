@@ -25,8 +25,8 @@ class ProductController extends AbstractController
     public function index(Request $request, ProductRepository $repository): Response
     {
         $filters = [
-            'type'     => $request->query->get('type'),
-            'query'    => $request->query->get('query'),
+            'type' => $request->query->get('type'),
+            'query' => $request->query->get('query'),
             'showInactive' => $request->query->getBoolean('showInactive'),
         ];
         $orderBy = [
