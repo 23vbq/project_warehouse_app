@@ -10,6 +10,11 @@ document.addEventListener('turbo:before-fetch-response', (event) => {
     Turbo.visit(location);
 });
 
+document.addEventListener('turbo:frame-missing', (event) => {
+    event.preventDefault();
+    event.detail.visit(event.detail.response.url);
+});
+
 document.addEventListener('turbo:frame-load', (event) => {
     initFlowbite();
 });
