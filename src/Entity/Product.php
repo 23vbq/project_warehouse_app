@@ -5,8 +5,11 @@ namespace App\Entity;
 use App\Enum\ProductType;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[UniqueEntity(fields: ['sku'], message: 'Produkt z tym SKU już istnieje.')]
+#[UniqueEntity(fields: ['ean'], message: 'Produkt z tym kodem EAN już istnieje.')]
 class Product
 {
     #[ORM\Id]
