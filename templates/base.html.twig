@@ -25,7 +25,7 @@
     <body class="h-screen overflow-hidden">
         {% block body %}{% endblock %}
         <div class="fixed bottom-5 right-5 z-[999] flex flex-col gap-2 items-end">
-            {% include 'layout/_partials/toasts.html.twig' %}
+            {{ include('layout/_partials/toasts.html.twig') }}
         </div>
     </body>
 </html>

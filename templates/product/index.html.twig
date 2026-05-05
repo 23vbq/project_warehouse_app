@@ -39,29 +39,29 @@
         </div>
     </div>
 
-    {% include 'product/list.html.twig' %}
+    {{ include('product/list.html.twig') }}
 
-    {% include 'layout/_partials/modal.html.twig' with {
+    {{ include('layout/_partials/modal.html.twig', {
         elementId: 'modal-product-new',
         turboFrameId: 'product_new',
         title: 'Nowy produkt',
         subtitle: 'Dodaj indeks magazynowy do kartoteki',
         icon: source('svg/menu/products.svg'),
-    } %}
+    }) }}
 
-    {% include 'layout/_partials/modal.html.twig' with {
+    {{ include('layout/_partials/modal.html.twig', {
         elementId: 'modal-product-edit',
         turboFrameId: 'product_edit',
         title: 'Edytuj produkt',
         subtitle: 'Zmień dane indeksu magazynowego',
         icon: source('svg/edit.svg'),
-    } %}
+    }) }}
 
-    {% include 'layout/_partials/modal.html.twig' with {
+    {{ include('layout/_partials/modal.html.twig', {
         elementId: 'modal-product-delete',
         turboFrameId: 'product_delete',
         title: 'Usuń produkt',
         icon: source('svg/delete.svg'),
-    } %}
+    }) }}
 </turbo-frame>
 {% endblock %}

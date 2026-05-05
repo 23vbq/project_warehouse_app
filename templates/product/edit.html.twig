@@ -3,10 +3,10 @@
 {{ form_start(form, {action: path('app_product_edit', {id: product.id}), attr: {class: 'flex flex-col', novalidate: 'novalidate', autocomplete: 'off'}}) }}
 
 {% set dotColors = {
-    'finished':    'bg-violet-400',
-    'semi':        'bg-amber-400',
-    'raw':         'bg-teal-400',
-    'consumables': 'bg-emerald-400',
+    finished: 'bg-violet-400',
+    semi: 'bg-amber-400',
+    raw: 'bg-teal-400',
+    consumables: 'bg-emerald-400',
 } %}
 
 <div class="px-[22px] py-[18px] flex flex-col gap-[18px]">

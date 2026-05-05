@@ -21,15 +21,15 @@
         <div class="mb-[18px]">
             <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">Magazyn</p>
 
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: 'app_dashboard',
                 path: path('app_dashboard'),
                 label: 'Pulpit',
-                svgContent: source('svg/menu/dashboard.svg')
-            } %}
+                svgContent: source('svg/menu/dashboard.svg'),
+            }) }}
 
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: 'app_product_index',
                 path: path('app_product_index'),
@@ -37,126 +37,126 @@
                 svgContent: source('svg/menu/products.svg'),
                 alert: alerts.products,
                 matchParams: {type: null},
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: 'app_product_index',
-                path: path('app_product_index', { type: 'finished' }),
+                path: path('app_product_index', {type: 'finished'}),
                 label: 'Felgi gotowe',
                 svgContent: source('svg/menu/finished-wheels.svg'),
                 isSubitem: true,
                 alert: alerts.finishedProducts,
                 matchParams: {type: 'finished'},
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: 'app_product_index',
-                path: path('app_product_index', { type: 'semi' }),
+                path: path('app_product_index', {type: 'semi'}),
                 label: 'Półprodukty',
                 svgContent: source('svg/menu/semiproducts.svg'),
                 isSubitem: true,
                 alert: alerts.semiProducts,
                 matchParams: {type: 'semi'},
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: 'app_product_index',
-                path: path('app_product_index', { type: 'raw' }),
+                path: path('app_product_index', {type: 'raw'}),
                 label: 'Surowce',
                 svgContent: source('svg/menu/raw-materials.svg'),
                 isSubitem: true,
                 alert: alerts.rawProducts,
                 matchParams: {type: 'raw'},
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: 'app_product_index',
-                path: path('app_product_index', { type: 'consumables' }),
+                path: path('app_product_index', {type: 'consumables'}),
                 label: 'Materiały eksploatacyjne',
                 svgContent: source('svg/menu/consumables.svg'),
                 isSubitem: true,
                 alert: alerts.consumableProducts,
                 matchParams: {type: 'consumables'},
-            } %}
+            }) }}
         </div>
 
         <div class="mb-[18px]">
             <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">Operacje</p>
 
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: null,
                 path: '#',
                 label: 'Operacje',
-                svgContent: source('svg/menu/operations.svg')
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                svgContent: source('svg/menu/operations.svg'),
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: null,
                 path: '#',
                 label: 'Przyjęcia',
-                svgContent: source('svg/menu/receipts.svg')
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                svgContent: source('svg/menu/receipts.svg'),
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: null,
                 path: '#',
                 label: 'Wydania',
-                svgContent: source('svg/menu/issues.svg')
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                svgContent: source('svg/menu/issues.svg'),
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: null,
                 path: '#',
                 label: 'Przesunięcia MM',
-                svgContent: source('svg/menu/mm-transfers.svg')
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                svgContent: source('svg/menu/mm-transfers.svg'),
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: null,
                 path: '#',
                 label: 'Inwentaryzacja',
-                svgContent: source('svg/menu/inventory.svg')
-            } %}
+                svgContent: source('svg/menu/inventory.svg'),
+            }) }}
         </div>
 
         <div class="mb-[18px]">
             <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">Zarządzanie</p>
 
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: 'app_location_index',
                 path: path('app_location_index'),
                 label: 'Lokalizacje',
-                svgContent: source('svg/menu/locations.svg')
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                svgContent: source('svg/menu/locations.svg'),
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: null,
                 path: '#',
                 label: 'Kontrahenci',
-                svgContent: source('svg/menu/contractors.svg')
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
+                svgContent: source('svg/menu/contractors.svg'),
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: null,
                 path: '#',
                 label: 'Raporty',
-                svgContent: source('svg/menu/reports.svg')
-            } %}
+                svgContent: source('svg/menu/reports.svg'),
+            }) }}
         </div>
 
         {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
             <div>
                 <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">System</p>
 
-                {% include 'layout/_partials/sidebar_item.html.twig' with {
+                {{ include('layout/_partials/sidebar_item.html.twig', {
                     currentRoute: currentRoute,
                     route: null,
                     path: '#',
                     label: 'Ustawienia',
-                    svgContent: source('svg/menu/settings.svg')
-                } %}
+                    svgContent: source('svg/menu/settings.svg'),
+                }) }}
             </div>
         {% endif %}
 

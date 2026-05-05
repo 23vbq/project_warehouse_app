@@ -30,31 +30,31 @@
         </div>
     </div>
 
-    {% include 'location/list.html.twig' %}
+    {{ include('location/list.html.twig') }}
 
     {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
-        {% include 'layout/_partials/modal.html.twig' with {
+        {{ include('layout/_partials/modal.html.twig', {
             elementId: 'modal-location-new',
             turboFrameId: 'location_new',
             title: 'Nowa lokalizacja',
             subtitle: 'Dodaj miejsce składowania do magazynu',
             icon: source('svg/menu/locations.svg'),
-        } %}
+        }) }}
 
-        {% include 'layout/_partials/modal.html.twig' with {
+        {{ include('layout/_partials/modal.html.twig', {
             elementId: 'modal-location-edit',
             turboFrameId: 'location_edit',
             title: 'Edytuj lokalizację',
             subtitle: 'Zmień dane miejsca składowania',
             icon: source('svg/edit.svg'),
-        } %}
+        }) }}
 
-        {% include 'layout/_partials/modal.html.twig' with {
+        {{ include('layout/_partials/modal.html.twig', {
             elementId: 'modal-location-delete',
             turboFrameId: 'location_delete',
             title: 'Usuń lokalizację',
             icon: source('svg/delete.svg'),
-        } %}
+        }) }}
     {% endif %}
 </turbo-frame>
 {% endblock %}

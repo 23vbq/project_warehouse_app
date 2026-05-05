@@ -79,7 +79,7 @@
                     <div>{{ location.createdAt|date('H:i') }}</div>
                 </td>
                 <td class="px-4 py-3">
-                    {% include 'location/_partials/status.html.twig' %}
+                    {{ include('location/_partials/status.html.twig') }}
                 </td>
                 <td class="px-4 py-3">
                     {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
