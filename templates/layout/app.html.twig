@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<turbo-frame id="page">
+<turbo-frame id="page" data-turbo-action="advance">
     <div class="flex h-full min-h-0 bg-surface-950">
 
         {{ render(controller('App\\Controller\\DefaultController::sidebar', { request: app.request })) }}

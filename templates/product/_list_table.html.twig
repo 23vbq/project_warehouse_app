@@ -1,6 +1,16 @@
 <turbo-frame id="products_list_table" data-turbo-filter-target="frame">
 <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
-    <table class="w-full text-[13px]">
+    <table class="w-full text-[13px] table-fixed">
+        <colgroup>
+            <col class="w-[34%]">
+            <col class="w-[15%]">
+            <col class="w-[8%]">
+            <col class="w-[11%]">
+            <col class="w-[11%]">
+            <col class="w-[12%]">
+            <col class="w-[9%]">
+            <col class="w-10">
+        </colgroup>
         <thead>
             <tr class="border-b border-stroke">
                 <th class="px-4 py-3 text-left font-medium text-content-500">
@@ -15,18 +25,18 @@
                 <th class="px-4 py-3 text-right font-medium text-content-500">Wartość</th>
                 <th class="px-4 py-3 text-left font-medium text-content-500">Lokalizacja</th>
                 <th class="px-4 py-3 text-left font-medium text-content-500">Status</th>
-                <th class="w-10 px-4 py-3"></th>
+                <th class="px-4 py-3"></th>
             </tr>
         </thead>
         <tbody class="divide-y divide-stroke">
             {% for product in pager %}
             <tr class="hover:bg-surface-800/50 transition-colors group">
-                <td class="px-4 py-3">
-                    <div class="flex items-center gap-3">
+                <td class="px-4 py-3 min-w-0">
+                    <div class="flex items-center gap-3 min-w-0">
                         {% include 'product/_partials/icon.html.twig' %}
-                        <div>
-                            <div class="font-medium text-content-50">{{ product.name }}</div>
-                            <div class="text-content-500 font-mono text-[12px] mt-0.5">{{ product.sku }}</div>
+                        <div class="min-w-0">
+                            <div class="font-medium text-content-50 truncate">{{ product.name }}</div>
+                            <div class="text-content-500 font-mono text-[12px] mt-0.5 truncate">{{ product.sku }}</div>
                         </div>
                     </div>
                 </td>
@@ -36,7 +46,7 @@
                 <td class="px-4 py-3 text-right text-content-500 uppercase">—</td>
                 <td class="px-4 py-3 text-right font-mono text-[12.5px] text-content-300">{{ product.unitPrice|number_format(2, ',', ' ') }} <span class="text-content-600">PLN</span></td>
                 <td class="px-4 py-3 text-right text-content-500 uppercase">—</td>
-                <td class="px-4 py-3 text-content-500">—</td>
+                <td class="px-4 py-3 text-content-500 truncate">—</td>
                 <td class="px-4 py-3">
                     {% include 'product/_partials/status.html.twig' %}
                 </td>
@@ -85,7 +95,7 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="7" class="px-4 py-16 text-center text-content-500">Brak produktów.</td>
+                <td colspan="100%" class="px-4 py-6 text-center text-content-500">Brak produktów.</td>
             </tr>
             {% endfor %}
         </tbody>
