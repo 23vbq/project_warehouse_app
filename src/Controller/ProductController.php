@@ -30,7 +30,7 @@ class ProductController extends AbstractController
             'showInactive' => $request->query->getBoolean('showInactive'),
         ];
         $orderBy = [
-            'field' => $request->query->get('sort'),
+            'field' => $request->query->get('sort', 'name'),
             'direction' => $request->query->get('direction', 'asc'),
         ];
 

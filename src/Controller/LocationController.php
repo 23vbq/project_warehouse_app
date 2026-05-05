@@ -29,7 +29,7 @@ class LocationController extends AbstractController
             'showInactive' => $request->query->getBoolean('showInactive'),
         ];
         $orderBy = [
-            'field' => $request->query->get('sort'),
+            'field' => $request->query->get('sort', 'code'),
             'direction' => $request->query->get('direction', 'asc'),
         ];
 
