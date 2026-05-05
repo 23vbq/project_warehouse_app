@@ -1,0 +1,52 @@
+{%- extends '@Pagerfanta/default.html.twig' -%}
+
+{%- block pager_widget -%}
+<div class="flex items-center justify-between px-4 py-3 border-t border-stroke">
+    <div class="text-[13px] text-content-500">
+        Wyświetlono
+        <span class="font-medium text-content-50">{{ min(pagerfanta.maxPerPage, pagerfanta.nbResults - (current_page - 1) * pagerfanta.maxPerPage) }}</span>
+        z
+        <span class="font-medium text-content-50">{{ pagerfanta.nbResults }}</span>
+        produktów
+    </div>
+    <div class="flex items-center gap-1">
+        {{- block('pager') -}}
+    </div>
+</div>
+{%- endblock pager_widget -%}
+
+{%- block previous_page_link -%}
+    <a href="{{ path }}" rel="prev" class="w-7 h-7 rounded-md grid place-items-center text-content-500 border border-stroke hover:text-content-50 hover:bg-surface-700 transition-colors">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+    </a>
+{%- endblock previous_page_link -%}
+
+{%- block previous_page_link_disabled -%}
+    <span class="w-7 h-7 rounded-md grid place-items-center text-content-700 border border-stroke opacity-40 cursor-default">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+    </span>
+{%- endblock previous_page_link_disabled -%}
+
+{%- block page_link -%}
+    <a href="{{ path }}" class="w-7 h-7 rounded-md grid place-items-center text-[13px] text-content-500 border border-transparent hover:text-content-50 hover:bg-surface-700 transition-colors">{{ page }}</a>
+{%- endblock page_link -%}
+
+{%- block current_page_link -%}
+    <span aria-current="page" class="w-7 h-7 rounded-md grid place-items-center text-[13px] font-medium bg-brand-500/16 text-brand-400 border border-brand-500/45">{{ page }}</span>
+{%- endblock current_page_link -%}
+
+{%- block ellipsis -%}
+    <span class="w-7 h-7 grid place-items-center text-content-700 text-[13px]">…</span>
+{%- endblock ellipsis -%}
+
+{%- block next_page_link -%}
+    <a href="{{ path }}" rel="next" class="w-7 h-7 rounded-md grid place-items-center text-content-500 border border-stroke hover:text-content-50 hover:bg-surface-700 transition-colors">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+    </a>
+{%- endblock next_page_link -%}
+
+{%- block next_page_link_disabled -%}
+    <span class="w-7 h-7 rounded-md grid place-items-center text-content-700 border border-stroke opacity-40 cursor-default">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+    </span>
+{%- endblock next_page_link_disabled -%}

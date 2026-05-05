@@ -1,11 +1,19 @@
 import './stimulus_bootstrap.js';
-/*
- * Welcome to your app's main JavaScript file!
- *
- * This file will be included onto the page via the importmap() Twig function,
- * which should already be in your base.html.twig.
- */
 import './styles/app.css';
 import 'flowbite';
+import * as Turbo from '@hotwired/turbo';
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+document.addEventListener('turbo:before-fetch-response', (event) => {
+    const location = event.detail.fetchResponse.response.headers.get('X-Turbo-Redirect');
+    if (!location) return;
+    event.preventDefault();
+    Turbo.visit(location);
+});
+
+document.addEventListener('turbo:frame-load', (event) => {
+    initFlowbite();
+});
+
+document.addEventListener('turbo:load', (event) => {
+    initFlowbite();
+});

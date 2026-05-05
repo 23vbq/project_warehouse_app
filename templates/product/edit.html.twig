@@ -1,0 +1,113 @@
+<turbo-frame id="product_edit">
+
+{{ form_start(form, {action: path('app_product_edit', {id: product.id}), attr: {class: 'flex flex-col', novalidate: 'novalidate', autocomplete: 'off'}}) }}
+
+{% set dotColors = {
+    'finished':    'bg-violet-400',
+    'semi':        'bg-amber-400',
+    'raw':         'bg-teal-400',
+    'consumables': 'bg-emerald-400',
+} %}
+
+<div class="px-[22px] py-[18px] flex flex-col gap-[18px]">
+
+    <div>
+        <div class="flex items-center gap-2 mb-3">
+            <span class="text-[10.5px] uppercase tracking-[0.08em] font-semibold text-content-700">Kategoria</span>
+            <span class="flex-1 h-px bg-stroke"></span>
+        </div>
+        <div class="flex items-center gap-2.5 px-3 py-2.5 bg-surface-800 border border-stroke rounded-[10px]">
+            <span class="w-[7px] h-[7px] rounded-full shrink-0 {{ dotColors[product.type.value] ?? 'bg-content-700' }}"></span>
+            <span class="text-[13px] font-medium text-content-300">{{ product.type.label() }}</span>
+            <span class="ml-auto text-[11px] text-content-700 bg-surface-700 border border-stroke rounded px-1.5 py-0.5">Zablokowane</span>
+        </div>
+        <input type="hidden" name="{{ form.type.vars.full_name }}" value="{{ product.type.value }}">
+        {% do form.type.setRendered() %}
+    </div>
+
+    <div>
+        <div class="flex items-center gap-2 mb-3">
+            <span class="text-[10.5px] uppercase tracking-[0.08em] font-semibold text-content-700">Dane podstawowe</span>
+            <span class="flex-1 h-px bg-stroke"></span>
+        </div>
+        <div class="grid grid-cols-2 gap-x-4 gap-y-4">
+            <div class="col-span-2">
+                {{ form_label(form.name, 'Nazwa produktu', {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (form.name.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
+                <span class="input-wrap {{ form.name.vars.errors|length ? 'input-wrap--error' }}">
+                    {{ form_widget(form.name, {attr: {placeholder: 'np. Felga aluminiowa 17" ET35'}}) }}
+                </span>
+                {% for error in form.name.vars.errors %}<p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>{% endfor %}
+            </div>
+            <div>
+                <span class="block text-xs font-medium mb-1.5 text-content-500">SKU</span>
+                <div class="flex items-center gap-2 px-3 h-9 bg-surface-800 border border-stroke rounded-lg">
+                    <span class="text-[13px] font-mono text-content-500">{{ product.sku }}</span>
+                    <span class="ml-auto text-[11px] text-content-700 bg-surface-700 border border-stroke rounded px-1.5 py-0.5">Zablokowane</span>
+                </div>
+                <input type="hidden" name="{{ form.sku.vars.full_name }}" value="{{ product.sku }}">
+                {% do form.sku.setRendered() %}
+            </div>
+            <div>
+                {{ form_label(form.ean, 'EAN', {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (form.ean.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
+                <span class="input-wrap {{ form.ean.vars.errors|length ? 'input-wrap--error' }}">
+                    {{ form_widget(form.ean, {attr: {placeholder: 'np. 5901234123457'}}) }}
+                </span>
+                {% for error in form.ean.vars.errors %}<p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>{% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="flex items-center gap-2 mb-3">
+            <span class="text-[10.5px] uppercase tracking-[0.08em] font-semibold text-content-700">Stany i magazyn</span>
+            <span class="flex-1 h-px bg-stroke"></span>
+        </div>
+        <div class="grid grid-cols-3 gap-x-4 gap-y-4">
+            <div>
+                <span class="block text-xs font-medium mb-1.5 text-content-500">Jednostka miary</span>
+                <div class="flex items-center gap-2 px-3 h-9 bg-surface-800 border border-stroke rounded-lg">
+                    <span class="text-[13px] text-content-500">{{ product.unit }}</span>
+                    <span class="ml-auto text-[11px] text-content-700 bg-surface-700 border border-stroke rounded px-1.5 py-0.5">Zablokowane</span>
+                </div>
+                <input type="hidden" name="{{ form.unit.vars.full_name }}" value="{{ product.unit }}">
+                {% do form.unit.setRendered() %}
+            </div>
+            <div>
+                {{ form_label(form.unitPrice, 'Cena jednostkowa', {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (form.unitPrice.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
+                <span class="input-wrap {{ form.unitPrice.vars.errors|length ? 'input-wrap--error' }}">
+                    {{ form_widget(form.unitPrice, {attr: {placeholder: '0.00', step: '0.01'}}) }}
+                    <span class="text-xs text-content-700 shrink-0">PLN</span>
+                </span>
+                {% for error in form.unitPrice.vars.errors %}<p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>{% endfor %}
+            </div>
+            <div>
+                {{ form_label(form.minStockLevel, 'Min. stan magazynowy', {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (form.minStockLevel.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
+                <span class="input-wrap {{ form.minStockLevel.vars.errors|length ? 'input-wrap--error' }}">
+                    {{ form_widget(form.minStockLevel, {attr: {placeholder: '—', step: '0.01'}}) }}
+                </span>
+                {% for error in form.minStockLevel.vars.errors %}<p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>{% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="flex items-center justify-end gap-2 px-[22px] py-4 border-t border-stroke shrink-0">
+    <button
+        type="button"
+        data-modal-hide="modal-product-edit"
+        class="h-[34px] px-4 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors cursor-pointer"
+    >
+        Anuluj
+    </button>
+    <button
+        type="submit"
+        class="h-[34px] px-4 text-[13px] font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-400 transition-colors cursor-pointer"
+    >
+        Zapisz zmiany
+    </button>
+</div>
+
+{{ form_end(form) }}
+
+</turbo-frame>
