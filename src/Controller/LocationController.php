@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Location;
+use App\Form\LocationType;
 use App\Repository\LocationRepository;
 use App\Traits\TurboTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -56,20 +58,69 @@ class LocationController extends AbstractController
     #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        throw $this->createNotFoundException('Not implemented');
+        $location = new Location();
+        $location->setCreatedBy($this->getUser());
+
+        $form = $this->createForm(LocationType::class, $location);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($location);
+            $entityManager->flush();
+
+            $this->addFlash('success', sprintf('Lokalizacja "%s" została utworzona.', $location->getName()));
+
+            return $this->redirectToRoute('app_location_index');
+        }
+
+        return $this->render('location/new.html.twig', [
+            'form' => $form,
+        ]);
     }
 
     #[Route('/{id}/edit', name: 'app_location_edit', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
-    public function edit(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        throw $this->createNotFoundException('Not implemented');
+    public function edit(
+        Request $request,
+        Location $location,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        $form = $this->createForm(LocationType::class, $location);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($location);
+            $entityManager->flush();
+
+            $this->addFlash('success', sprintf('Zmiany w lokalizacji "%s" zostały zapisane.', $location->getName()));
+
+            return $this->redirectToRoute('app_location_index');
+        }
+
+        return $this->render('location/edit.html.twig', [
+            'form' => $form,
+            'location' => $location,
+        ]);
     }
 
     #[Route('/{id}/delete', name: 'app_location_delete', methods: ['POST'])]
     #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
-    public function delete(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        throw $this->createNotFoundException('Not implemented');
+    public function delete(
+        Request $request,
+        Location $location,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        if ($request->isMethod('POST') && $this->isCsrfTokenValid('delete'.$location->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($location);
+            $entityManager->flush();
+
+            $this->addFlash('success', sprintf('Lokalizacja "%s" została usunięta.', $location->getName()));
+
+            return $this->redirectToRoute('app_location_index');
+        }
+
+        return $this->render('location/delete.html.twig', [
+            'location' => $location,
+        ]);
     }
 }

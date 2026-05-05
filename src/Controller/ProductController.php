@@ -69,7 +69,7 @@ class ProductController extends AbstractController
             $em->persist($product);
             $em->flush();
 
-            $this->addFlash('success', 'Produkt "'.$product->getName().'" został dodany.');
+            $this->addFlash('success', sprintf('Produkt "%s" został dodany.', $product->getName()));
 
             return $this->turboRedirectToRoute($request, 'app_product_index');
         }
@@ -93,7 +93,7 @@ class ProductController extends AbstractController
             $em->persist($product);
             $em->flush();
 
-            $this->addFlash('success', 'Zmiany w produkcie "'.$product->getName().'" zostały zapisane.');
+            $this->addFlash('success', sprintf('Zmiany w produkcie "%s" zostały zapisane.', $product->getName()));
 
             return $this->turboRedirectToRoute($request, 'app_product_index');
         }
@@ -117,7 +117,7 @@ class ProductController extends AbstractController
             $em->persist($product);
             $em->flush();
 
-            $this->addFlash('success', 'Produkt "'.$product->getName().'" został dezaktywowany.');
+            $this->addFlash('success', sprintf('Produkt "%s" został dezaktywowany.', $product->getName()));
 
             return $this->turboRedirectToRoute($request, 'app_product_index');
         }
