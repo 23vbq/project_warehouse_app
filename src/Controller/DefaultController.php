@@ -20,12 +20,12 @@ class DefaultController extends AbstractController
     public function sidebar(
         Request $request,
         ProductRepository $productRepository,
-        LocationRepository $locationRepository
+        LocationRepository $locationRepository,
     ): Response {
         $currentRoute = $request->attributes->get('_route');
 
         $productCounts = $productRepository->countTypesAndTotal();
-        $locationCounts = $locationRepository->count([ 'isActive' => true ]);
+        $locationCounts = $locationRepository->count(['isActive' => true]);
 
         $alerts = [
             'products' => $productCounts['total'] ?? 0,

@@ -62,7 +62,7 @@ class ProductController extends AbstractController
         if (!$request->headers->has('Turbo-Frame')) {
             return $this->redirectToRoute('app_product_index');
         }
-        
+
         $product = new Product();
         $product->setCreatedBy($this->getUser());
 
@@ -93,7 +93,7 @@ class ProductController extends AbstractController
         if (!$request->headers->has('Turbo-Frame')) {
             return $this->redirectToRoute('app_product_index');
         }
-        
+
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
@@ -122,7 +122,7 @@ class ProductController extends AbstractController
         if (!$request->headers->has('Turbo-Frame')) {
             return $this->redirectToRoute('app_product_index');
         }
-        
+
         if ($request->isMethod('POST') && $this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
             $product->setInactive();
 
