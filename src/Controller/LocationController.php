@@ -58,6 +58,10 @@ class LocationController extends AbstractController
     #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$request->headers->has('Turbo-Frame')) {
+            return $this->redirectToRoute('app_location_index');
+        }
+
         $location = new Location();
         $location->setCreatedBy($this->getUser());
 
@@ -85,6 +89,10 @@ class LocationController extends AbstractController
         Location $location,
         EntityManagerInterface $entityManager,
     ): Response {
+        if (!$request->headers->has('Turbo-Frame')) {
+            return $this->redirectToRoute('app_location_index');
+        }
+
         $form = $this->createForm(LocationType::class, $location);
         $form->handleRequest($request);
 
@@ -103,15 +111,20 @@ class LocationController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/delete', name: 'app_location_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_location_delete', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
     public function delete(
         Request $request,
         Location $location,
         EntityManagerInterface $entityManager,
     ): Response {
+        if (!$request->headers->has('Turbo-Frame')) {
+            return $this->redirectToRoute('app_location_index');
+        }
+
         if ($request->isMethod('POST') && $this->isCsrfTokenValid('delete'.$location->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($location);
+            $location->setInactive();
+            $entityManager->persist($location);
             $entityManager->flush();
 
             $this->addFlash('success', sprintf('Lokalizacja "%s" została usunięta.', $location->getName()));
