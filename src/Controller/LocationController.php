@@ -72,7 +72,7 @@ class LocationController extends AbstractController
             $entityManager->persist($location);
             $entityManager->flush();
 
-            $this->addFlash('success', sprintf('Lokalizacja "%s" została utworzona.', $location->getName()));
+            $this->addFlash('success', sprintf('Lokalizacja "%s" została utworzona.', $location->getCode()));
 
             return $this->turboRedirectToRoute($request, 'app_location_index');
         }
@@ -100,7 +100,7 @@ class LocationController extends AbstractController
             $entityManager->persist($location);
             $entityManager->flush();
 
-            $this->addFlash('success', sprintf('Zmiany w lokalizacji "%s" zostały zapisane.', $location->getName()));
+            $this->addFlash('success', sprintf('Zmiany w lokalizacji "%s" zostały zapisane.', $location->getCode()));
 
             return $this->turboRedirectToRoute($request, 'app_location_index');
         }
@@ -127,7 +127,7 @@ class LocationController extends AbstractController
             $entityManager->persist($location);
             $entityManager->flush();
 
-            $this->addFlash('success', sprintf('Lokalizacja "%s" została usunięta.', $location->getName()));
+            $this->addFlash('success', sprintf('Lokalizacja "%s" została usunięta.', $location->getCode()));
 
             return $this->turboRedirectToRoute($request, 'app_location_index');
         }
