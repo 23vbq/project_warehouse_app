@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\LocationRepository;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,10 +20,12 @@ class DefaultController extends AbstractController
     public function sidebar(
         Request $request,
         ProductRepository $productRepository,
+        LocationRepository $locationRepository
     ): Response {
         $currentRoute = $request->attributes->get('_route');
 
         $productCounts = $productRepository->countTypesAndTotal();
+        $locationCounts = $locationRepository->count([ 'isActive' => true ]);
 
         $alerts = [
             'products' => $productCounts['total'] ?? 0,
@@ -30,6 +33,7 @@ class DefaultController extends AbstractController
             'semiProducts' => $productCounts['semiCount'] ?? 0,
             'rawProducts' => $productCounts['rawCount'] ?? 0,
             'consumableProducts' => $productCounts['consumablesCount'] ?? 0,
+            'locations' => $locationCounts ?? 0,
         ];
 
         return $this->render('layout/_partials/sidebar.html.twig', [

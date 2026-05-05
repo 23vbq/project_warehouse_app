@@ -70,7 +70,7 @@ class LocationController extends AbstractController
 
             $this->addFlash('success', sprintf('Lokalizacja "%s" została utworzona.', $location->getName()));
 
-            return $this->redirectToRoute('app_location_index');
+            return $this->turboRedirectToRoute($request, 'app_location_index');
         }
 
         return $this->render('location/new.html.twig', [
@@ -94,7 +94,7 @@ class LocationController extends AbstractController
 
             $this->addFlash('success', sprintf('Zmiany w lokalizacji "%s" zostały zapisane.', $location->getName()));
 
-            return $this->redirectToRoute('app_location_index');
+            return $this->turboRedirectToRoute($request, 'app_location_index');
         }
 
         return $this->render('location/edit.html.twig', [
@@ -116,7 +116,7 @@ class LocationController extends AbstractController
 
             $this->addFlash('success', sprintf('Lokalizacja "%s" została usunięta.', $location->getName()));
 
-            return $this->redirectToRoute('app_location_index');
+            return $this->turboRedirectToRoute($request, 'app_location_index');
         }
 
         return $this->render('location/delete.html.twig', [
