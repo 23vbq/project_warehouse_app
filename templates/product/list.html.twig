@@ -43,19 +43,21 @@
         </div>
 
         {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
-            {% set inactiveUrl = path('app_product_index', filters|merge({showInactive: filters.showInactive ? null : 1, page: null, sort: orderBy.field, direction: orderBy.direction})) %}
-            <a
-                href="{{ inactiveUrl }}"
-                class="flex items-center gap-1.5 h-[34px] px-3 text-[13px] border rounded-lg transition-colors
-                {% if filters.showInactive %}
-                    text-amber-400 bg-amber-500/10 border-amber-500/25 hover:bg-amber-500/15
-                {% else %}
-                    text-content-500 bg-surface-800 border-stroke hover:text-content-50
-                {% endif %}"
-            >
+            <label class="group flex items-center gap-1.5 h-[34px] px-3 text-[13px] border rounded-lg transition-colors cursor-pointer
+                text-content-500 bg-surface-800 border-stroke hover:text-content-50
+                has-[:checked]:text-amber-400 has-[:checked]:bg-amber-500/10 has-[:checked]:border-amber-500/25 has-[:checked]:hover:bg-amber-500/15">
+                <input
+                    type="checkbox"
+                    name="showInactive"
+                    value="1"
+                    {% if filters.showInactive %}checked{% endif %}
+                    data-turbo-filter-target="filterField"
+                    class="sr-only"
+                >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                {{ filters.showInactive ? 'Ukryj nieaktywne' : 'Pokaż nieaktywne' }}
-            </a>
+                <span class="group-has-[:checked]:hidden">Pokaż nieaktywne</span>
+                <span class="hidden group-has-[:checked]:inline">Ukryj nieaktywne</span>
+            </label>
         {% endif %}
 
         {# TODO: More filters #}

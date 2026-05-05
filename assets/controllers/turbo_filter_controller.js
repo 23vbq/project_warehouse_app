@@ -57,7 +57,9 @@ export default class extends Controller {
         const filters = {};
 
         this.filterFieldTargets.forEach((field) => {
-            if (field.value) {
+            if (field.type === 'checkbox') {
+                if (field.checked) filters[field.name] = field.value;
+            } else if (field.value) {
                 filters[field.name] = field.value;
             }
         });
