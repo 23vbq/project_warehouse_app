@@ -42,7 +42,7 @@ class ProductController extends AbstractController
 
         $view = 'product/index.html.twig';
         $turboFrameId = $request->headers->get('Turbo-Frame');
-        if ('product_list' === $turboFrameId) {
+        if ($turboFrameId === 'product_list') {
             $view = 'product/list.html.twig';
         } elseif ('product_list_table' === $turboFrameId) {
             $view = 'product/_list_table.html.twig';
