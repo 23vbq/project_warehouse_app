@@ -26,9 +26,7 @@
             </div>
             <div class="col-span-2">
                 {{ form_label(form.description, 'Opis', {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (form.description.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
-                <span class="input-wrap {{ form.description.vars.errors|length ? 'input-wrap--error' }}">
-                    {{ form_widget(form.description, {attr: {placeholder: 'np. Główny magazyn w siedzibie', rows: 3}}) }}
-                </span>
+                {{ form_widget(form.description, {attr: {placeholder: 'np. Główny magazyn w siedzibie', rows: 3, class: 'input-textarea ' ~ (form.description.vars.errors|length ? 'input-textarea--error' : '')}}) }}
                 {% for error in form.description.vars.errors %}<p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>{% endfor %}
             </div>
         </div>

@@ -69,7 +69,10 @@
                 </td>
                 <td class="px-4 py-3 min-w-0">
                     {% if location.description %}
-                        <span class="text-content-500 truncate block">{{ location.description }}</span>
+                        <div data-controller="tooltip" class="min-w-0">
+                            <span class="text-content-500 truncate block cursor-default">{{ location.description }}</span>
+                            {{ include('layout/_partials/tooltip.html.twig', { content: location.description }) }}
+                        </div>
                     {% else %}
                         <span class="text-content-700">—</span>
                     {% endif %}
