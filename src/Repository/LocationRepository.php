@@ -14,6 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class LocationRepository extends ServiceEntityRepository
 {
     use SanitizesOrderBy;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Location::class);

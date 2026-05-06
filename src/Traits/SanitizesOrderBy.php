@@ -6,6 +6,6 @@ trait SanitizesOrderBy
 {
     private function sanitizeDirection(?string $direction): string
     {
-        return strtolower((string) $direction) === 'desc' ? 'DESC' : 'ASC';
+        return 'desc' === strtolower((string) $direction) ? 'DESC' : 'ASC';
     }
 }
