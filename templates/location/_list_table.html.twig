@@ -85,7 +85,7 @@
                     {{ include('location/_partials/status.html.twig') }}
                 </td>
                 <td class="px-4 py-3">
-                    {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
+                    {% if is_granted('ROLE_WAREHOUSE_MANAGER') and location.isActive() %}
                     <button
                         type="button"
                         data-dropdown-toggle="location-menu-{{ location.id }}"

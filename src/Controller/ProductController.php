@@ -94,6 +94,12 @@ class ProductController extends AbstractController
             return $this->redirectToRoute('app_product_index');
         }
 
+        if (!$product->isActive()) {
+            $this->addFlash('error', sprintf('Produkt "%s" jest nieaktywny i nie może być edytowany.', $product->getName()));
+
+            return $this->turboRedirectToRoute($request, 'app_product_index');
+        }
+
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
@@ -121,6 +127,12 @@ class ProductController extends AbstractController
     ): Response {
         if (!$request->headers->has('Turbo-Frame')) {
             return $this->redirectToRoute('app_product_index');
+        }
+
+        if (!$product->isActive()) {
+            $this->addFlash('error', sprintf('Produkt "%s" jest już nieaktywny.', $product->getName()));
+
+            return $this->turboRedirectToRoute($request, 'app_product_index');
         }
 
         if ($request->isMethod('POST') && $this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {

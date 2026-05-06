@@ -93,6 +93,12 @@ class LocationController extends AbstractController
             return $this->redirectToRoute('app_location_index');
         }
 
+        if (!$location->isActive()) {
+            $this->addFlash('error', sprintf('Lokalizacja "%s" jest nieaktywna i nie może być edytowana.', $location->getCode()));
+
+            return $this->turboRedirectToRoute($request, 'app_location_index');
+        }
+
         $form = $this->createForm(LocationType::class, $location);
         $form->handleRequest($request);
 
@@ -120,6 +126,12 @@ class LocationController extends AbstractController
     ): Response {
         if (!$request->headers->has('Turbo-Frame')) {
             return $this->redirectToRoute('app_location_index');
+        }
+
+        if (!$location->isActive()) {
+            $this->addFlash('error', sprintf('Lokalizacja "%s" jest już nieaktywna.', $location->getCode()));
+
+            return $this->turboRedirectToRoute($request, 'app_location_index');
         }
 
         if ($request->isMethod('POST') && $this->isCsrfTokenValid('delete'.$location->getId(), $request->request->get('_token'))) {
