@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Location;
+use App\Traits\SanitizesOrderBy;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -12,6 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class LocationRepository extends ServiceEntityRepository
 {
+    use SanitizesOrderBy;
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Location::class);
@@ -43,7 +45,7 @@ class LocationRepository extends ServiceEntityRepository
         ];
         if (!empty($orderBy)) {
             foreach ($orderBy as $field => $direction) {
-                $qb->addOrderBy($orderMap[$field] ?? 'l.code', $direction);
+                $qb->addOrderBy($orderMap[$field] ?? 'l.code', $this->sanitizeDirection($direction));
             }
         }
         $qb->addOrderBy('l.code', 'ASC');
