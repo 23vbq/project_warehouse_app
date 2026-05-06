@@ -1,0 +1,34 @@
+<turbo-frame id="product-stock-details-{{ product.id }}">
+    {% if stocks is empty %}
+        <p class="px-4 py-3 text-[13px] text-content-500">Brak stanów magazynowych dla tego produktu.</p>
+    {% else %}
+        <table class="w-full text-[13px] table-fixed">
+            <colgroup>
+                <col class="w-[15%]">
+                <col class="w-[25%]">
+                <col class="w-[15%]">
+                <col>
+            </colgroup>
+            <thead>
+                <tr class="border-b border-stroke">
+                    <th class="px-4 py-2 text-left font-medium text-content-500">Lokalizacja</th>
+                    <th class="px-4 py-2 text-left font-medium text-content-500">Nazwa</th>
+                    <th class="px-4 py-2 text-right font-medium text-content-500">Ilość</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-stroke">
+                {% for stock in stocks %}
+                    <tr>
+                        <td class="px-4 py-2 font-mono text-content-50">{{ stock.location.code }}</td>
+                        <td class="px-4 py-2 text-content-500 truncate">{{ stock.location.name ?: '—' }}</td>
+                        <td class="px-4 py-2 text-right font-mono text-content-300">
+                            {{ stock.quantity }} <span class="text-content-600">{{ product.unit }}</span>
+                        </td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</turbo-frame>

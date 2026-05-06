@@ -30,18 +30,19 @@
 <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
     <table class="w-full text-[13px] table-fixed">
         <colgroup>
-            <col class="w-[34%]">
+            <col class="w-8">
+            <col class="w-[31%]">
             <col class="w-[12%]">
             <col class="w-[12%]">
             <col class="w-[8%]">
             <col class="w-[11%]">
             <col class="w-[11%]">
-            <col class="w-[12%]">
-            <col class="w-[9%]">
+            <col class="w-[10%]">
             <col class="w-16">
         </colgroup>
         <thead>
             <tr class="border-b border-stroke">
+                <th class="px-2 py-3"></th>
                 <th class="px-4 py-3 text-left font-medium text-content-500">
                     {{ _self.sortLink('Produkt', 'name', 'left', orderBy, filters) }}
                 </th>
@@ -56,16 +57,33 @@
                     {{ _self.sortLink('Cena', 'unitPrice', 'right', orderBy, filters) }}
                 </th>
                 <th class="px-4 py-3 text-right font-medium text-content-500">Wartość</th>
-                <th class="px-4 py-3 text-left font-medium text-content-500">Lokalizacja</th>
                 <th class="px-4 py-3 text-left font-medium text-content-500">
                     {{ _self.sortLink('Status', 'isActive', 'left', orderBy, filters) }}
                 </th>
                 <th class="px-4 py-3"></th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-stroke">
-            {% for product in pager %}
+        {% for product in pager %}
+        <tbody
+            class="divide-y divide-stroke border-b border-stroke"
+            data-controller="accordion"
+            data-accordion-auto-close-value="true"
+        >
             <tr class="hover:bg-surface-800/50 transition-colors group">
+                <td class="px-2 py-3 text-center">
+                    <button
+                        type="button"
+                        data-action="click->accordion#toggle"
+                        data-accordion-row-id-param="stock-product-{{ product.id }}"
+                        data-accordion-url-param="{{ path('app_product_stock_detail', {id: product.id}) }}"
+                        class="w-5 h-5 rounded grid place-items-center text-content-700 hover:text-content-300 transition-colors cursor-pointer"
+                        data-accordion-target="toggle"
+                    >
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 10l5 5 5-5"></path>
+                        </svg>
+                    </button>
+                </td>
                 <td class="px-4 py-3 min-w-0">
                     <div class="flex items-center gap-3 min-w-0">
                         {{ include('product/_partials/icon.html.twig') }}
@@ -85,7 +103,6 @@
                 <td class="px-4 py-3 text-right text-content-500 uppercase">—</td>
                 <td class="px-4 py-3 text-right font-mono text-[12.5px] text-content-300">{{ product.unitPrice|number_format(2, ',', ' ') }} <span class="text-content-600">PLN</span></td>
                 <td class="px-4 py-3 text-right text-content-500 uppercase">—</td>
-                <td class="px-4 py-3 text-content-500 truncate">—</td>
                 <td class="px-4 py-3">
                     {{ include('product/_partials/status.html.twig') }}
                 </td>
@@ -103,7 +120,6 @@
                             id="product-menu-{{ product.id }}"
                             class="hidden z-20 bg-surface-800 border border-stroke rounded-lg shadow-[0_8px_24px_-8px_rgba(0,0,0,0.5)] py-1 min-w-[140px]"
                         >
-
                             <button
                                 type="button"
                                 data-controller="turbo"
@@ -135,12 +151,21 @@
                     {% endif %}
                 </td>
             </tr>
-            {% else %}
+            <tr id="stock-product-{{ product.id }}" class="hidden bg-surface-800/30">
+                <td colspan="9" class="p-0">
+                    <turbo-frame id="product-stock-details-{{ product.id }}" class="relative block min-h-[60px]">
+                        {{ include('layout/_partials/loader.html.twig') }}
+                    </turbo-frame>
+                </td>
+            </tr>
+        </tbody>
+        {% else %}
+        <tbody>
             <tr>
                 <td colspan="100%" class="px-4 py-6 text-center text-content-500">Brak produktów.</td>
             </tr>
-            {% endfor %}
         </tbody>
+        {% endfor %}
     </table>
 
     {{ pagerfanta(pager) }}
