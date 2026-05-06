@@ -136,7 +136,7 @@ class ProductController extends AbstractController
         }
 
         if ($request->isMethod('POST') && $this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
-            $product->setInactive();
+            $product->setIsActive(false);
 
             $em->persist($product);
             $em->flush();

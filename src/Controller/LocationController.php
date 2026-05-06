@@ -135,7 +135,7 @@ class LocationController extends AbstractController
         }
 
         if ($request->isMethod('POST') && $this->isCsrfTokenValid('delete'.$location->getId(), $request->request->get('_token'))) {
-            $location->setInactive();
+            $location->setIsActive(false);
             $entityManager->persist($location);
             $entityManager->flush();
 

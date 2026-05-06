@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: LocationRepository::class)]
-#[UniqueEntity(fields: ['code'], message: 'Lokalizacja o tym kodzie już istnieje.')]
+#[UniqueEntity(fields: ['code'], repositoryMethod: 'findForUniqueValidation', message: 'Lokalizacja o tym kodzie już istnieje.')]
 class Location
 {
     #[ORM\Id]
@@ -16,7 +16,7 @@ class Location
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50, unique: true)]
+    #[ORM\Column(length: 50)]
     private ?string $code = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -57,14 +57,6 @@ class Location
         return $this;
     }
 
-    public function setInactive(): static
-    {
-        $this->setIsActive(false);
-        $this->setCode('DELETED_'.$this->getCode());
-
-        return $this;
-    }
-
     public function getName(): ?string
     {
         return $this->name;
@@ -94,7 +86,7 @@ class Location
         return $this->isActive;
     }
 
-    private function setIsActive(bool $isActive): static
+    public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
 

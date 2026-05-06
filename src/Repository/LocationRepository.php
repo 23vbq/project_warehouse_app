@@ -19,6 +19,13 @@ class LocationRepository extends ServiceEntityRepository
         parent::__construct($registry, Location::class);
     }
 
+    public function findForUniqueValidation(array $criteria): array
+    {
+        $criteria['isActive'] = true;
+
+        return $this->findBy($criteria);
+    }
+
     public function addActiveFilter(QueryBuilder &$qb, string $alias): QueryBuilder
     {
         return $qb->andWhere("$alias.isActive = :locationIsActive")

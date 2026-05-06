@@ -8,8 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[UniqueEntity(fields: ['sku'], message: 'Produkt z tym SKU już istnieje.')]
-#[UniqueEntity(fields: ['ean'], message: 'Produkt z tym kodem EAN już istnieje.')]
+#[UniqueEntity(fields: ['sku'], repositoryMethod: 'findForUniqueValidation', message: 'Produkt z tym SKU już istnieje.')]
+#[UniqueEntity(fields: ['ean'], repositoryMethod: 'findForUniqueValidation', message: 'Produkt z tym kodem EAN już istnieje.')]
 class Product
 {
     #[ORM\Id]
@@ -17,10 +17,10 @@ class Product
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50, unique: true)]
+    #[ORM\Column(length: 50)]
     private ?string $sku = null;
 
-    #[ORM\Column(length: 13, unique: true, nullable: true)]
+    #[ORM\Column(length: 13, nullable: true)]
     private ?string $ean = null;
 
     #[ORM\Column(length: 255)]
@@ -147,7 +147,7 @@ class Product
         return $this->isActive;
     }
 
-    private function setIsActive(bool $isActive): static
+    public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
 
@@ -178,11 +178,4 @@ class Product
         return $this;
     }
 
-    public function setInactive(): static
-    {
-        $this->setIsActive(false);
-        $this->setSku('DELETED_'.$this->getSku());
-
-        return $this;
-    }
 }
