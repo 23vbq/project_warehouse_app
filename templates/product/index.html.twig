@@ -21,45 +21,47 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18M9 21V9"></path></svg>
                 Importuj
             </button> #}
-            <button
-                type="button"
-                data-controller="turbo"
-                data-action="click->turbo#open"
-                data-turbo-frame-id="product_new"
-                data-url="{{ path('app_product_new') }}"
-                data-modal-target="modal-product-new"
-                data-modal-toggle="modal-product-new"
-                class="flex items-center gap-2 h-[34px] px-4 text-[13px] font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-400 transition-colors cursor-pointer"
-            >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
-                Nowy produkt
-            </button>
+            {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
+                <button
+                    type="button"
+                    data-controller="turbo"
+                    data-action="click->turbo#open"
+                    data-turbo-frame-id="product_new"
+                    data-url="{{ path('app_product_new') }}"
+                    data-modal-target="modal-product-new"
+                    data-modal-toggle="modal-product-new"
+                    class="flex items-center gap-2 h-[34px] px-4 text-[13px] font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-400 transition-colors cursor-pointer"
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+                    Nowy produkt
+                </button>
+            {% endif %}
         </div>
     </div>
 
-    {% include 'product/list.html.twig' %}
+    {{ include('product/list.html.twig') }}
 
-    {% include 'layout/_partials/modal.html.twig' with {
+    {{ include('layout/_partials/modal.html.twig', {
         elementId: 'modal-product-new',
         turboFrameId: 'product_new',
         title: 'Nowy produkt',
         subtitle: 'Dodaj indeks magazynowy do kartoteki',
         icon: source('svg/menu/products.svg'),
-    } %}
+    }) }}
 
-    {% include 'layout/_partials/modal.html.twig' with {
+    {{ include('layout/_partials/modal.html.twig', {
         elementId: 'modal-product-edit',
         turboFrameId: 'product_edit',
         title: 'Edytuj produkt',
         subtitle: 'Zmień dane indeksu magazynowego',
         icon: source('svg/edit.svg'),
-    } %}
+    }) }}
 
-    {% include 'layout/_partials/modal.html.twig' with {
+    {{ include('layout/_partials/modal.html.twig', {
         elementId: 'modal-product-delete',
         turboFrameId: 'product_delete',
         title: 'Usuń produkt',
         icon: source('svg/delete.svg'),
-    } %}
+    }) }}
 </turbo-frame>
 {% endblock %}

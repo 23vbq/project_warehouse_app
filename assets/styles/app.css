@@ -120,6 +120,22 @@
   .input-wrap input::placeholder {
     @apply text-content-700;
   }
+  .input-textarea {
+    @apply w-full bg-surface-700 border border-stroke rounded-[10px] px-3 py-2.5 text-content-50 text-[14px] outline-none resize-y;
+    transition: border-color .12s ease, background .12s ease, box-shadow .12s ease;
+  }
+  .input-textarea::placeholder {
+    @apply text-content-700;
+  }
+  .input-textarea:focus {
+    @apply border-brand-500/45 bg-surface-800 shadow-[0_0_0_3px_rgba(160,100,230,0.12)];
+  }
+  .input-textarea--error {
+    @apply border-danger-500/50 shadow-[0_0_0_3px_rgba(220,80,50,0.12)];
+  }
+  .input-textarea--error:focus {
+    @apply border-danger-500/70 shadow-[0_0_0_3px_rgba(220,80,50,0.18)];
+  }
   .input-wrap .toggle-pw {
     @apply text-content-700 p-1 leading-none;
   }

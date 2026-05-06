@@ -30,7 +30,7 @@ class ProductController extends AbstractController
             'showInactive' => $request->query->getBoolean('showInactive'),
         ];
         $orderBy = [
-            'field' => $request->query->get('sort'),
+            'field' => $request->query->get('sort', 'name'),
             'direction' => $request->query->get('direction', 'asc'),
         ];
 
@@ -59,6 +59,10 @@ class ProductController extends AbstractController
     #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
+        if (!$request->headers->has('Turbo-Frame')) {
+            return $this->redirectToRoute('app_product_index');
+        }
+
         $product = new Product();
         $product->setCreatedBy($this->getUser());
 
@@ -69,7 +73,7 @@ class ProductController extends AbstractController
             $em->persist($product);
             $em->flush();
 
-            $this->addFlash('success', 'Produkt "'.$product->getName().'" został dodany.');
+            $this->addFlash('success', sprintf('Produkt "%s" został dodany.', $product->getName()));
 
             return $this->turboRedirectToRoute($request, 'app_product_index');
         }
@@ -86,6 +90,16 @@ class ProductController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
     ): Response {
+        if (!$request->headers->has('Turbo-Frame')) {
+            return $this->redirectToRoute('app_product_index');
+        }
+
+        if (!$product->isActive()) {
+            $this->addFlash('error', sprintf('Produkt "%s" jest nieaktywny i nie może być edytowany.', $product->getName()));
+
+            return $this->turboRedirectToRoute($request, 'app_product_index');
+        }
+
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
@@ -93,7 +107,7 @@ class ProductController extends AbstractController
             $em->persist($product);
             $em->flush();
 
-            $this->addFlash('success', 'Zmiany w produkcie "'.$product->getName().'" zostały zapisane.');
+            $this->addFlash('success', sprintf('Zmiany w produkcie "%s" zostały zapisane.', $product->getName()));
 
             return $this->turboRedirectToRoute($request, 'app_product_index');
         }
@@ -111,13 +125,23 @@ class ProductController extends AbstractController
         Product $product,
         EntityManagerInterface $em,
     ): Response {
+        if (!$request->headers->has('Turbo-Frame')) {
+            return $this->redirectToRoute('app_product_index');
+        }
+
+        if (!$product->isActive()) {
+            $this->addFlash('error', sprintf('Produkt "%s" jest już nieaktywny.', $product->getName()));
+
+            return $this->turboRedirectToRoute($request, 'app_product_index');
+        }
+
         if ($request->isMethod('POST') && $this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
-            $product->setInactive();
+            $product->setIsActive(false);
 
             $em->persist($product);
             $em->flush();
 
-            $this->addFlash('success', 'Produkt "'.$product->getName().'" został dezaktywowany.');
+            $this->addFlash('success', sprintf('Produkt "%s" został dezaktywowany.', $product->getName()));
 
             return $this->turboRedirectToRoute($request, 'app_product_index');
         }
