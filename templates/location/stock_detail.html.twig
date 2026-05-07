@@ -20,7 +20,9 @@
             <tbody class="divide-y divide-stroke">
                 {% for stock in stocks %}
                     <tr>
-                        <td class="px-4 py-2 font-mono text-content-50 truncate">{{ stock.product.sku }}</td>
+                        <td class="px-4 py-2 font-mono text-content-50 truncate">
+                            <a href="{{ path('app_product_index', {query: stock.product.sku}) }}" class="underline hover:text-content-300 transition-colors">{{ stock.product.sku }}</a>
+                        </td>
                         <td class="px-4 py-2 text-content-300 truncate">{{ stock.product.name }}</td>
                         <td class="px-4 py-2 text-right font-mono text-content-300">
                             {{ stock.quantity }} <span class="text-content-600">{{ stock.product.unit }}</span>

@@ -69,7 +69,7 @@
                             data-action="click->accordion#toggle"
                             data-accordion-row-id-param="stock-location-{{ location.id }}"
                             data-accordion-url-param="{{ path('app_location_stock_detail', {id: location.id}) }}"
-                            class="w-5 h-5 rounded grid place-items-center text-content-700 hover:text-content-300 transition-colors cursor-pointer"
+                            class="w-5 h-5 rounded grid place-items-center text-content-700 hover:text-content-300 transition-colors transition-transform duration-200 cursor-pointer"
                             data-accordion-target="toggle"
                         >
                             <div class="w-4 h-4 shrink-0">{{ source('svg/chevron-down.svg') }}</div>
