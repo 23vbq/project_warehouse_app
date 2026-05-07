@@ -103,11 +103,19 @@
                         <div>{{ product.createdAt|date('H:i') }}</div>
                     </td>
                     <td class="px-4 py-3 text-right font-mono text-[12.5px] text-content-300">
-                        {% if row.totalStock %}
-                            {{ row.totalStock }}
-                            <span class="text-content-600">{{ product.unit }}</span>
-                        {% else %}
-                            <span class="text-content-500">—</span>
+                        <div>
+                            {% if row.totalStock %}
+                                {{ row.totalStock }}
+                                <span class="text-content-500">{{ product.unit }}</span>
+                            {% else %}
+                                <span class="text-content-500">—</span>
+                            {% endif %}
+                        </div>
+                        {% if product.minStockLevel %}
+                            <div class="text-[11px] text-content-500" title="Stan minimalny">
+                                {{ product.minStockLevel }}
+                                <span class="text-content-700">{{ product.unit }}</span>
+                            </div>
                         {% endif %}
                     </td>
                     <td class="px-4 py-3 text-right font-mono text-[12.5px] text-content-300">
