@@ -36,7 +36,13 @@ class ProductRepository extends ServiceEntityRepository
 
     public function createIndexQueryBuilder(array $filters = [], array $orderBy = []): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('p');
+        $qb = $this->createQueryBuilder('p')
+            ->select(
+                'p as product',
+                'SUM(s.quantity) as totalStock'
+            )
+            ->leftJoin('p.stocks', 's')
+            ->groupBy('p.id');
 
         if (!empty($filters['type'])) {
             $qb->andWhere('p.type = :type')
