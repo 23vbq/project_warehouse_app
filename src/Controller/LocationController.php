@@ -58,9 +58,8 @@ class LocationController extends AbstractController
     #[Route('/{id}/stock', name: 'app_location_stock_detail', methods: ['GET'])]
     public function stockDetail(
         Location $location,
-        StockRepository $stockRepository
-    ): Response
-    {
+        StockRepository $stockRepository,
+    ): Response {
         $stocks = $stockRepository->findByLocation($location->getId());
 
         return $this->render('location/stock_detail.html.twig', [
