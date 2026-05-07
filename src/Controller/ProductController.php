@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
+use App\Repository\StockRepository;
 use App\Traits\TurboTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
@@ -52,6 +53,19 @@ class ProductController extends AbstractController
             'pager' => $pager,
             'filters' => $filters,
             'orderBy' => $orderBy,
+        ]);
+    }
+
+    #[Route('/{id}/stock', name: 'app_product_stock_detail')]
+    public function stockDetail(
+        Product $product,
+        StockRepository $stockRepository,
+    ): Response {
+        $stocks = $stockRepository->findByProduct($product->getId());
+
+        return $this->render('product/stock_detail.html.twig', [
+            'product' => $product,
+            'stocks' => $stocks,
         ]);
     }
 

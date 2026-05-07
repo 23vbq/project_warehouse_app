@@ -29,15 +29,17 @@
 <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
     <table class="w-full text-[13px] table-fixed">
         <colgroup>
-            <col class="w-[20%]">
-            <col class="w-[24%]">
-            <col class="w-[28%]">
-            <col class="w-[14%]">
+            <col class="w-8">
+            <col class="w-[18%]">
+            <col class="w-[22%]">
+            <col class="w-[26%]">
+            <col class="w-[12%]">
             <col class="w-[10%]">
             <col class="w-16">
         </colgroup>
         <thead>
             <tr class="border-b border-stroke">
+                <th class="px-2 py-3"></th>
                 <th class="px-4 py-3 text-left font-medium text-content-500">
                     {{ _self.sortLink('Kod', 'code', 'left', orderBy, filters) }}
                 </th>
@@ -54,86 +56,108 @@
                 <th class="px-4 py-3"></th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-stroke">
-            {% for location in pager %}
-            <tr class="hover:bg-surface-800/50 transition-colors group">
-                <td class="px-4 py-3 min-w-0">
-                    <span class="font-mono font-medium text-content-50 truncate block">{{ location.code }}</span>
-                </td>
-                <td class="px-4 py-3 min-w-0">
-                    {% if location.name %}
-                        <span class="text-content-300 truncate block">{{ location.name }}</span>
-                    {% else %}
-                        <span class="text-content-700">—</span>
-                    {% endif %}
-                </td>
-                <td class="px-4 py-3 min-w-0">
-                    {% if location.description %}
-                        <div data-controller="tooltip" class="min-w-0">
-                            <span class="text-content-500 truncate block cursor-default">{{ location.description }}</span>
-                            {{ include('layout/_partials/tooltip.html.twig', {content: location.description}) }}
+        <tbody
+            class="divide-y divide-stroke"
+            data-controller="accordion"
+            data-accordion-auto-close-value="true"
+        >
+        {% for location in pager %}
+                <tr class="hover:bg-surface-800/50 transition-colors group border-b border-stroke">
+                    <td class="px-2 py-3 text-center">
+                        <button
+                            type="button"
+                            data-action="click->accordion#toggle"
+                            data-accordion-row-id-param="stock-location-{{ location.id }}"
+                            data-accordion-url-param="{{ path('app_location_stock_detail', {id: location.id}) }}"
+                            class="w-5 h-5 rounded grid place-items-center text-content-700 hover:text-content-300 transition-colors transition-transform duration-200 cursor-pointer"
+                        >
+                            <div class="w-4 h-4 shrink-0">{{ source('svg/chevron-down.svg') }}</div>
+                        </button>
+                    </td>
+                    <td class="px-4 py-3 min-w-0">
+                        <span class="font-mono font-medium text-content-50 truncate block">{{ location.code }}</span>
+                    </td>
+                    <td class="px-4 py-3 min-w-0">
+                        {% if location.name %}
+                            <span class="text-content-300 truncate block">{{ location.name }}</span>
+                        {% else %}
+                            <span class="text-content-700">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3 min-w-0">
+                        {% if location.description %}
+                            <div data-controller="tooltip" class="min-w-0">
+                                <span class="text-content-500 truncate block cursor-default">{{ location.description }}</span>
+                                {{ include('layout/_partials/tooltip.html.twig', {content: location.description}) }}
+                            </div>
+                        {% else %}
+                            <span class="text-content-700">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3 text-right text-content-500">
+                        <div>{{ location.createdAt|date('d.m.Y') }}</div>
+                        <div>{{ location.createdAt|date('H:i') }}</div>
+                    </td>
+                    <td class="px-4 py-3">
+                        {{ include('location/_partials/status.html.twig') }}
+                    </td>
+                    <td class="px-4 py-3">
+                        {% if is_granted('ROLE_WAREHOUSE_MANAGER') and location.isActive() %}
+                        <button
+                            type="button"
+                            data-dropdown-toggle="location-menu-{{ location.id }}"
+                            data-dropdown-placement="left-start"
+                            class="w-7 h-7 rounded-md grid place-items-center text-content-700 hover:text-content-50 hover:bg-surface-700 transition-all cursor-pointer"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>
+                        </button>
+                        <div
+                            id="location-menu-{{ location.id }}"
+                            class="hidden z-20 bg-surface-800 border border-stroke rounded-lg shadow-[0_8px_24px_-8px_rgba(0,0,0,0.5)] py-1 min-w-[140px]"
+                        >
+                            <button
+                                type="button"
+                                data-controller="turbo"
+                                data-action="turbo#open"
+                                data-turbo-frame-id="location_edit"
+                                data-url="{{ path('app_location_edit', {id: location.id}) }}"
+                                data-modal-target="modal-location-edit"
+                                data-modal-toggle="modal-location-edit"
+                                class="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-content-300 hover:bg-surface-700 hover:text-content-50 transition-colors cursor-pointer"
+                            >
+                                <div class="w-[13px] h-[13px] shrink-0">{{ source('svg/edit.svg') }}</div>
+                                Edytuj
+                            </button>
+                            <div class="h-px bg-stroke mx-2 my-1"></div>
+                            <button
+                                type="button"
+                                data-controller="turbo"
+                                data-action="turbo#open"
+                                data-turbo-frame-id="location_delete"
+                                data-url="{{ path('app_location_delete', {id: location.id}) }}"
+                                data-modal-target="modal-location-delete"
+                                data-modal-toggle="modal-location-delete"
+                                class="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-danger-500 hover:bg-surface-700 transition-colors cursor-pointer"
+                            >
+                                <div class="w-[13px] h-[13px] shrink-0">{{ source('svg/delete.svg') }}</div>
+                                Usuń
+                            </button>
                         </div>
-                    {% else %}
-                        <span class="text-content-700">—</span>
-                    {% endif %}
-                </td>
-                <td class="px-4 py-3 text-right text-content-500">
-                    <div>{{ location.createdAt|date('d.m.Y') }}</div>
-                    <div>{{ location.createdAt|date('H:i') }}</div>
-                </td>
-                <td class="px-4 py-3">
-                    {{ include('location/_partials/status.html.twig') }}
-                </td>
-                <td class="px-4 py-3">
-                    {% if is_granted('ROLE_WAREHOUSE_MANAGER') and location.isActive() %}
-                    <button
-                        type="button"
-                        data-dropdown-toggle="location-menu-{{ location.id }}"
-                        data-dropdown-placement="left-start"
-                        class="w-7 h-7 rounded-md grid place-items-center text-content-700 hover:text-content-50 hover:bg-surface-700 transition-all cursor-pointer"
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>
-                    </button>
-                    <div
-                        id="location-menu-{{ location.id }}"
-                        class="hidden z-20 bg-surface-800 border border-stroke rounded-lg shadow-[0_8px_24px_-8px_rgba(0,0,0,0.5)] py-1 min-w-[140px]"
-                    >
-                        <button
-                            type="button"
-                            data-controller="turbo"
-                            data-action="turbo#open"
-                            data-turbo-frame-id="location_edit"
-                            data-url="{{ path('app_location_edit', {id: location.id}) }}"
-                            data-modal-target="modal-location-edit"
-                            data-modal-toggle="modal-location-edit"
-                            class="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-content-300 hover:bg-surface-700 hover:text-content-50 transition-colors cursor-pointer"
-                        >
-                            <div class="w-[13px] h-[13px] shrink-0">{{ source('svg/edit.svg') }}</div>
-                            Edytuj
-                        </button>
-                        <div class="h-px bg-stroke mx-2 my-1"></div>
-                        <button
-                            type="button"
-                            data-controller="turbo"
-                            data-action="turbo#open"
-                            data-turbo-frame-id="location_delete"
-                            data-url="{{ path('app_location_delete', {id: location.id}) }}"
-                            data-modal-target="modal-location-delete"
-                            data-modal-toggle="modal-location-delete"
-                            class="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-danger-500 hover:bg-surface-700 transition-colors cursor-pointer"
-                        >
-                            <div class="w-[13px] h-[13px] shrink-0">{{ source('svg/delete.svg') }}</div>
-                            Usuń
-                        </button>
-                    </div>
-                    {% endif %}
-                </td>
-            </tr>
-            {% else %}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr id="stock-location-{{ location.id }}" class="hidden bg-surface-800/30">
+                    <td colspan="7" class="p-0">
+                        <turbo-frame id="location-stock-details-{{ location.id }}" class="relative block min-h-[60px]">
+                            {{ include('layout/_partials/loader.html.twig') }}
+                        </turbo-frame>
+                    </td>
+                </tr>
+        {% else %}
             <tr>
-                <td colspan="100%" class="px-4 py-6 text-center text-content-500">Brak lokalizacji.</td>
+                <td colspan="7" class="px-4 py-6 text-center text-content-500">Brak lokalizacji.</td>
             </tr>
-            {% endfor %}
+        {% endfor %}
         </tbody>
     </table>
 

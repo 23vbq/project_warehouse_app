@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\LocationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -34,10 +36,17 @@ class Location
     #[ORM\ManyToOne]
     private ?User $createdBy = null;
 
+    /**
+     * @var Collection<int, Stock>
+     */
+    #[ORM\OneToMany(targetEntity: Stock::class, mappedBy: 'location')]
+    private Collection $stocks;
+
     public function __construct()
     {
         $this->setIsActive(true);
         $this->setCreatedAt(new \DateTimeImmutable());
+        $this->stocks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -113,6 +122,31 @@ class Location
     public function setCreatedBy(?User $createdBy): static
     {
         $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Stock>
+     */
+    public function getStocks(): Collection
+    {
+        return $this->stocks;
+    }
+
+    public function addStock(Stock $stock): static
+    {
+        if (!$this->stocks->contains($stock)) {
+            $this->stocks->add($stock);
+            $stock->setLocation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStock(Stock $stock): static
+    {
+        $this->stocks->removeElement($stock);
 
         return $this;
     }
