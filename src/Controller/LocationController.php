@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Location;
 use App\Form\LocationType;
 use App\Repository\LocationRepository;
+use App\Repository\StockRepository;
 use App\Traits\TurboTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
@@ -51,6 +52,20 @@ class LocationController extends AbstractController
             'pager' => $pager,
             'filters' => $filters,
             'orderBy' => $orderBy,
+        ]);
+    }
+
+    #[Route('/{id}/stock', name: 'app_location_stock_detail', methods: ['GET'])]
+    public function stockDetail(
+        Location $location,
+        StockRepository $stockRepository
+    ): Response
+    {
+        $stocks = $stockRepository->findByLocation($location->getId());
+
+        return $this->render('location/stock_detail.html.twig', [
+            'location' => $location,
+            'stocks' => $stocks,
         ]);
     }
 
