@@ -59,9 +59,8 @@ class ProductController extends AbstractController
     #[Route('/{id}/stock', name: 'app_product_stock_detail')]
     public function stockDetail(
         Product $product,
-        StockRepository $stockRepository
-    ): Response
-    {
+        StockRepository $stockRepository,
+    ): Response {
         $stocks = $stockRepository->findByProduct($product->getId());
 
         return $this->render('product/stock_detail.html.twig', [
