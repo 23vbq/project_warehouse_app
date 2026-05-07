@@ -67,6 +67,8 @@ class ProductRepository extends ServiceEntityRepository
             'sku' => 'p.sku',
             'unitPrice' => 'p.unitPrice',
             'status' => 'p.isActive',
+            'totalStock' => 'case when totalStock is null then 1 else 0 end asc, totalStock',
+            'totalPrice' => 'case when totalStock is null then 1 else 0 end asc, totalStock * p.unitPrice',
         ];
         if (!empty($orderBy)) {
             foreach ($orderBy as $field => $direction) {

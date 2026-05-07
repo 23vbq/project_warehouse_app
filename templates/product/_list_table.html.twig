@@ -52,13 +52,17 @@
                 <th class="px-4 py-3 text-right font-medium text-content-500">
                     {{ _self.sortLink('Utworzony', 'createdAt', 'right', orderBy, filters) }}
                 </th>
-                <th class="px-4 py-3 text-right font-medium text-content-500">Stan</th>
+                <th class="px-4 py-3 text-right font-medium text-content-500">
+                    {{ _self.sortLink('Stan', 'totalStock', 'right', orderBy, filters) }}
+                </th>
                 <th class="px-4 py-3 text-right font-medium text-content-500">
                     {{ _self.sortLink('Cena', 'unitPrice', 'right', orderBy, filters) }}
                 </th>
-                <th class="px-4 py-3 text-right font-medium text-content-500">Wartość</th>
+                <th class="px-4 py-3 text-right font-medium text-content-500">
+                    {{ _self.sortLink('Wartość', 'totalPrice', 'right', orderBy, filters) }}
+                </th>
                 <th class="px-4 py-3 text-left font-medium text-content-500">
-                    {{ _self.sortLink('Status', 'isActive', 'left', orderBy, filters) }}
+                    {{ _self.sortLink('Status', 'status', 'left', orderBy, filters) }}
                 </th>
                 <th class="px-4 py-3"></th>
             </tr>
