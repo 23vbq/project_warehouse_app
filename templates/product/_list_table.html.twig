@@ -67,14 +67,14 @@
                 <th class="px-4 py-3"></th>
             </tr>
         </thead>
+        <tbody
+            class="divide-y divide-stroke"
+            data-controller="accordion"
+            data-accordion-auto-close-value="true"
+        >
         {% for row in pager %}
             {% set product = row.product %}
-            <tbody
-                class="divide-y divide-stroke border-b border-stroke"
-                data-controller="accordion"
-                data-accordion-auto-close-value="true"
-            >
-                <tr class="hover:bg-surface-800/50 transition-colors group">
+                <tr class="hover:bg-surface-800/50 transition-colors group border-b border-stroke">
                     <td class="px-2 py-3 text-center">
                         <button
                             type="button"
@@ -82,7 +82,6 @@
                             data-accordion-row-id-param="stock-product-{{ product.id }}"
                             data-accordion-url-param="{{ path('app_product_stock_detail', {id: product.id}) }}"
                             class="w-5 h-5 rounded grid place-items-center text-content-700 hover:text-content-300 transition-colors transition-transform duration-200 cursor-pointer"
-                            data-accordion-target="toggle"
                         >
                             <div class="w-4 h-4 shrink-0">{{ source('svg/chevron-down.svg') }}</div>
                         </button>
@@ -178,14 +177,12 @@
                         </turbo-frame>
                     </td>
                 </tr>
-            </tbody>
         {% else %}
-            <tbody>
-                <tr>
-                    <td colspan="100%" class="px-4 py-6 text-center text-content-500">Brak produktów.</td>
-                </tr>
-            </tbody>
+            <tr>
+                <td colspan="9" class="px-4 py-6 text-center text-content-500">Brak produktów.</td>
+            </tr>
         {% endfor %}
+        </tbody>
     </table>
 
     {{ pagerfanta(pager) }}
