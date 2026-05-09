@@ -28,6 +28,7 @@ class OperationLineType extends AbstractType
                 'choice_label' => fn (Product $p) => sprintf('[%s] %s', $p->getSku(), $p->getName()),
                 'query_builder' => function (ProductRepository $r) {
                     $qb = $r->createQueryBuilder('p');
+
                     return $r->addActiveFilter($qb, 'p');
                 },
                 'placeholder' => 'Wybierz produkt…',
@@ -42,6 +43,7 @@ class OperationLineType extends AbstractType
                 'choice_label' => fn (Location $l) => $l->getCode().($l->getName() ? ' — '.$l->getName() : ''),
                 'query_builder' => function (LocationRepository $r) {
                     $qb = $r->createQueryBuilder('l');
+
                     return $r->addActiveFilter($qb, 'l');
                 },
                 'placeholder' => 'Lokalizacja źródłowa…',
@@ -57,6 +59,7 @@ class OperationLineType extends AbstractType
                 'choice_label' => fn (Location $l) => $l->getCode().($l->getName() ? ' — '.$l->getName() : ''),
                 'query_builder' => function (LocationRepository $r) {
                     $qb = $r->createQueryBuilder('l');
+
                     return $r->addActiveFilter($qb, 'l');
                 },
                 'placeholder' => 'Lokalizacja docelowa…',
@@ -68,17 +71,17 @@ class OperationLineType extends AbstractType
 
         $builder
             ->add('quantity', NumberType::class, [
-                'scale'       => 3,
+                'scale' => 3,
                 'constraints' => [
                     new NotBlank(message: 'Ilość jest wymagana.'),
                     new Positive(message: 'Ilość musi być większa od zera.'),
                 ],
             ]);
 
-        if ($operationType !== Operation::TYPE_RELOCATION) {
+        if (Operation::TYPE_RELOCATION !== $operationType) {
             $builder->add('unitPrice', NumberType::class, [
                 'required' => false,
-                'scale'    => 2,
+                'scale' => 2,
                 'constraints' => [
                     new Positive(message: 'Cena musi być większa od zera.'),
                 ],

@@ -60,8 +60,8 @@
         {% for operation in pager %}
             <tr class="hover:bg-surface-800/50 transition-colors border-b border-stroke">
                 <td class="px-2 py-3 text-center">
-                    {% set icons = { 'receipt': 'svg/pz.svg', 'release': 'svg/wz.svg', 'relocation': 'svg/mm.svg' } %}
-                    {% set colors = { 'receipt': 'text-emerald-500', 'release': 'text-violet-500', 'relocation': 'text-amber-500' } %}
+                    {% set icons = {receipt: 'svg/pz.svg', release: 'svg/wz.svg', relocation: 'svg/mm.svg'} %}
+                    {% set colors = {receipt: 'text-emerald-500', release: 'text-violet-500', relocation: 'text-amber-500'} %}
                     <div class="w-4 h-4 mx-auto {{ colors[operation.documentType] ?? 'text-content-500' }}">
                         {{ source(icons[operation.documentType] ?? 'svg/pz.svg') }}
                     </div>

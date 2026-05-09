@@ -18,9 +18,9 @@ use Doctrine\ORM\Mapping as ORM;
 ])]
 abstract class Operation
 {
-    const TYPE_RECEIPT = 'receipt';
-    const TYPE_RELEASE = 'release';
-    const TYPE_RELOCATION = 'relocation';
+    public const TYPE_RECEIPT = 'receipt';
+    public const TYPE_RELEASE = 'release';
+    public const TYPE_RELOCATION = 'relocation';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -191,5 +191,4 @@ abstract class Operation
 
         return $this;
     }
-
 }

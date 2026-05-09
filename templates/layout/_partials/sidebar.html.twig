@@ -89,34 +89,34 @@
                 path: path('app_operation_index'),
                 label: 'Operacje',
                 svgContent: source('svg/menu/operations.svg'),
-                matchParams: { type: null },
+                matchParams: {type: null},
             }) }}
             {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: 'app_operation_index',
-                path: path('app_operation_index', { type: 'receipt' }),
+                path: path('app_operation_index', {type: 'receipt'}),
                 label: 'Przyjęcia',
                 svgContent: source('svg/menu/receipts.svg'),
                 isSubitem: true,
-                matchParams: { type: 'receipt' },
+                matchParams: {type: 'receipt'},
             }) }}
             {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: 'app_operation_index',
-                path: path('app_operation_index', { type: 'release' }),
+                path: path('app_operation_index', {type: 'release'}),
                 label: 'Wydania',
                 svgContent: source('svg/menu/issues.svg'),
                 isSubitem: true,
-                matchParams: { type: 'release' },
+                matchParams: {type: 'release'},
             }) }}
             {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,
                 route: 'app_operation_index',
-                path: path('app_operation_index', { type: 'relocation' }),
+                path: path('app_operation_index', {type: 'relocation'}),
                 label: 'Przesunięcia MM',
                 svgContent: source('svg/menu/mm-transfers.svg'),
                 isSubitem: true,
-                matchParams: { type: 'relocation' },
+                matchParams: {type: 'relocation'},
             }) }}
             {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentRoute: currentRoute,

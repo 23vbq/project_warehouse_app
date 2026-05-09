@@ -68,15 +68,14 @@ class OperationRepository extends ServiceEntityRepository
     public function getNextNumber(
         string $type,
         string $year,
-        string $month
-    ): int
-    {
+        string $month,
+    ): int {
         $from = new \DateTimeImmutable(sprintf('%s-%s-01 00:00:00', $year, $month));
-        $to   = $from->modify('first day of next month');
+        $to = $from->modify('first day of next month');
 
         $typeMap = [
-            Operation::TYPE_RECEIPT    => Receipt::class,
-            Operation::TYPE_RELEASE    => Release::class,
+            Operation::TYPE_RECEIPT => Receipt::class,
+            Operation::TYPE_RELEASE => Release::class,
             Operation::TYPE_RELOCATION => Relocation::class,
         ];
 
@@ -91,6 +90,6 @@ class OperationRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        return ($max === null) ? 1 : ((int) $max + 1);
+        return (null === $max) ? 1 : ((int) $max + 1);
     }
 }

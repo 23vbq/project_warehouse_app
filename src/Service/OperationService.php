@@ -9,7 +9,8 @@ class OperationService
 {
     public function __construct(
         private readonly OperationRepository $operationRepository,
-    ) {}
+    ) {
+    }
 
     public function generateNumber(Operation $operation): Operation
     {

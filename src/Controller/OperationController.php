@@ -31,11 +31,11 @@ class OperationController extends AbstractController
     public function index(Request $request, OperationRepository $repository): Response
     {
         $filters = [
-            'type'  => $request->query->get('type'),
+            'type' => $request->query->get('type'),
             'query' => $request->query->get('query'),
         ];
         $orderBy = [
-            'field'     => $request->query->get('sort', 'createdAt'),
+            'field' => $request->query->get('sort', 'createdAt'),
             'direction' => $request->query->get('direction', 'desc'),
         ];
 
@@ -54,7 +54,7 @@ class OperationController extends AbstractController
         }
 
         return $this->render($view, [
-            'pager'   => $pager,
+            'pager' => $pager,
             'filters' => $filters,
             'orderBy' => $orderBy,
         ]);
@@ -86,7 +86,7 @@ class OperationController extends AbstractController
         }
 
         return $this->render('operation/receipt_new.html.twig', [
-            'form'    => $form,
+            'form' => $form,
             'receipt' => $receipt,
         ]);
     }
@@ -117,7 +117,7 @@ class OperationController extends AbstractController
         }
 
         return $this->render('operation/release_new.html.twig', [
-            'form'    => $form,
+            'form' => $form,
             'release' => $release,
         ]);
     }
@@ -148,7 +148,7 @@ class OperationController extends AbstractController
         }
 
         return $this->render('operation/relocation_new.html.twig', [
-            'form'       => $form,
+            'form' => $form,
             'relocation' => $relocation,
         ]);
     }
