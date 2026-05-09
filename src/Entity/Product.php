@@ -6,6 +6,7 @@ use App\Enum\ProductType;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -34,11 +35,11 @@ class Product
     #[ORM\Column(length: 20)]
     private ?string $unit = null;
 
-    #[ORM\Column]
-    private ?float $unitPrice = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $unitPrice = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?float $minStockLevel = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 3, nullable: true)]
+    private ?string $minStockLevel = null;
 
     #[ORM\Column]
     private ?bool $isActive = null;
@@ -127,24 +128,24 @@ class Product
         return $this;
     }
 
-    public function getUnitPrice(): ?float
+    public function getUnitPrice(): ?string
     {
         return $this->unitPrice;
     }
 
-    public function setUnitPrice(float $unitPrice): static
+    public function setUnitPrice(string $unitPrice): static
     {
         $this->unitPrice = $unitPrice;
 
         return $this;
     }
 
-    public function getMinStockLevel(): ?float
+    public function getMinStockLevel(): ?string
     {
         return $this->minStockLevel;
     }
 
-    public function setMinStockLevel(?float $minStockLevel): static
+    public function setMinStockLevel(?string $minStockLevel): static
     {
         $this->minStockLevel = $minStockLevel;
 
