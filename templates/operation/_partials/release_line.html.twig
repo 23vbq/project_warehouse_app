@@ -1,0 +1,41 @@
+<tr data-line class="border-b border-stroke last:border-0">
+    <td class="px-3 py-2 text-content-700 text-[12px] font-mono text-center">
+        {{ loop.index ?? '?' }}
+    </td>
+    <td class="px-2 py-2">
+        {{ form_widget(line.product, {attr: {class: 'w-full bg-surface-800 border border-stroke rounded-lg px-2 h-[34px] text-content-50 text-[12.5px] outline-none focus:border-brand-500/45'}}) }}
+        {% for error in line.product.vars.errors %}
+            <p class="text-[11px] mt-0.5 text-danger-500">{{ error.message }}</p>
+        {% endfor %}
+    </td>
+    <td class="px-2 py-2">
+        {{ form_widget(line.locationFrom, {attr: {class: 'w-full bg-surface-800 border border-stroke rounded-lg px-2 h-[34px] text-content-50 text-[12.5px] outline-none focus:border-brand-500/45'}}) }}
+        {% for error in line.locationFrom.vars.errors %}
+            <p class="text-[11px] mt-0.5 text-danger-500">{{ error.message }}</p>
+        {% endfor %}
+    </td>
+    <td class="px-2 py-2">
+        <span class="input-wrap h-[34px] {{ line.quantity.vars.errors|length ? 'input-wrap--error' }}">
+            {{ form_widget(line.quantity, {attr: {class: 'text-right', placeholder: '0.000', step: '0.001'}}) }}
+        </span>
+    </td>
+    <td class="px-2 py-2">
+        <span class="input-wrap h-[34px] {{ line.unitPrice.vars.errors|length ? 'input-wrap--error' }}">
+            {{ form_widget(line.unitPrice, {attr: {class: 'text-right', placeholder: '—', step: '0.01'}}) }}
+        </span>
+    </td>
+    <td class="px-3 py-2 text-right font-mono text-[12.5px] text-content-500">
+        —
+    </td>
+    <td class="px-2 py-2 text-center">
+        <button
+            type="button"
+            data-action="click->form-collection#removeLine"
+            class="w-6 h-6 rounded flex items-center justify-center text-content-700 hover:text-danger-500 hover:bg-danger-500/10 transition-colors cursor-pointer"
+            title="Usuń pozycję"
+        >
+            <div class="w-3.5 h-3.5">{{ source('svg/x.svg') }}</div>
+        </button>
+    </td>
+    {{ form_rest(line) }}
+</tr>

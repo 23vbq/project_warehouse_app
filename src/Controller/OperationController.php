@@ -4,7 +4,11 @@ namespace App\Controller;
 
 use App\Entity\OperationLine;
 use App\Entity\Receipt;
+use App\Entity\Release;
+use App\Entity\Relocation;
 use App\Form\ReceiptType;
+use App\Form\ReleaseType;
+use App\Form\RelocationType;
 use App\Repository\OperationRepository;
 use App\Service\OperationService;
 use App\Traits\TurboTrait;
@@ -57,7 +61,7 @@ class OperationController extends AbstractController
     }
 
     #[Route('/new/receipt', name: 'app_operation_new_receipt')]
-    #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
+    #[IsGranted('ROLE_WAREHOUSE_EMPLOYEE')]
     public function newReceipt(
         Request $request,
         OperationService $operationService,
@@ -84,6 +88,68 @@ class OperationController extends AbstractController
         return $this->render('operation/receipt_new.html.twig', [
             'form'    => $form,
             'receipt' => $receipt,
+        ]);
+    }
+
+    #[Route('/new/release', name: 'app_operation_new_release')]
+    #[IsGranted('ROLE_WAREHOUSE_EMPLOYEE')]
+    public function newRelease(
+        Request $request,
+        OperationService $operationService,
+        EntityManagerInterface $em,
+    ): Response {
+        $release = new Release();
+        $release->setCreatedBy($this->getUser());
+        $release->addOperationLine(new OperationLine());
+
+        $form = $this->createForm(ReleaseType::class, $release);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $operationService->generateNumber($release);
+
+            $em->persist($release);
+            $em->flush();
+
+            $this->addFlash('success', sprintf('Wydanie %s zostało utworzone.', $release->getFullNumber()));
+
+            return $this->redirectToRoute('app_operation_index');
+        }
+
+        return $this->render('operation/release_new.html.twig', [
+            'form'    => $form,
+            'release' => $release,
+        ]);
+    }
+
+    #[Route('/new/relocation', name: 'app_operation_new_relocation')]
+    #[IsGranted('ROLE_WAREHOUSE_EMPLOYEE')]
+    public function newRelocation(
+        Request $request,
+        OperationService $operationService,
+        EntityManagerInterface $em,
+    ): Response {
+        $relocation = new Relocation();
+        $relocation->setCreatedBy($this->getUser());
+        $relocation->addOperationLine(new OperationLine());
+
+        $form = $this->createForm(RelocationType::class, $relocation);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $operationService->generateNumber($relocation);
+
+            $em->persist($relocation);
+            $em->flush();
+
+            $this->addFlash('success', sprintf('Przesunięcie %s zostało utworzone.', $relocation->getFullNumber()));
+
+            return $this->redirectToRoute('app_operation_index');
+        }
+
+        return $this->render('operation/relocation_new.html.twig', [
+            'form'       => $form,
+            'relocation' => $relocation,
         ]);
     }
 }
