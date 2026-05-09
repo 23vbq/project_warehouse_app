@@ -12,19 +12,23 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\InheritanceType('JOINED')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
-    'receipt' => Receipt::class,
-    'release' => Release::class,
-    'relocation' => Relocation::class,
+    Operation::TYPE_RECEIPT => Receipt::class,
+    Operation::TYPE_RELEASE => Release::class,
+    Operation::TYPE_RELOCATION => Relocation::class,
 ])]
 abstract class Operation
 {
+    const TYPE_RECEIPT = 'receipt';
+    const TYPE_RELEASE = 'release';
+    const TYPE_RELOCATION = 'relocation';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $number = null;
+    #[ORM\Column]
+    private ?int $number = null;
 
     #[ORM\Column(enumType: OperationStatus::class)]
     private ?OperationStatus $status = null;
@@ -47,8 +51,11 @@ abstract class Operation
     /**
      * @var Collection<int, OperationLine>
      */
-    #[ORM\OneToMany(targetEntity: OperationLine::class, mappedBy: 'operation', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: OperationLine::class, mappedBy: 'operation', cascade: ['persist'], orphanRemoval: true)]
     private Collection $operationLines;
+
+    #[ORM\Column(length: 255)]
+    private ?string $fullNumber = null;
 
     public function __construct()
     {
@@ -64,12 +71,12 @@ abstract class Operation
         return $this->id;
     }
 
-    public function getNumber(): ?string
+    public function getNumber(): ?int
     {
         return $this->number;
     }
 
-    public function setNumber(string $number): static
+    public function setNumber(int $number): static
     {
         $this->number = $number;
 
@@ -172,4 +179,17 @@ abstract class Operation
 
         return $this;
     }
+
+    public function getFullNumber(): ?string
+    {
+        return $this->fullNumber;
+    }
+
+    public function setFullNumber(string $fullNumber): static
+    {
+        $this->fullNumber = $fullNumber;
+
+        return $this;
+    }
+
 }

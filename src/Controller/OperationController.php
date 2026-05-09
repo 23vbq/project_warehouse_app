@@ -2,8 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\OperationLine;
+use App\Entity\Receipt;
+use App\Form\ReceiptType;
 use App\Repository\OperationRepository;
+use App\Service\OperationService;
 use App\Traits\TurboTrait;
+use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -48,6 +53,37 @@ class OperationController extends AbstractController
             'pager'   => $pager,
             'filters' => $filters,
             'orderBy' => $orderBy,
+        ]);
+    }
+
+    #[Route('/new/receipt', name: 'app_operation_new_receipt')]
+    #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
+    public function newReceipt(
+        Request $request,
+        OperationService $operationService,
+        EntityManagerInterface $em,
+    ): Response {
+        $receipt = new Receipt();
+        $receipt->setCreatedBy($this->getUser());
+        $receipt->addOperationLine(new OperationLine());
+
+        $form = $this->createForm(ReceiptType::class, $receipt);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $operationService->generateNumber($receipt);
+
+            $em->persist($receipt);
+            $em->flush();
+
+            $this->addFlash('success', sprintf('Przyjęcie %s zostało utworzone.', $receipt->getFullNumber()));
+
+            return $this->redirectToRoute('app_operation_index');
+        }
+
+        return $this->render('operation/receipt_new.html.twig', [
+            'form'    => $form,
+            'receipt' => $receipt,
         ]);
     }
 }

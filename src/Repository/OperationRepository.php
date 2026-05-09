@@ -30,9 +30,9 @@ class OperationRepository extends ServiceEntityRepository
 
         if (!empty($filters['type'])) {
             $typeMap = [
-                'receipt'    => Receipt::class,
-                'release'    => Release::class,
-                'relocation' => Relocation::class,
+                Operation::TYPE_RECEIPT => Receipt::class,
+                Operation::TYPE_RELEASE => Release::class,
+                Operation::TYPE_RELOCATION => Relocation::class,
             ];
             if (isset($typeMap[$filters['type']])) {
                 $qb->andWhere('o INSTANCE OF :type')
@@ -41,15 +41,17 @@ class OperationRepository extends ServiceEntityRepository
         }
 
         if (!empty($filters['query'])) {
-            $qb->andWhere('o.number LIKE :query')
-                ->setParameter('query', '%' . $filters['query'] . '%');
+            if (is_numeric($filters['query'])) {
+                $qb->andWhere('o.fullNumber LIKE :query')
+                    ->setParameter('query', '%'.$filters['query'].'%');
+            }
         }
 
         $orderMap = [
-            'number'       => 'o.number',
+            'fullNumber' => 'o.fullNumber',
             'documentDate' => 'o.documentDate',
-            'createdAt'    => 'o.createdAt',
-            'status'       => 'o.status',
+            'createdAt' => 'o.createdAt',
+            'status' => 'o.status',
         ];
 
         if (!empty($orderBy)) {
@@ -61,5 +63,34 @@ class OperationRepository extends ServiceEntityRepository
         }
 
         return $qb;
+    }
+
+    public function getNextNumber(
+        string $type,
+        string $year,
+        string $month
+    ): int
+    {
+        $from = new \DateTimeImmutable(sprintf('%s-%s-01 00:00:00', $year, $month));
+        $to   = $from->modify('first day of next month');
+
+        $typeMap = [
+            Operation::TYPE_RECEIPT    => Receipt::class,
+            Operation::TYPE_RELEASE    => Release::class,
+            Operation::TYPE_RELOCATION => Relocation::class,
+        ];
+
+        $max = $this->createQueryBuilder('o')
+            ->select('MAX(o.number)')
+            ->where('o INSTANCE OF :type')
+            ->andWhere('o.documentDate >= :from')
+            ->andWhere('o.documentDate < :to')
+            ->setParameter('type', $typeMap[$type] ?? $type)
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return ($max === null) ? 1 : ((int) $max + 1);
     }
 }

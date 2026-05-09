@@ -41,7 +41,7 @@
             <tr class="border-b border-stroke">
                 <th class="px-2 py-3"></th>
                 <th class="px-4 py-3 text-left font-medium text-content-500">
-                    {{ _self.sortLink('Numer', 'number', 'left', orderBy, filters) }}
+                    {{ _self.sortLink('Numer', 'fullNumber', 'left', orderBy, filters) }}
                 </th>
                 <th class="px-4 py-3 text-left font-medium text-content-500">Typ</th>
                 <th class="px-4 py-3 text-right font-medium text-content-500">
@@ -67,11 +67,11 @@
                     </div>
                 </td>
                 <td class="px-4 py-3 min-w-0">
-                    <div class="font-mono font-medium text-content-50 truncate">{{ operation.number }}</div>
+                    <div class="font-mono font-medium text-content-50 truncate">{{ operation.fullNumber }}</div>
                     <div class="text-content-700 text-[11px] mt-0.5">{{ operation.documentDate|date('d.m.Y') }}</div>
                 </td>
                 <td class="px-4 py-3">
-                    {{ include('operation/_partials/type.html.twig') }}
+                    {{ include('operation/_partials/type.html.twig', {operation: operation}) }}
                 </td>
                 <td class="px-4 py-3 text-right text-content-500 uppercase">
                     <div>{{ operation.documentDate|date('d.m.Y') }}</div>
@@ -82,10 +82,10 @@
                     <div>{{ operation.createdAt|date('H:i') }}</div>
                 </td>
                 <td class="px-4 py-3 text-content-300 truncate">
-                    {{ operation.createdBy ? operation.createdBy.fullName : '—' }}
+                    {{ operation.createdBy ? operation.createdBy.getUserIdentifier() : '—' }}
                 </td>
                 <td class="px-4 py-3">
-                    {{ include('operation/_partials/status.html.twig') }}
+                    {{ include('operation/_partials/status.html.twig', {operation: operation}) }}
                 </td>
             </tr>
         {% else %}
