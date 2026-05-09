@@ -21,6 +21,11 @@ class Release extends Operation
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $releaseMethod = null;
 
+    public function getDocumentType(): string
+    {
+        return 'release';
+    }
+
     public function getRecipient(): ?string
     {
         return $this->recipient;

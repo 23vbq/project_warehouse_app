@@ -1,0 +1,67 @@
+{% extends 'layout/app.html.twig' %}
+
+{% block title %}Operacje — RimFlowMS{% endblock %}
+
+{% block breadcrumb_current %}Operacje{% endblock %}
+
+{% block content %}
+<turbo-frame id="page_content" data-turbo="true">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-[22px] font-semibold tracking-tight text-content-50 mb-1">Operacje magazynowe</h1>
+            <p class="text-content-500 text-[13px]">Wszystkie dokumenty magazynowe · {{ pager.nbResults }} pozycji</p>
+        </div>
+        <div class="flex items-center gap-2">
+            {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
+                <div>
+                    <button
+                        type="button"
+                        data-dropdown-toggle="operation-new-menu"
+                        data-dropdown-placement="bottom-end"
+                        class="flex items-center gap-2 h-[34px] px-4 text-[13px] font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-400 transition-colors cursor-pointer"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+                        Nowy dokument
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+                    </button>
+                    <div
+                        id="operation-new-menu"
+                        class="hidden z-20 bg-surface-800 border border-stroke rounded-lg shadow-[0_8px_24px_-8px_rgba(0,0,0,0.5)] py-1.5 min-w-[220px]"
+                    >
+                        <div class="px-3 py-1.5 text-[11px] font-medium text-content-500 uppercase tracking-wider">Wybierz typ dokumentu</div>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 text-[13px] text-content-300 hover:bg-surface-700 hover:text-content-50 transition-colors">
+                            <div class="w-6 h-6 rounded flex items-center justify-center bg-emerald-500/15 text-emerald-400 shrink-0">
+                                <div class="w-3.5 h-3.5">{{ source('svg/pz.svg') }}</div>
+                            </div>
+                            <div>
+                                <div class="font-medium">Przyjęcie zewnętrzne</div>
+                                <div class="text-[11px] text-content-600 font-mono">PZ</div>
+                            </div>
+                        </a>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 text-[13px] text-content-300 hover:bg-surface-700 hover:text-content-50 transition-colors">
+                            <div class="w-6 h-6 rounded flex items-center justify-center bg-violet-500/15 text-violet-400 shrink-0">
+                                <div class="w-3.5 h-3.5">{{ source('svg/wz.svg') }}</div>
+                            </div>
+                            <div>
+                                <div class="font-medium">Wydanie zewnętrzne</div>
+                                <div class="text-[11px] text-content-600 font-mono">WZ</div>
+                            </div>
+                        </a>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 text-[13px] text-content-300 hover:bg-surface-700 hover:text-content-50 transition-colors">
+                            <div class="w-6 h-6 rounded flex items-center justify-center bg-amber-500/15 text-amber-400 shrink-0">
+                                <div class="w-3.5 h-3.5">{{ source('svg/mm.svg') }}</div>
+                            </div>
+                            <div>
+                                <div class="font-medium">Przesunięcie międzymagazynowe</div>
+                                <div class="text-[11px] text-content-600 font-mono">MM</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {{ include('operation/list.html.twig') }}
+</turbo-frame>
+{% endblock %}

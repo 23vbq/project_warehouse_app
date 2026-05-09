@@ -1,0 +1,101 @@
+{% macro sortLink(label, field, align, orderBy, filters) %}
+    {% set isActive = orderBy.field == field %}
+    {% set nextDir = isActive and orderBy.direction == 'asc' ? 'desc' : 'asc' %}
+    {% set href = path('app_operation_index', {
+        type: filters.type ?: null,
+        query: filters.query ?: null,
+        sort: field,
+        direction: nextDir,
+    }) %}
+    <a
+        href="{{ href }}"
+        data-turbo-action="advance"
+        class="flex items-center gap-1 {{ align == 'right' ? 'justify-end' : '' }} transition-colors {{ isActive ? 'text-content-50' : 'hover:text-content-50' }}"
+    >
+        {{ label }}
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            {% if isActive and orderBy.direction == 'asc' %}
+                <path d="M7 10l5-5 5 5"></path>
+            {% elseif isActive and orderBy.direction == 'desc' %}
+                <path d="M7 14l5 5 5-5"></path>
+            {% else %}
+                <path d="M7 10l5-5 5 5M7 14l5 5 5-5"></path>
+            {% endif %}
+        </svg>
+    </a>
+{% endmacro %}
+
+<turbo-frame id="operation_list_table" data-turbo-filter-target="frame">
+<div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
+    <table class="w-full text-[13px] table-fixed">
+        <colgroup>
+            <col class="w-10">
+            <col class="w-[30%]">
+            <col class="w-[10%]">
+            <col class="w-[13%]">
+            <col class="w-[13%]">
+            <col class="w-[14%]">
+            <col class="w-[13%]">
+        </colgroup>
+        <thead>
+            <tr class="border-b border-stroke">
+                <th class="px-2 py-3"></th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">
+                    {{ _self.sortLink('Numer', 'number', 'left', orderBy, filters) }}
+                </th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">Typ</th>
+                <th class="px-4 py-3 text-right font-medium text-content-500">
+                    {{ _self.sortLink('Data dok.', 'documentDate', 'right', orderBy, filters) }}
+                </th>
+                <th class="px-4 py-3 text-right font-medium text-content-500">
+                    {{ _self.sortLink('Utworzono', 'createdAt', 'right', orderBy, filters) }}
+                </th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">Operator</th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">
+                    {{ _self.sortLink('Status', 'status', 'left', orderBy, filters) }}
+                </th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-stroke">
+        {% for operation in pager %}
+            <tr class="hover:bg-surface-800/50 transition-colors border-b border-stroke">
+                <td class="px-2 py-3 text-center">
+                    {% set icons = { 'receipt': 'svg/pz.svg', 'release': 'svg/wz.svg', 'relocation': 'svg/mm.svg' } %}
+                    {% set colors = { 'receipt': 'text-emerald-500', 'release': 'text-violet-500', 'relocation': 'text-amber-500' } %}
+                    <div class="w-4 h-4 mx-auto {{ colors[operation.documentType] ?? 'text-content-500' }}">
+                        {{ source(icons[operation.documentType] ?? 'svg/pz.svg') }}
+                    </div>
+                </td>
+                <td class="px-4 py-3 min-w-0">
+                    <div class="font-mono font-medium text-content-50 truncate">{{ operation.number }}</div>
+                    <div class="text-content-700 text-[11px] mt-0.5">{{ operation.documentDate|date('d.m.Y') }}</div>
+                </td>
+                <td class="px-4 py-3">
+                    {{ include('operation/_partials/type.html.twig') }}
+                </td>
+                <td class="px-4 py-3 text-right text-content-500 uppercase">
+                    <div>{{ operation.documentDate|date('d.m.Y') }}</div>
+                    <div>{{ operation.documentDate|date('H:i') }}</div>
+                </td>
+                <td class="px-4 py-3 text-right text-content-500 uppercase">
+                    <div>{{ operation.createdAt|date('d.m.Y') }}</div>
+                    <div>{{ operation.createdAt|date('H:i') }}</div>
+                </td>
+                <td class="px-4 py-3 text-content-300 truncate">
+                    {{ operation.createdBy ? operation.createdBy.fullName : '—' }}
+                </td>
+                <td class="px-4 py-3">
+                    {{ include('operation/_partials/status.html.twig') }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7" class="px-4 py-6 text-center text-content-500">Brak operacji.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {{ pagerfanta(pager) }}
+</div>
+</turbo-frame>

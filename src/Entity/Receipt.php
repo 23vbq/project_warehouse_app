@@ -20,6 +20,11 @@ class Receipt extends Operation
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $transport = null;
 
+    public function getDocumentType(): string
+    {
+        return 'receipt';
+    }
+
     public function getSupplier(): ?string
     {
         return $this->supplier;

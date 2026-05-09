@@ -57,6 +57,8 @@ abstract class Operation
         $this->operationLines = new ArrayCollection();
     }
 
+    abstract public function getDocumentType(): string;
+
     public function getId(): ?int
     {
         return $this->id;

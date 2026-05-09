@@ -11,6 +11,11 @@ class Relocation extends Operation
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $reason = null;
 
+    public function getDocumentType(): string
+    {
+        return 'relocation';
+    }
+
     public function getReason(): ?string
     {
         return $this->reason;
