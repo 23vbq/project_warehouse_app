@@ -17,7 +17,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -104,7 +103,7 @@ class OperationController extends AbstractController
 
             $this->addFlash('success', sprintf('Przyjęcie %s zostało utworzone.', $receipt->getFullNumber()));
 
-            return $this->redirectToRoute('app_operation_index');
+            return $this->redirectToRoute('app_operation_show', ['id' => $receipt->getId()]);
         }
 
         return $this->render('operation/receipt_new.html.twig', [
@@ -139,7 +138,7 @@ class OperationController extends AbstractController
 
             $this->addFlash('success', sprintf('Wydanie %s zostało utworzone.', $release->getFullNumber()));
 
-            return $this->redirectToRoute('app_operation_index');
+            return $this->redirectToRoute('app_operation_show', ['id' => $release->getId()]);
         }
 
         return $this->render('operation/release_new.html.twig', [
@@ -174,7 +173,7 @@ class OperationController extends AbstractController
 
             $this->addFlash('success', sprintf('Przesunięcie %s zostało utworzone.', $relocation->getFullNumber()));
 
-            return $this->redirectToRoute('app_operation_index');
+            return $this->redirectToRoute('app_operation_show', ['id' => $relocation->getId()]);
         }
 
         return $this->render('operation/relocation_new.html.twig', [

@@ -1,0 +1,24 @@
+{% if operation.recipient %}
+    <li class="flex items-start justify-between py-2.5 gap-3">
+        <dt class="text-[12px] text-content-500 shrink-0">Odbiorca</dt>
+        <dd class="text-[12.5px] text-content-50 text-right">{{ operation.recipient }}</dd>
+    </li>
+{% endif %}
+{% if operation.customerOrderNumber %}
+    <li class="flex items-start justify-between py-2.5 gap-3">
+        <dt class="text-[12px] text-content-500 shrink-0">Nr zamówienia</dt>
+        <dd class="text-[12.5px] text-content-50 font-mono text-right">{{ operation.customerOrderNumber }}</dd>
+    </li>
+{% endif %}
+{% if operation.releaseDate %}
+    <li class="flex items-start justify-between py-2.5 gap-3">
+        <dt class="text-[12px] text-content-500 shrink-0">Data wydania</dt>
+        <dd class="text-[12.5px] text-content-50 text-right">{{ operation.releaseDate|date('d.m.Y') }}</dd>
+    </li>
+{% endif %}
+{% if operation.releaseMethod %}
+    <li class="flex items-start justify-between py-2.5 gap-3">
+        <dt class="text-[12px] text-content-500 shrink-0">Sposób wydania</dt>
+        <dd class="text-[12.5px] text-content-50 text-right">{{ operation.releaseMethod }}</dd>
+    </li>
+{% endif %}

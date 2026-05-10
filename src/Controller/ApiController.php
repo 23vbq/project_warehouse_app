@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Product;
 use App\Repository\LocationRepository;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -37,9 +36,8 @@ class ApiController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function productGet(
         Request $request,
-        ProductRepository $productRepository
-    ): Response
-    {
+        ProductRepository $productRepository,
+    ): Response {
         $id = $request->query->getInt('id');
         $product = $productRepository->find($id);
 

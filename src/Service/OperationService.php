@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Operation;
+use App\Enum\OperationStatus;
 use App\Repository\OperationRepository;
 
 class OperationService
@@ -44,5 +45,33 @@ class OperationService
         $operation->setFullNumber($fullNumber);
 
         return $operation;
+    }
+
+    public function confirm(Operation $operation): Operation
+    {
+        if (OperationStatus::DRAFT !== $operation->getStatus()) {
+            throw new \DomainException('Operacja musi mieć status DRAFT');
+        }
+
+        $this->validateForConfirmation($operation);
+
+        return $operation;
+    }
+
+    protected function validateForConfirmation(Operation $operation): void
+    {
+        if ($operation->getOperationLines()->isEmpty()) {
+            throw new \DomainException('Nie można zatwierdzić operacji bez pozycji.');
+        }
+
+        if (null === $operation->getDocumentDate()) {
+            throw new \DomainException('Data dokumentu jest wymagana do zatwierdzenia.');
+        }
+
+        $documentType = $operation->getDocumentType();
+        if (Operation::TYPE_RELEASE === $documentType) {
+        } elseif (Operation::TYPE_RELOCATION === $documentType) {
+        } elseif (Operation::TYPE_RECEIPT === $documentType) {
+        }
     }
 }

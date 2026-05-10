@@ -2,10 +2,9 @@
     <div class="flex items-center justify-between px-5 py-4 border-b border-stroke">
         <div>
             <div class="text-[14px] font-semibold text-content-50">Pozycje dokumentu</div>
-            <div class="text-[12px] text-content-500 mt-0.5">Produkty przesunięte między lokalizacjami</div>
-        </div>
-        <div class="text-[12px] text-content-500">
-            {{ operation.operationLines|length }} {{ operation.operationLines|length == 1 ? 'pozycja' : (operation.operationLines|length in [2,3,4] ? 'pozycje' : 'pozycji') }}
+            <div class="text-[12px] text-content-500 mt-0.5">
+                {{ operation.operationLines|length }} {{ operation.operationLines|length == 1 ? 'pozycja' : (operation.operationLines|length in [2, 3, 4] ? 'pozycje' : 'pozycji') }}
+            </div>
         </div>
     </div>
 
@@ -20,7 +19,7 @@
         <thead>
             <tr class="border-b border-stroke bg-surface-800/50">
                 <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-700">#</th>
-                <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Produkt</th>
+                <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Produkt / SKU</th>
                 <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Lokalizacja źródłowa</th>
                 <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Lokalizacja docelowa</th>
                 <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Ilość</th>
@@ -31,8 +30,8 @@
             <tr class="hover:bg-surface-800/30 transition-colors">
                 <td class="px-3 py-3 text-content-700 text-[11px]">{{ loop.index }}</td>
                 <td class="px-3 py-3 min-w-0">
-                    <div class="font-mono text-[11.5px] text-content-500 leading-tight truncate">{{ line.product.sku }}</div>
-                    <div class="text-[13px] text-content-50 leading-tight truncate mt-0.5">{{ line.product.name }}</div>
+                    <div class="text-[13px] text-content-50 leading-tight truncate">{{ line.product.name }}</div>
+                    <div class="font-mono text-[11.5px] text-content-500 leading-tight truncate mt-0.5">{{ line.product.sku }}</div>
                 </td>
                 <td class="px-3 py-3">
                     {% if line.locationFrom %}
@@ -54,8 +53,8 @@
                         <span class="text-content-700">—</span>
                     {% endif %}
                 </td>
-                <td class="px-3 py-3 text-right text-content-50 tabular-nums">
-                    {{ line.quantity|number_format(3, ',', ' ') }}
+                <td class="px-3 py-3 text-right tabular-nums">
+                    <span class="font-medium {{ isConfirmed ? 'text-content-50' : 'text-content-500' }}">{{ line.quantity|number_format(3, ',', ' ') }}</span>
                     <span class="text-content-500 text-[11px]">{{ line.product.unit }}</span>
                 </td>
             </tr>

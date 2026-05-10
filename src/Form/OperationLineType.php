@@ -10,101 +10,42 @@ use App\Repository\LocationRepository;
 use App\Repository\ProductRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\ChoiceList\Loader\CallbackChoiceLoader;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;
 
 class OperationLineType extends AbstractType
 {
+    public function __construct(
+        private readonly ProductRepository $productRepository,
+        private readonly LocationRepository $locationRepository,
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $operationType = $options['operation_type'];
-        $data = $builder->getData();
+        $entity = $builder->getData();
 
-        $builder
-            ->add('product', EntityType::class, [
-                'class' => Product::class,
-                'choice_label' => fn (Product $p) => sprintf('[%s] %s', $p->getSku(), $p->getName()),
-                'query_builder' => function (ProductRepository $productRepository) use ($data) {
-                    $qb = $productRepository->createQueryBuilder('p');
+        $this->addEntityChoices($builder, $operationType, $entity ? [
+            'product' => $entity->getProduct()?->getId(),
+            'locationFrom' => $entity->getLocationFrom()?->getId(),
+            'locationTo' => $entity->getLocationTo()?->getId(),
+        ] : null);
 
-                    if ($data && $data->getProduct()) {
-                        $qb->where('p.id = :productId')
-                            ->setParameter('productId', $data->getProduct()->getId());
-                    } else {
-                        $qb->where('1 = 0');
-                    }
-
-                    $productRepository->addActiveFilter($qb, 'p');
-
-                    return $qb;
-                },
-                'placeholder' => 'Wybierz produkt...',
-                'constraints' => [
-                    new NotBlank(message: 'Produkt jest wymagany.'),
-                ],
-            ]);
-
-        if (in_array($operationType, [Operation::TYPE_RELEASE, Operation::TYPE_RELOCATION], true)) {
-            $builder->add('locationFrom', EntityType::class, [
-                'class' => Location::class,
-                'choice_label' => fn (Location $l) => $l->getCode().($l->getName() ? ' — '.$l->getName() : ''),
-                'query_builder' => function (LocationRepository $r) use ($data) {
-                    $qb = $r->createQueryBuilder('l');
-
-                    if ($data && $data->getLocationFrom()) {
-                        $qb->where('l.id = :locationId')
-                            ->setParameter('locationId', $data->getLocationFrom()->getId());
-                    } else {
-                        $qb->where('1 = 0');
-                    }
-
-                    $r->addActiveFilter($qb, 'l');
-
-                    return $qb;
-                },
-                'placeholder' => 'Lokalizacja źródłowa...',
-                'constraints' => [
-                    new NotBlank(message: 'Lokalizacja źródłowa jest wymagana.'),
-                ],
-            ]);
-        }
-
-        if (in_array($operationType, [Operation::TYPE_RECEIPT, Operation::TYPE_RELOCATION], true)) {
-            $builder->add('locationTo', EntityType::class, [
-                'class' => Location::class,
-                'choice_label' => fn (Location $l) => $l->getCode().($l->getName() ? ' — '.$l->getName() : ''),
-                'query_builder' => function (LocationRepository $r) use ($data) {
-                    $qb = $r->createQueryBuilder('l');
-
-                    if ($data && $data->getLocationTo()) {
-                        $qb->where('l.id = :locationId')
-                            ->setParameter('locationId', $data->getLocationTo()->getId());
-                    } else {
-                        $qb->where('1 = 0');
-                    }
-
-                    $r->addActiveFilter($qb, 'l');
-
-                    return $qb;
-                },
-                'placeholder' => 'Lokalizacja docelowa...',
-                'constraints' => [
-                    new NotBlank(message: 'Lokalizacja docelowa jest wymagana.'),
-                ],
-            ]);
-        }
-
-        $builder
-            ->add('quantity', NumberType::class, [
-                'scale' => 3,
-                'constraints' => [
-                    new NotBlank(message: 'Ilość jest wymagana.'),
-                    new Positive(message: 'Ilość musi być większa od zera.'),
-                ],
-            ]);
+        $builder->add('quantity', NumberType::class, [
+            'scale' => 3,
+            'constraints' => [
+                new NotBlank(message: 'Ilość jest wymagana.'),
+                new Positive(message: 'Ilość musi być większa od zero.'),
+            ],
+        ]);
 
         if (Operation::TYPE_RELOCATION !== $operationType) {
             $builder->add('unitPrice', NumberType::class, [
@@ -115,6 +56,11 @@ class OperationLineType extends AbstractType
                 ],
             ]);
         }
+
+        $builder->addEventListener(
+            FormEvents::PRE_SUBMIT,
+            fn (FormEvent $event) => $this->addEntityChoices($event->getForm(), $operationType, $event->getData())
+        );
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -129,5 +75,76 @@ class OperationLineType extends AbstractType
             Operation::TYPE_RELEASE,
             Operation::TYPE_RELOCATION,
         ]);
+    }
+
+    private function addEntityChoices(
+        FormBuilderInterface|FormInterface $form,
+        string $operationType,
+        ?array $data,
+    ): void {
+        $productId = !empty($data['product']) ? (int) $data['product'] : null;
+        $locationFromId = !empty($data['locationFrom']) ? (int) $data['locationFrom'] : null;
+        $locationToId = !empty($data['locationTo']) ? (int) $data['locationTo'] : null;
+
+        $form->add('product', EntityType::class, [
+            'class' => Product::class,
+            'choice_loader' => new CallbackChoiceLoader(function () use ($productId): array {
+                if (!$productId) {
+                    return [];
+                }
+                $queryBuilder = $this->productRepository->createQueryBuilder('p')
+                    ->where('p.id = :id')
+                    ->setParameter('id', $productId);
+                $this->productRepository->addActiveFilter($queryBuilder, 'p');
+
+                return $queryBuilder->getQuery()->getResult();
+            }),
+            'placeholder' => 'Wybierz produkt...',
+            'constraints' => [
+                new NotBlank(message: 'Produkt jest wymagany.'),
+            ],
+        ]);
+
+        if (in_array($operationType, [Operation::TYPE_RELEASE, Operation::TYPE_RELOCATION], true)) {
+            $form->add('locationFrom', EntityType::class, [
+                'class' => Location::class,
+                'choice_loader' => new CallbackChoiceLoader(function () use ($locationFromId): array {
+                    if (!$locationFromId) {
+                        return [];
+                    }
+                    $queryBuilder = $this->locationRepository->createQueryBuilder('l')
+                        ->where('l.id = :id')
+                        ->setParameter('id', $locationFromId);
+                    $this->locationRepository->addActiveFilter($queryBuilder, 'l');
+
+                    return $queryBuilder->getQuery()->getResult();
+                }),
+                'placeholder' => 'Lokalizacja źródłowa...',
+                'constraints' => [
+                    new NotBlank(message: 'Lokalizacja źródłowa jest wymagana.'),
+                ],
+            ]);
+        }
+
+        if (in_array($operationType, [Operation::TYPE_RECEIPT, Operation::TYPE_RELOCATION], true)) {
+            $form->add('locationTo', EntityType::class, [
+                'class' => Location::class,
+                'choice_loader' => new CallbackChoiceLoader(function () use ($locationToId): array {
+                    if (!$locationToId) {
+                        return [];
+                    }
+                    $queryBuilder = $this->locationRepository->createQueryBuilder('l')
+                        ->where('l.id = :id')
+                        ->setParameter('id', $locationToId);
+                    $this->locationRepository->addActiveFilter($queryBuilder, 'l');
+
+                    return $queryBuilder->getQuery()->getResult();
+                }),
+                'placeholder' => 'Lokalizacja docelowa...',
+                'constraints' => [
+                    new NotBlank(message: 'Lokalizacja docelowa jest wymagana.'),
+                ],
+            ]);
+        }
     }
 }

@@ -29,8 +29,7 @@
 <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
     <table class="w-full text-[13px] table-fixed">
         <colgroup>
-            <col class="w-10">
-            <col class="w-[30%]">
+            <col class="w-[34%]">
             <col class="w-[10%]">
             <col class="w-[13%]">
             <col class="w-[13%]">
@@ -39,7 +38,6 @@
         </colgroup>
         <thead>
             <tr class="border-b border-stroke">
-                <th class="px-2 py-3"></th>
                 <th class="px-4 py-3 text-left font-medium text-content-500">
                     {{ _self.sortLink('Numer', 'fullNumber', 'left', orderBy, filters) }}
                 </th>
@@ -59,16 +57,18 @@
         <tbody class="divide-y divide-stroke">
         {% for operation in pager %}
             <tr class="hover:bg-surface-800/50 transition-colors border-b border-stroke">
-                <td class="px-2 py-3 text-center">
-                    {% set icons = {receipt: 'svg/pz.svg', release: 'svg/wz.svg', relocation: 'svg/mm.svg'} %}
-                    {% set colors = {receipt: 'text-emerald-500', release: 'text-violet-500', relocation: 'text-amber-500'} %}
-                    <div class="w-4 h-4 mx-auto {{ colors[operation.documentType] ?? 'text-content-500' }}">
-                        {{ source(icons[operation.documentType] ?? 'svg/pz.svg') }}
-                    </div>
-                </td>
                 <td class="px-4 py-3 min-w-0">
-                    <a href="{{ path('app_operation_show', {id: operation.id}) }}" class="font-mono font-medium text-content-50 underline hover:text-content-300 transition-colors truncate">{{ operation.fullNumber }}</a>
-                    <div class="text-content-700 text-[11px] mt-0.5">{{ operation.documentDate|date('d.m.Y') }}</div>
+                    {% set icons = {receipt: 'svg/pz.svg', release: 'svg/wz.svg', relocation: 'svg/mm.svg'} %}
+                    {% set colors = {receipt: 'text-emerald-400', release: 'text-violet-400', relocation: 'text-amber-400'} %}
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-9 h-9 rounded-[10px] bg-surface-800 border border-stroke flex items-center justify-center shrink-0 {{ colors[operation.documentType] ?? 'text-content-500' }}">
+                            <div class="w-5 h-5">{{ source(icons[operation.documentType] ?? 'svg/pz.svg') }}</div>
+                        </div>
+                        <div class="min-w-0">
+                            <a href="{{ path('app_operation_show', {id: operation.id}) }}" data-turbo-frame="page" class="font-mono font-medium text-content-50 underline hover:text-content-300 transition-colors block truncate">{{ operation.fullNumber }}</a>
+                            <div class="text-content-700 text-[11px] mt-0.5">{{ operation.documentDate|date('d.m.Y') }}</div>
+                        </div>
+                    </div>
                 </td>
                 <td class="px-4 py-3">
                     {{ include('operation/_partials/type.html.twig', {operation: operation}) }}
@@ -90,7 +90,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="7" class="px-4 py-6 text-center text-content-500">Brak operacji.</td>
+                <td colspan="6" class="px-4 py-6 text-center text-content-500">Brak operacji.</td>
             </tr>
         {% endfor %}
         </tbody>

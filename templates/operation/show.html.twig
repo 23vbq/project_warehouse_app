@@ -8,92 +8,178 @@
     <span class="text-content-50 font-mono font-medium">{{ operation.fullNumber }}</span>
 {% endblock %}
 
-{% macro field(label, value) %}
-<div>
-    <dt class="text-[11px] uppercase tracking-[0.07em] font-semibold text-content-700 mb-1.5">{{ label }}</dt>
-    <dd class="text-[13px] text-content-50">{{ value is not empty ? value : '—' }}</dd>
-</div>
-{% endmacro %}
+{% set isConfirmed = operation.status.value == 'confirmed' %}
 
 {% block content %}
+<turbo-frame id="page_content">
 
-<div class="flex items-center justify-between mb-6">
-    <div class="flex items-center gap-3">
+<div class="flex items-center justify-between mb-4 gap-4">
+    <div class="flex items-center gap-3.5 min-w-0 flex-1">
         <a
             href="{{ path('app_operation_index') }}"
-            class="w-[34px] h-[34px] rounded-lg bg-surface-800 border border-stroke flex items-center justify-center text-content-500 hover:text-content-50 hover:bg-surface-700 transition-colors"
+            class="w-[34px] h-[34px] rounded-lg bg-surface-800 border border-stroke flex items-center justify-center text-content-500 hover:text-content-50 hover:bg-surface-700 transition-colors shrink-0"
         >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
         </a>
-        <div class="flex items-center gap-2.5">
-            <h1 class="text-[22px] font-semibold tracking-tight text-content-50 font-mono">{{ operation.fullNumber }}</h1>
-            {{ include('operation/_partials/type.html.twig', {operation: operation}) }}
-            {{ include('operation/_partials/status.html.twig', {operation: operation}) }}
+
+        <div class="flex items-center gap-3.5 min-w-0 flex-1">
+            <div class="w-11 h-11 rounded-[12px] border grid place-items-center shrink-0 {% if operation.documentType == 'receipt' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30{% elseif operation.documentType == 'release' %}bg-violet-500/15 text-violet-400 border-violet-500/35{% else %}bg-amber-500/15 text-amber-400 border-amber-500/30{% endif %}">
+                <div class="w-5 h-5">{% if operation.documentType == 'receipt' %}{{ source('svg/pz.svg') }}{% elseif operation.documentType == 'release' %}{{ source('svg/wz.svg') }}{% else %}{{ source('svg/mm.svg') }}{% endif %}</div>
+            </div>
+
+            <div class="min-w-0">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <h1 class="font-mono text-[19px] font-semibold text-content-50 tracking-tight">{{ operation.fullNumber }}</h1>
+                    {{ include('operation/_partials/type.html.twig', {operation: operation}) }}
+                    {{ include('operation/_partials/status.html.twig', {operation: operation}) }}
+                </div>
+                <div class="flex items-center gap-2 text-[12.5px] text-content-500 mt-1 flex-wrap">
+                    <span>Operator: <span class="text-content-300">{{ operation.createdBy ? operation.createdBy.getUserIdentifier() : '—' }}</span></span>
+                    <span class="text-content-700">·</span>
+                    <span>{{ operation.createdAt|date('d.m.Y · H:i') }}</span>
+                    {% if isConfirmed and operation.confirmedAt %}
+                        <span class="text-content-700">·</span>
+                        <span class="text-emerald-500">Zatwierdzono {{ operation.confirmedAt|date('d.m.Y H:i') }}</span>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 
-    {% if operation.status.value == 'draft' %}
-    <form method="post" action="{{ path('app_operation_confirm', {id: operation.id}) }}">
-        <input type="hidden" name="_token" value="{{ csrf_token('confirm_operation_' ~ operation.id) }}">
-        <button
-            type="submit"
-            class="flex items-center gap-2 h-[34px] px-4 text-[13px] font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-500 transition-colors cursor-pointer"
-        >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            Zatwierdź
-        </button>
-    </form>
-    {% endif %}
+    <div class="flex items-center gap-2 shrink-0">
+        {% if isConfirmed %}
+            <button
+                type="button"
+                class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors cursor-pointer"
+            >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                Drukuj
+            </button>
+        {% else %}
+            <a
+                href="#"
+                class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors"
+            >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                Edytuj
+            </a>
+            <form method="post" action="{{ path('app_operation_confirm', {id: operation.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('confirm_operation_' ~ operation.id) }}">
+                <button
+                    type="submit"
+                    class="flex items-center gap-2 h-[34px] px-4 text-[13px] font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-500 transition-colors cursor-pointer"
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Zatwierdź
+                </button>
+            </form>
+        {% endif %}
+    </div>
 </div>
 
-<div class="flex flex-col gap-4">
+{% if operation.documentType == 'receipt' %}
+    {{ include('operation/_partials/receipt_show_meta.html.twig', {operation: operation}) }}
+{% elseif operation.documentType == 'release' %}
+    {{ include('operation/_partials/release_show_meta.html.twig', {operation: operation}) }}
+{% else %}
+    {{ include('operation/_partials/relocation_show_meta.html.twig', {operation: operation}) }}
+{% endif %}
 
-    {# Metadata card #}
-    <div class="bg-surface-900 border border-stroke rounded-xl p-4">
-        <dl class="flex items-start gap-10 text-[13px]">
-            <div>
-                <dt class="text-[11px] uppercase tracking-[0.07em] font-semibold text-content-700 mb-1">Utworzono</dt>
-                <dd class="text-content-50">{{ operation.createdAt|date('d.m.Y H:i') }}</dd>
-                <dd class="text-content-500 text-[11px] mt-0.5">{{ operation.createdBy ? operation.createdBy.getUserIdentifier() : '—' }}</dd>
-            </div>
-            {% if operation.confirmedAt %}
-            <div>
-                <dt class="text-[11px] uppercase tracking-[0.07em] font-semibold text-content-700 mb-1">Zatwierdzono</dt>
-                <dd class="text-content-50">{{ operation.confirmedAt|date('d.m.Y H:i') }}</dd>
-                <dd class="text-content-500 text-[11px] mt-0.5">{{ operation.confirmedBy ? operation.confirmedBy.getUserIdentifier() : '—' }}</dd>
-            </div>
-            {% endif %}
-        </dl>
+<div class="grid grid-cols-[1fr_300px] gap-3.5 items-start">
+
+    <div>
+        {% if operation.documentType == 'receipt' %}
+            {{ include('operation/_partials/receipt_show_lines.html.twig', {operation: operation, isConfirmed: isConfirmed}) }}
+        {% elseif operation.documentType == 'release' %}
+            {{ include('operation/_partials/release_show_lines.html.twig', {operation: operation, isConfirmed: isConfirmed}) }}
+        {% else %}
+            {{ include('operation/_partials/relocation_show_lines.html.twig', {operation: operation, isConfirmed: isConfirmed}) }}
+        {% endif %}
     </div>
 
-    {# Document header card #}
-    <div class="bg-surface-900 border border-stroke rounded-xl p-5">
-        <div class="flex items-center gap-2 mb-4">
-            <span class="text-[10.5px] uppercase tracking-[0.08em] font-semibold text-content-700">Dane dokumentu</span>
-            <span class="flex-1 h-px bg-stroke"></span>
+    <aside>
+        <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
+            <div class="px-4 py-3 border-b border-stroke">
+                <h2 class="text-[13px] font-semibold text-content-50">Szczegóły</h2>
+            </div>
+            <ul class="divide-y divide-stroke px-4">
+                <li class="flex items-start justify-between py-2.5 gap-3">
+                    <dt class="text-[12px] text-content-500 shrink-0">Numer</dt>
+                    <dd class="text-[12.5px] text-content-50 font-mono text-right">{{ operation.fullNumber }}</dd>
+                </li>
+                <li class="flex items-start justify-between py-2.5 gap-3">
+                    <dt class="text-[12px] text-content-500 shrink-0">Status</dt>
+                    <dd class="text-right">{{ include('operation/_partials/status.html.twig', {operation: operation}) }}</dd>
+                </li>
+                <li class="flex items-start justify-between py-2.5 gap-3">
+                    <dt class="text-[12px] text-content-500 shrink-0">Data dokumentu</dt>
+                    <dd class="text-[12.5px] text-content-50 text-right">{{ operation.documentDate|date('d.m.Y') }}</dd>
+                </li>
+                <li class="flex items-start justify-between py-2.5 gap-3">
+                    <dt class="text-[12px] text-content-500 shrink-0">Operator</dt>
+                    <dd class="text-[12.5px] text-content-50 text-right">{{ operation.createdBy ? operation.createdBy.getUserIdentifier() : '—' }}</dd>
+                </li>
+                {% if isConfirmed %}
+                    <li class="flex items-start justify-between py-2.5 gap-3">
+                        <dt class="text-[12px] text-content-500 shrink-0">Zatwierdzono</dt>
+                        <dd class="text-[12.5px] text-content-50 text-right">{{ operation.confirmedAt ? operation.confirmedAt|date('d.m.Y H:i') : '—' }}</dd>
+                    </li>
+                    <li class="flex items-start justify-between py-2.5 gap-3">
+                        <dt class="text-[12px] text-content-500 shrink-0">Zatwierdził</dt>
+                        <dd class="text-[12.5px] text-content-50 text-right">{{ operation.confirmedBy ? operation.confirmedBy.getUserIdentifier() : '—' }}</dd>
+                    </li>
+                {% endif %}
+
+                {% if operation.documentType == 'receipt' %}
+                    {{ include('operation/_partials/receipt_show_details_content.html.twig', {operation: operation}) }}
+                {% elseif operation.documentType == 'release' %}
+                    {{ include('operation/_partials/release_show_details_content.html.twig', {operation: operation}) }}
+                {% else %}
+                    {{ include('operation/_partials/relocation_show_details_content.html.twig', {operation: operation}) }}
+                {% endif %}
+
+                <li class="flex items-start justify-between py-2.5 gap-3">
+                    <dt class="text-[12px] text-content-500 shrink-0">Ilość pozycji</dt>
+                    <dd class="text-[12.5px] text-content-50 text-right font-mono">{{ operation.operationLines|length }}</dd>
+                </li>
+            </ul>
         </div>
-        <dl class="grid grid-cols-4 gap-x-6 gap-y-5">
-            {{ _self.field('Data dokumentu', operation.documentDate|date('d.m.Y')) }}
 
-            {% if operation.documentType == 'receipt' %}
-                {{ _self.field('Dostawca', operation.supplier) }}
-                {{ _self.field('Nr faktury / WZ dostawcy', operation.invoiceNumber) }}
-                {{ _self.field('Data dostawy', operation.deliveryDate ? operation.deliveryDate|date('d.m.Y') : null) }}
-                {{ _self.field('Transport', operation.transport) }}
-            {% elseif operation.documentType == 'release' %}
-                {{ _self.field('Odbiorca', operation.recipient) }}
-                {{ _self.field('Nr zamówienia klienta', operation.customerOrderNumber) }}
-                {{ _self.field('Data wydania', operation.releaseDate ? operation.releaseDate|date('d.m.Y') : null) }}
-                {{ _self.field('Sposób wydania', operation.releaseMethod) }}
-            {% elseif operation.documentType == 'relocation' %}
-                {{ _self.field('Powód przesunięcia', operation.reason) }}
-            {% endif %}
-        </dl>
-    </div>
-
-    {# Lines card #}
-    {{ include('operation/_partials/' ~ operation.documentType ~ '_show_lines.html.twig', {operation: operation}) }}
+        <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden mt-3">
+            <div class="px-4 py-3 border-b border-stroke">
+                <h2 class="text-[13px] font-semibold text-content-50">Obieg</h2>
+            </div>
+            <ul class="px-4 py-1">
+                <li class="grid grid-cols-[16px_1fr] gap-2.5 py-3">
+                    <div class="flex flex-col items-center">
+                        <span class="w-2 h-2 rounded-full shrink-0 bg-emerald-400 shadow-[0_0_0_3px_rgba(52,211,153,0.15)] mt-1.5"></span>
+                        <div class="flex-1 w-px bg-stroke mt-1.5"></div>
+                    </div>
+                    <div>
+                        <div class="text-[12.5px] text-content-50">Utworzono</div>
+                        <div class="text-[11.5px] text-content-500 mt-0.5">{{ operation.createdBy ? operation.createdBy.getUserIdentifier() : '—' }} · {{ operation.createdAt|date('d.m.Y H:i') }}</div>
+                    </div>
+                </li>
+                <li class="grid grid-cols-[16px_1fr] gap-2.5 py-3">
+                    {% if isConfirmed %}
+                        <span class="w-2 h-2 rounded-full mt-1.5 ml-1 shrink-0 bg-emerald-400 shadow-[0_0_0_3px_rgba(52,211,153,0.15)]"></span>
+                        <div>
+                            <div class="text-[12.5px] text-content-50">Zatwierdzono</div>
+                            <div class="text-[11.5px] text-content-500 mt-0.5">{{ operation.confirmedBy ? operation.confirmedBy.getUserIdentifier() : '—' }} · {{ operation.confirmedAt|date('d.m.Y H:i') }}</div>
+                        </div>
+                    {% else %}
+                        <span class="w-2 h-2 rounded-full mt-1.5 ml-1 shrink-0 bg-surface-600 border border-stroke"></span>
+                        <div>
+                            <div class="text-[12.5px] text-content-500">Zatwierdzenie</div>
+                            <div class="text-[11.5px] text-content-700 mt-0.5">— oczekuje</div>
+                        </div>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </aside>
 
 </div>
 
+</turbo-frame>
 {% endblock %}

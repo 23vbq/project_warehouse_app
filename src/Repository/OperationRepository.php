@@ -29,15 +29,8 @@ class OperationRepository extends ServiceEntityRepository
             ->leftJoin('o.createdBy', 'u');
 
         if (!empty($filters['type'])) {
-            $typeMap = [
-                Operation::TYPE_RECEIPT => Receipt::class,
-                Operation::TYPE_RELEASE => Release::class,
-                Operation::TYPE_RELOCATION => Relocation::class,
-            ];
-            if (isset($typeMap[$filters['type']])) {
-                $qb->andWhere('o INSTANCE OF :type')
-                    ->setParameter('type', $typeMap[$filters['type']]);
-            }
+            $qb->andWhere('o INSTANCE OF :type')
+                ->setParameter('type', $filters['type']);
         }
 
         if (!empty($filters['query'])) {
