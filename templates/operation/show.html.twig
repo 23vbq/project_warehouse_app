@@ -3,6 +3,8 @@
 {% block title %}{{ operation.fullNumber }} — RimFlowMS{% endblock %}
 
 {% block breadcrumb %}
+    <span>Magazyn</span>
+    <span class="text-content-700">/</span>
     <a href="{{ path('app_operation_index') }}" class="hover:text-content-300 transition-colors">Operacje</a>
     <span class="text-content-700">/</span>
     <span class="text-content-50 font-mono font-medium">{{ operation.fullNumber }}</span>
@@ -17,6 +19,7 @@
     <div class="flex items-center gap-3.5 min-w-0 flex-1">
         <a
             href="{{ path('app_operation_index') }}"
+            target="_top"
             class="w-[34px] h-[34px] rounded-lg bg-surface-800 border border-stroke flex items-center justify-center text-content-500 hover:text-content-50 hover:bg-surface-700 transition-colors shrink-0"
         >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
@@ -89,10 +92,13 @@
 
     <div>
         {% if operation.documentType == 'receipt' %}
+            {{ include('operation/_partials/receipt_show_details.html.twig', {operation: operation}) }}
             {{ include('operation/_partials/receipt_show_lines.html.twig', {operation: operation, isConfirmed: isConfirmed}) }}
         {% elseif operation.documentType == 'release' %}
+            {{ include('operation/_partials/release_show_details.html.twig', {operation: operation}) }}
             {{ include('operation/_partials/release_show_lines.html.twig', {operation: operation, isConfirmed: isConfirmed}) }}
         {% else %}
+            {{ include('operation/_partials/relocation_show_details.html.twig', {operation: operation}) }}
             {{ include('operation/_partials/relocation_show_lines.html.twig', {operation: operation, isConfirmed: isConfirmed}) }}
         {% endif %}
     </div>
@@ -128,14 +134,6 @@
                         <dt class="text-[12px] text-content-500 shrink-0">Zatwierdził</dt>
                         <dd class="text-[12.5px] text-content-50 text-right">{{ operation.confirmedBy ? operation.confirmedBy.getUserIdentifier() : '—' }}</dd>
                     </li>
-                {% endif %}
-
-                {% if operation.documentType == 'receipt' %}
-                    {{ include('operation/_partials/receipt_show_details_content.html.twig', {operation: operation}) }}
-                {% elseif operation.documentType == 'release' %}
-                    {{ include('operation/_partials/release_show_details_content.html.twig', {operation: operation}) }}
-                {% else %}
-                    {{ include('operation/_partials/relocation_show_details_content.html.twig', {operation: operation}) }}
                 {% endif %}
 
                 <li class="flex items-start justify-between py-2.5 gap-3">

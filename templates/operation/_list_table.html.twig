@@ -74,8 +74,7 @@
                     {{ include('operation/_partials/type.html.twig', {operation: operation}) }}
                 </td>
                 <td class="px-4 py-3 text-right text-content-500 uppercase">
-                    <div>{{ operation.documentDate|date('d.m.Y') }}</div>
-                    <div>{{ operation.documentDate|date('H:i') }}</div>
+                    {{ operation.documentDate|date('d.m.Y') }}
                 </td>
                 <td class="px-4 py-3 text-right text-content-500 uppercase">
                     <div>{{ operation.createdAt|date('d.m.Y') }}</div>
