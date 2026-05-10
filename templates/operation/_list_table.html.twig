@@ -67,7 +67,7 @@
                     </div>
                 </td>
                 <td class="px-4 py-3 min-w-0">
-                    <div class="font-mono font-medium text-content-50 truncate">{{ operation.fullNumber }}</div>
+                    <a href="{{ path('app_operation_show', {id: operation.id}) }}" class="font-mono font-medium text-content-50 underline hover:text-content-300 transition-colors truncate">{{ operation.fullNumber }}</a>
                     <div class="text-content-700 text-[11px] mt-0.5">{{ operation.documentDate|date('d.m.Y') }}</div>
                 </td>
                 <td class="px-4 py-3">

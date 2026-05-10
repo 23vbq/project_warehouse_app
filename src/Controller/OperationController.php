@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Operation;
 use App\Entity\OperationLine;
 use App\Entity\Receipt;
 use App\Entity\Release;
@@ -59,6 +60,22 @@ class OperationController extends AbstractController
             'filters' => $filters,
             'orderBy' => $orderBy,
         ]);
+    }
+
+    #[Route('/{id}', name: 'app_operation_show', requirements: ['id' => '\d+'])]
+    public function show(Operation $operation): Response
+    {
+        return $this->render('operation/show.html.twig', [
+            'operation' => $operation,
+        ]);
+    }
+
+    #[Route('/{id}/confirm', name: 'app_operation_confirm', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_WAREHOUSE_EMPLOYEE')]
+    public function confirm(Operation $operation): Response
+    {
+        // TODO: implement confirmation logic
+        return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
     }
 
     #[Route('/new/receipt', name: 'app_operation_new_receipt')]

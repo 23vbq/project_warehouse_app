@@ -1,0 +1,91 @@
+{% set totalValue = 0 %}
+{% for line in operation.operationLines %}
+    {% if line.unitPrice and line.quantity %}
+        {% set totalValue = totalValue + (line.quantity * line.unitPrice) %}
+    {% endif %}
+{% endfor %}
+
+<div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-stroke">
+        <div>
+            <div class="text-[14px] font-semibold text-content-50">Pozycje dokumentu</div>
+            <div class="text-[12px] text-content-500 mt-0.5">Produkty przyjęte na magazyn</div>
+        </div>
+        <div class="text-[12px] text-content-500">
+            {{ operation.operationLines|length }} {{ operation.operationLines|length == 1 ? 'pozycja' : (operation.operationLines|length in [2,3,4] ? 'pozycje' : 'pozycji') }}
+        </div>
+    </div>
+
+    <table class="w-full text-[13px] table-fixed">
+        <colgroup>
+            <col class="w-8">
+            <col class="w-[32%]">
+            <col class="w-[24%]">
+            <col class="w-[13%]">
+            <col class="w-[13%]">
+            <col class="w-[13%]">
+        </colgroup>
+        <thead>
+            <tr class="border-b border-stroke bg-surface-800/50">
+                <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-700">#</th>
+                <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Produkt</th>
+                <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Lokalizacja docelowa</th>
+                <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Ilość</th>
+                <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Cena jedn.</th>
+                <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Wartość</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-stroke">
+        {% for line in operation.operationLines %}
+            <tr class="hover:bg-surface-800/30 transition-colors">
+                <td class="px-3 py-3 text-content-700 text-[11px]">{{ loop.index }}</td>
+                <td class="px-3 py-3 min-w-0">
+                    <div class="font-mono text-[11.5px] text-content-500 leading-tight truncate">{{ line.product.sku }}</div>
+                    <div class="text-[13px] text-content-50 leading-tight truncate mt-0.5">{{ line.product.name }}</div>
+                </td>
+                <td class="px-3 py-3">
+                    {% if line.locationTo %}
+                        <div class="font-mono text-[12.5px] text-content-50 leading-tight">{{ line.locationTo.code }}</div>
+                        {% if line.locationTo.name %}
+                            <div class="text-[11px] text-content-500 leading-tight mt-0.5 truncate">{{ line.locationTo.name }}</div>
+                        {% endif %}
+                    {% else %}
+                        <span class="text-content-700">—</span>
+                    {% endif %}
+                </td>
+                <td class="px-3 py-3 text-right text-content-50 tabular-nums">
+                    {{ line.quantity|number_format(3, ',', ' ') }}
+                    <span class="text-content-500 text-[11px]">{{ line.product.unit }}</span>
+                </td>
+                <td class="px-3 py-3 text-right text-content-300 tabular-nums">
+                    {% if line.unitPrice %}
+                        {{ line.unitPrice|number_format(2, ',', ' ') }}
+                        <span class="text-content-500 text-[11px]">PLN</span>
+                    {% else %}
+                        <span class="text-content-700">—</span>
+                    {% endif %}
+                </td>
+                <td class="px-3 py-3 text-right text-content-50 tabular-nums">
+                    {% if line.unitPrice and line.quantity %}
+                        {{ (line.quantity * line.unitPrice)|number_format(2, ',', ' ') }}
+                        <span class="text-content-500 text-[11px]">PLN</span>
+                    {% else %}
+                        <span class="text-content-700">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        {% if totalValue > 0 %}
+        <tfoot>
+            <tr class="border-t border-stroke bg-surface-800/50">
+                <td colspan="5" class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500 uppercase tracking-[0.06em]">Łącznie</td>
+                <td class="px-3 py-2.5 text-right text-[13px] font-semibold text-content-50 tabular-nums">
+                    {{ totalValue|number_format(2, ',', ' ') }}
+                    <span class="text-content-500 text-[11px] font-normal">PLN</span>
+                </td>
+            </tr>
+        </tfoot>
+        {% endif %}
+    </table>
+</div>
