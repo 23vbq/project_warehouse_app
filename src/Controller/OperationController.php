@@ -69,6 +69,14 @@ class OperationController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/lines', name: 'app_operation_lines_detail', requirements: ['id' => '\d+'])]
+    public function linesDetail(Operation $operation): Response
+    {
+        return $this->render('operation/lines_detail.html.twig', [
+            'operation' => $operation,
+        ]);
+    }
+
     #[Route('/{id}/confirm', name: 'app_operation_confirm', methods: ['POST'], requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_WAREHOUSE_EMPLOYEE')]
     public function confirm(Operation $operation): Response

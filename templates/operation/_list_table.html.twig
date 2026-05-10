@@ -29,15 +29,17 @@
 <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
     <table class="w-full text-[13px] table-fixed">
         <colgroup>
-            <col class="w-[34%]">
+            <col class="w-[3%]">
+            <col class="w-[31%]">
             <col class="w-[10%]">
             <col class="w-[13%]">
             <col class="w-[13%]">
             <col class="w-[14%]">
-            <col class="w-[13%]">
+            <col class="w-[16%]">
         </colgroup>
         <thead>
             <tr class="border-b border-stroke">
+                <th class="px-2 py-3"></th>
                 <th class="px-4 py-3 text-left font-medium text-content-500">
                     {{ _self.sortLink('Numer', 'fullNumber', 'left', orderBy, filters) }}
                 </th>
@@ -54,9 +56,24 @@
                 </th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-stroke">
+        <tbody
+            class="divide-y divide-stroke"
+            data-controller="accordion"
+            data-accordion-auto-close-value="true"
+        >
         {% for operation in pager %}
-            <tr class="hover:bg-surface-800/50 transition-colors border-b border-stroke">
+            <tr class="hover:bg-surface-800/50 transition-colors group border-b border-stroke">
+                <td class="px-2 py-3 text-center">
+                    <button
+                        type="button"
+                        data-action="click->accordion#toggle"
+                        data-accordion-row-id-param="stock-operation-{{ operation.id }}"
+                        data-accordion-url-param="{{ path('app_operation_lines_detail', {id: operation.id}) }}"
+                        class="w-5 h-5 rounded grid place-items-center text-content-700 hover:text-content-300 transition-colors cursor-pointer"
+                    >
+                        <div class="w-4 h-4 shrink-0">{{ source('svg/chevron-down.svg') }}</div>
+                    </button>
+                </td>
                 <td class="px-4 py-3 min-w-0">
                     {% set icons = {receipt: 'svg/pz.svg', release: 'svg/wz.svg', relocation: 'svg/mm.svg'} %}
                     {% set colors = {receipt: 'text-emerald-400', release: 'text-violet-400', relocation: 'text-amber-400'} %}
@@ -87,9 +104,16 @@
                     {{ include('operation/_partials/status.html.twig', {operation: operation}) }}
                 </td>
             </tr>
+            <tr id="stock-operation-{{ operation.id }}" class="hidden bg-surface-800/30">
+                <td colspan="7" class="p-0">
+                    <turbo-frame id="operation-lines-details-{{ operation.id }}" class="relative block min-h-[60px]">
+                        {{ include('layout/_partials/loader.html.twig') }}
+                    </turbo-frame>
+                </td>
+            </tr>
         {% else %}
             <tr>
-                <td colspan="6" class="px-4 py-6 text-center text-content-500">Brak operacji.</td>
+                <td colspan="7" class="px-4 py-6 text-center text-content-500">Brak operacji.</td>
             </tr>
         {% endfor %}
         </tbody>
