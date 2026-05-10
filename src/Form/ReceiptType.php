@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ReceiptType extends AbstractType
@@ -42,6 +43,9 @@ class ReceiptType extends AbstractType
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
+                'constraints' => [
+                    new Count(min: 1, minMessage: 'Dodaj przynajmniej jedną pozycję.'),
+                ],
             ]);
     }
 

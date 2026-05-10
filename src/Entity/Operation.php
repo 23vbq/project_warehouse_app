@@ -100,7 +100,7 @@ abstract class Operation
         return $this->documentDate;
     }
 
-    public function setDocumentDate(\DateTimeImmutable $documentDate): static
+    public function setDocumentDate(?\DateTimeImmutable $documentDate): static
     {
         $this->documentDate = $documentDate;
 

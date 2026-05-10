@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Product;
 use App\Repository\LocationRepository;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,6 +31,29 @@ class ApiController extends AbstractController
             'sku' => $product->getSku(),
             'ean' => $product->getEan(),
         ], $products));
+    }
+
+    #[Route('/product/get', name: 'app_api_product_get')]
+    #[IsGranted('ROLE_USER')]
+    public function productGet(
+        Request $request,
+        ProductRepository $productRepository
+    ): Response
+    {
+        $id = $request->query->getInt('id');
+        $product = $productRepository->find($id);
+
+        if (!$product) {
+            return $this->json(['error' => 'Produkt nie znaleziony'], Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->json([
+            'id' => $product->getId(),
+            'name' => $product->getName(),
+            'sku' => $product->getSku(),
+            'ean' => $product->getEan(),
+            'unitPrice' => $product->getUnitPrice(),
+        ]);
     }
 
     #[Route('/location/search', name: 'app_api_location_search')]
