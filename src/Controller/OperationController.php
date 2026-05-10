@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -69,10 +70,14 @@ class OperationController extends AbstractController
     ): Response {
         $receipt = new Receipt();
         $receipt->setCreatedBy($this->getUser());
-        $receipt->addOperationLine(new OperationLine());
 
         $form = $this->createForm(ReceiptType::class, $receipt);
         $form->handleRequest($request);
+
+        if (!$form->isSubmitted() && $receipt->getOperationLines()->isEmpty()) {
+            $receipt->addOperationLine(new OperationLine());
+            $form = $this->createForm(ReceiptType::class, $receipt);
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $operationService->generateNumber($receipt);
@@ -100,10 +105,14 @@ class OperationController extends AbstractController
     ): Response {
         $release = new Release();
         $release->setCreatedBy($this->getUser());
-        $release->addOperationLine(new OperationLine());
 
         $form = $this->createForm(ReleaseType::class, $release);
         $form->handleRequest($request);
+
+        if (!$form->isSubmitted() && $release->getOperationLines()->isEmpty()) {
+            $release->addOperationLine(new OperationLine());
+            $form = $this->createForm(ReleaseType::class, $release);
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $operationService->generateNumber($release);
@@ -131,10 +140,14 @@ class OperationController extends AbstractController
     ): Response {
         $relocation = new Relocation();
         $relocation->setCreatedBy($this->getUser());
-        $relocation->addOperationLine(new OperationLine());
 
         $form = $this->createForm(RelocationType::class, $relocation);
         $form->handleRequest($request);
+
+        if (!$form->isSubmitted() && $relocation->getOperationLines()->isEmpty()) {
+            $relocation->addOperationLine(new OperationLine());
+            $form = $this->createForm(RelocationType::class, $relocation);
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $operationService->generateNumber($relocation);

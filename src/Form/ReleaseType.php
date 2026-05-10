@@ -43,6 +43,7 @@ class ReleaseType extends AbstractType
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
+                'error_bubbling' => false,
                 'constraints' => [
                     new Count(min: 1, minMessage: 'Dodaj przynajmniej jedną pozycję.'),
                 ],

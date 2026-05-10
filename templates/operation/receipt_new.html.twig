@@ -151,11 +151,13 @@
                 </tbody>
             </table>
 
-            {% if form.operationLines|length == 0 %}
-                <div class="px-5 py-8 text-center text-content-500 text-[13px]">
-                    Brak pozycji. Kliknij „Dodaj pozycję" aby rozpocząć.
+            {% set linesErrors = form.operationLines.vars.errors %}
+            {% if linesErrors|length %}
+                <div class="px-5 py-3 text-left text-danger-500 text-[13px]">
+                    {{ linesErrors[0].message }}
                 </div>
             {% endif %}
+            {% do form.operationLines.setRendered() %}
 
         </div>
 
