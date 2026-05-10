@@ -3,13 +3,17 @@
         {{ loop.index ?? '?' }}
     </td>
     <td class="px-2 py-2">
-        {{ form_widget(line.product, {attr: {class: 'w-full bg-surface-800 border border-stroke rounded-lg px-2 h-[34px] text-content-50 text-[12.5px] outline-none focus:border-brand-500/45'}}) }}
+        {{ form_widget(line.product, {attr: {
+            'data-controller': 'tom-select',
+            'data-tom-select-template-value': 'products',
+            'data-tom-select-fetch-url-value': path('app_api_product_search'),
+        }}) }}
         {% for error in line.product.vars.errors %}
             <p class="text-[11px] mt-0.5 text-danger-500">{{ error.message }}</p>
         {% endfor %}
     </td>
     <td class="px-2 py-2">
-        {{ form_widget(line.locationTo, {attr: {class: 'w-full bg-surface-800 border border-stroke rounded-lg px-2 h-[34px] text-content-50 text-[12.5px] outline-none focus:border-brand-500/45'}}) }}
+        {{ form_widget(line.locationTo, {attr: {'data-controller': 'tom-select'}}) }}
         {% for error in line.locationTo.vars.errors %}
             <p class="text-[11px] mt-0.5 text-danger-500">{{ error.message }}</p>
         {% endfor %}

@@ -42,14 +42,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
         </a>
         <div>
-            <h1 class="text-[22px] font-semibold tracking-tight text-content-50 mb-0.5">Nowe przyjęcie zewnętrzne</h1>
-            <p class="text-content-500 text-[13px]">
-                Roboczy
-                <span class="text-content-700 mx-1">·</span>
-                PZ
-                <span class="text-content-700 mx-1">·</span>
-                {{ receipt.createdAt|date('d.m.Y · H:i') }}
-            </p>
+            <h1 class="text-[22px] font-semibold tracking-tight text-content-50">Nowe przyjęcie zewnętrzne</h1>
         </div>
     </div>
     <div class="flex items-center gap-2">
@@ -69,10 +62,27 @@
     </div>
 </div>
 
-<div class="grid grid-cols-[1fr_280px] gap-4 items-start">
+<div class="flex flex-col gap-4">
 
-    {# LEFT #}
-    <div class="flex flex-col gap-4">
+    {# Summary card #}
+    <div class="bg-surface-900 border border-stroke rounded-xl p-4">
+        <dl class="flex items-center gap-8 text-[13px]">
+            <div class="flex items-center gap-2">
+                <dt class="text-content-500">Typ dokumentu</dt>
+                <dd class="font-medium text-content-50">
+                    {{ include('operation/_partials/type.html.twig', {operation: receipt}) }}
+                </dd>
+            </div>
+            <div class="flex items-center gap-2">
+                <dt class="text-content-500">Status</dt>
+                <dd>{{ include('operation/_partials/status.html.twig', {operation: receipt}) }}</dd>
+            </div>
+            <div class="flex items-center gap-2">
+                <dt class="text-content-500">Utworzono</dt>
+                <dd class="text-content-300">{{ receipt.createdAt|date('d.m.Y H:i') }}</dd>
+            </div>
+        </dl>
+    </div>
 
         {# Header card #}
         <div class="bg-surface-900 border border-stroke rounded-xl p-5">
@@ -149,32 +159,6 @@
 
         </div>
 
-    </div>
-
-    {# RIGHT — sidebar #}
-    <aside class="flex flex-col gap-4">
-
-        <div class="bg-surface-900 border border-stroke rounded-xl p-4">
-            <div class="text-[11px] uppercase tracking-[0.08em] font-semibold text-content-700 mb-3">Podsumowanie</div>
-            <dl class="flex flex-col gap-2 text-[13px]">
-                <div class="flex justify-between">
-                    <dt class="text-content-500">Typ dokumentu</dt>
-                    <dd class="font-medium text-content-50">
-                        {{ include('operation/_partials/type.html.twig', {operation: receipt}) }}
-                    </dd>
-                </div>
-                <div class="flex justify-between">
-                    <dt class="text-content-500">Status</dt>
-                    <dd>{{ include('operation/_partials/status.html.twig', {operation: receipt}) }}</dd>
-                </div>
-                <div class="flex justify-between">
-                    <dt class="text-content-500">Utworzono</dt>
-                    <dd class="text-content-300">{{ receipt.createdAt|date('d.m.Y H:i') }}</dd>
-                </div>
-            </dl>
-        </div>
-
-    </aside>
 
 </div>
 

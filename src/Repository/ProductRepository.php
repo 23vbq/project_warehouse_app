@@ -100,4 +100,22 @@ class ProductRepository extends ServiceEntityRepository
         return $qb->getQuery()
             ->getSingleResult();
     }
+
+    public function searchByQuery(string $query, int $limit = 10): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('p')
+            ->where('
+                p.name LIKE :query
+                OR p.sku LIKE :query
+                OR p.ean LIKE :query
+            ')
+            ->setParameter('query', '%'.$query.'%')
+            ->setMaxResults($limit);
+
+        $this->addActiveFilter($qb, 'p');
+
+        return $qb->getQuery()
+            ->getResult();
+    }
 }

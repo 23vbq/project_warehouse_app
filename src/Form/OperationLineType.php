@@ -21,17 +21,27 @@ class OperationLineType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $operationType = $options['operation_type'];
+        $data = $builder->getData();
 
         $builder
             ->add('product', EntityType::class, [
                 'class' => Product::class,
                 'choice_label' => fn (Product $p) => sprintf('[%s] %s', $p->getSku(), $p->getName()),
-                'query_builder' => function (ProductRepository $r) {
-                    $qb = $r->createQueryBuilder('p');
+                'query_builder' => function (ProductRepository $productRepository) use ($data) {
+                    $qb = $productRepository->createQueryBuilder('p');   
 
-                    return $r->addActiveFilter($qb, 'p');
+                    if ($data && $data->getProduct()) {
+                        $qb->where('p.id = :productId')
+                            ->setParameter('productId', $data->getProduct()->getId());
+                    } else {
+                        $qb->where('1 = 0');
+                    }
+
+                    $productRepository->addActiveFilter($qb, 'p');
+
+                    return $qb;
                 },
-                'placeholder' => 'Wybierz produkt…',
+                'placeholder' => 'Wybierz produkt...',
                 'constraints' => [
                     new NotBlank(message: 'Produkt jest wymagany.'),
                 ],
@@ -46,7 +56,7 @@ class OperationLineType extends AbstractType
 
                     return $r->addActiveFilter($qb, 'l');
                 },
-                'placeholder' => 'Lokalizacja źródłowa…',
+                'placeholder' => 'Lokalizacja źródłowa...',
                 'constraints' => [
                     new NotBlank(message: 'Lokalizacja źródłowa jest wymagana.'),
                 ],
@@ -62,7 +72,7 @@ class OperationLineType extends AbstractType
 
                     return $r->addActiveFilter($qb, 'l');
                 },
-                'placeholder' => 'Lokalizacja docelowa…',
+                'placeholder' => 'Lokalizacja docelowa...',
                 'constraints' => [
                     new NotBlank(message: 'Lokalizacja docelowa jest wymagana.'),
                 ],
