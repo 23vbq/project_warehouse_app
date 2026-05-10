@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\LocationRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,7 +14,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/api')]
 class ApiController extends AbstractController
 {
-    #[Route('/products', name: 'app_api_product_search')]
+    #[Route('/product/search', name: 'app_api_product_search')]
     #[IsGranted('ROLE_USER')]
     public function productSearch(
         Request $request,
@@ -31,5 +32,24 @@ class ApiController extends AbstractController
             'sku' => $product->getSku(),
             'ean' => $product->getEan(),
         ], $products));
+    }
+
+    #[Route('/location/search', name: 'app_api_location_search')]
+    #[IsGranted('ROLE_USER')]
+    public function locationSearch(
+        Request $request,
+        LocationRepository $locationRepository,
+    ): Response
+    {
+        $query = $request->query->get('query', '');
+        $limit = 10;
+
+        $locations = $locationRepository->searchByQuery($query, $limit);
+
+        return $this->json(array_map(fn ($location) => [
+            'id' => $location->getId(),
+            'code' => $location->getCode(),
+            'name' => $location->getName(),
+        ], $locations));
     }
 }

@@ -13,7 +13,11 @@
         {% endfor %}
     </td>
     <td class="px-2 py-2">
-        {{ form_widget(line.locationTo, {attr: {'data-controller': 'tom-select'}}) }}
+        {{ form_widget(line.locationTo, {attr: {
+            'data-controller': 'tom-select',
+            'data-tom-select-template-value': 'locations',
+            'data-tom-select-fetch-url-value': path('app_api_location_search'),
+        }}) }}
         {% for error in line.locationTo.vars.errors %}
             <p class="text-[11px] mt-0.5 text-danger-500">{{ error.message }}</p>
         {% endfor %}

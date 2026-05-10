@@ -51,10 +51,19 @@ class OperationLineType extends AbstractType
             $builder->add('locationFrom', EntityType::class, [
                 'class' => Location::class,
                 'choice_label' => fn (Location $l) => $l->getCode().($l->getName() ? ' — '.$l->getName() : ''),
-                'query_builder' => function (LocationRepository $r) {
+                'query_builder' => function (LocationRepository $r) use ($data) {
                     $qb = $r->createQueryBuilder('l');
 
-                    return $r->addActiveFilter($qb, 'l');
+                    if ($data && $data->getLocationFrom()) {
+                        $qb->where('l.id = :locationId')
+                            ->setParameter('locationId', $data->getLocationFrom()->getId());
+                    } else {
+                        $qb->where('1 = 0');
+                    }
+
+                    $r->addActiveFilter($qb, 'l');
+
+                    return $qb;
                 },
                 'placeholder' => 'Lokalizacja źródłowa...',
                 'constraints' => [
@@ -67,10 +76,19 @@ class OperationLineType extends AbstractType
             $builder->add('locationTo', EntityType::class, [
                 'class' => Location::class,
                 'choice_label' => fn (Location $l) => $l->getCode().($l->getName() ? ' — '.$l->getName() : ''),
-                'query_builder' => function (LocationRepository $r) {
+                'query_builder' => function (LocationRepository $r) use ($data) {
                     $qb = $r->createQueryBuilder('l');
 
-                    return $r->addActiveFilter($qb, 'l');
+                    if ($data && $data->getLocationTo()) {
+                        $qb->where('l.id = :locationId')
+                            ->setParameter('locationId', $data->getLocationTo()->getId());
+                    } else {
+                        $qb->where('1 = 0');
+                    }
+
+                    $r->addActiveFilter($qb, 'l');
+
+                    return $qb;
                 },
                 'placeholder' => 'Lokalizacja docelowa...',
                 'constraints' => [

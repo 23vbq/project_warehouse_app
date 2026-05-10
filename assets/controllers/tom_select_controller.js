@@ -47,6 +47,7 @@ export default class extends Controller {
     #getTemplateOptions(template) {
         const templates = {
             products: () => this.#productsTemplate(),
+            locations: () => this.#locationsTemplate(),
         };
 
         if (!templates[template]) {
@@ -84,6 +85,38 @@ export default class extends Controller {
                         <div class="text-[11px] text-content-700 font-mono leading-tight">
                             ${escape(data.sku)}${data.ean ? `<span class="opacity-40 mx-1">|</span>${escape(data.ean)}` : ''}
                         </div>
+                    </div>
+                `,
+                no_results: () => `<div class="px-3 py-2.5 text-[12.5px] text-content-500 text-center">Brak wyników</div>`,
+                loading: () => `<div class="px-3 py-2.5 text-[12.5px] text-content-500 text-center">Ładowanie…</div>`,
+            },
+        };
+    }
+
+    #locationsTemplate() {
+        return {
+            ...this.#baseOptions(),
+            valueField: 'id',
+            labelField: 'code',
+            searchField: ['code', 'name'],
+            preload: true,
+            load: (query, callback) => {
+                fetch(`${this.fetchUrlValue}?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => callback(data))
+                    .catch(() => callback());
+            },
+            render: {
+                option: (data, escape) => `
+                    <div class="px-2 py-1.5 cursor-pointer">
+                        <div class="text-[12.5px] text-content-300 truncate leading-tight font-mono">${escape(data.code)}</div>
+                        ${data.name ? `<div class="text-[11px] text-content-700 mt-0.5 leading-tight truncate">${escape(data.name)}</div>` : ''}
+                    </div>
+                `,
+                item: (data, escape) => `
+                    <div class="py-0.5 overflow-hidden flex-1 min-w-0">
+                        <div class="text-[12.5px] text-content-50 truncate leading-tight font-mono">${escape(data.code)}</div>
+                        ${data.name ? `<div class="text-[11px] text-content-700 leading-tight truncate">${escape(data.name)}</div>` : ''}
                     </div>
                 `,
                 no_results: () => `<div class="px-3 py-2.5 text-[12.5px] text-content-500 text-center">Brak wyników</div>`,
