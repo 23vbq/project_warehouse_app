@@ -28,7 +28,7 @@ class OperationLineType extends AbstractType
                 'class' => Product::class,
                 'choice_label' => fn (Product $p) => sprintf('[%s] %s', $p->getSku(), $p->getName()),
                 'query_builder' => function (ProductRepository $productRepository) use ($data) {
-                    $qb = $productRepository->createQueryBuilder('p');   
+                    $qb = $productRepository->createQueryBuilder('p');
 
                     if ($data && $data->getProduct()) {
                         $qb->where('p.id = :productId')

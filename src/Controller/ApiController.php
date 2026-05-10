@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Repository\LocationRepository;
 use App\Repository\ProductRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,8 +18,7 @@ class ApiController extends AbstractController
     public function productSearch(
         Request $request,
         ProductRepository $productRepository,
-    ): Response
-    {
+    ): Response {
         $query = $request->query->get('query', '');
         $limit = 10;
 
@@ -39,8 +37,7 @@ class ApiController extends AbstractController
     public function locationSearch(
         Request $request,
         LocationRepository $locationRepository,
-    ): Response
-    {
+    ): Response {
         $query = $request->query->get('query', '');
         $limit = 10;
 
