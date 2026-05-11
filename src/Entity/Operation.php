@@ -194,6 +194,6 @@ abstract class Operation
 
     public function isConfirmed(): bool
     {
-        return $this->status === OperationStatus::CONFIRMED;
+        return OperationStatus::CONFIRMED === $this->status;
     }
 }
