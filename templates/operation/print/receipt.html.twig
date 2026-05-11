@@ -1,0 +1,107 @@
+{% extends 'base_print.html.twig' %}
+
+{% block title %}{{ operation.fullNumber }}{% endblock %}
+
+{% block content %}
+
+{% set totalValue = 0 %}
+{% for line in operation.operationLines %}
+    {% if line.unitPrice and line.quantity %}
+        {% set totalValue = totalValue + (line.quantity * line.unitPrice) %}
+    {% endif %}
+{% endfor %}
+
+<div class="document-header">
+    <div>
+        <div class="document-number">{{ operation.fullNumber }}</div>
+        <div class="document-type">Przyjęcie zewnętrzne (PZ)</div>
+    </div>
+    <div class="document-meta">
+        <div>Data dokumentu: <strong>{{ operation.documentDate|date('d.m.Y') }}</strong></div>
+        {% if operation.deliveryDate %}
+            <div>Data dostawy: <strong>{{ operation.deliveryDate|date('d.m.Y') }}</strong></div>
+        {% endif %}
+        <div>Zatwierdzono: <strong>{{ operation.confirmedAt|date('d.m.Y H:i') }}</strong></div>
+        <div>Zatwierdził: <strong>{{ operation.confirmedBy ? operation.confirmedBy.getUserIdentifier() : '—' }}</strong></div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="info-grid">
+        <div class="info-item">
+            <dt>Dostawca</dt>
+            <dd>{{ operation.supplier ?: '—' }}</dd>
+        </div>
+        <div class="info-item">
+            <dt>Nr faktury / WZ dostawcy</dt>
+            <dd>{{ operation.invoiceNumber ?: '—' }}</dd>
+        </div>
+        <div class="info-item">
+            <dt>Transport</dt>
+            <dd>{{ operation.transport ?: '—' }}</dd>
+        </div>
+        <div class="info-item">
+            <dt>Operator</dt>
+            <dd>{{ operation.createdBy ? operation.createdBy.getUserIdentifier() : '—' }}</dd>
+        </div>
+        <div class="info-item">
+            <dt>Utworzono</dt>
+            <dd>{{ operation.createdAt|date('d.m.Y H:i') }}</dd>
+        </div>
+        <div class="info-item">
+            <dt>Liczba pozycji</dt>
+            <dd>{{ operation.operationLines|length }}</dd>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Pozycje dokumentu</h2>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:30px">#</th>
+                <th>Produkt</th>
+                <th>SKU</th>
+                <th>Lokalizacja docelowa</th>
+                <th class="text-right">Ilość</th>
+                <th class="text-right">Cena jedn.</th>
+                <th class="text-right">Wartość</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in operation.operationLines %}
+                <tr>
+                    <td class="font-mono">{{ loop.index }}</td>
+                    <td>{{ line.product ? line.product.name : '—' }}</td>
+                    <td class="font-mono">{{ line.product ? line.product.sku : '—' }}</td>
+                    <td class="font-mono">{{ line.locationTo ? line.locationTo.code : '—' }}</td>
+                    <td class="text-right font-mono">{{ line.quantity|number_format(3, ',', ' ') }} {{ line.product ? line.product.unit : '' }}</td>
+                    <td class="text-right font-mono">{{ line.unitPrice ? line.unitPrice|number_format(2, ',', ' ') ~ ' PLN' : '—' }}</td>
+                    <td class="text-right font-mono">
+                        {% if line.unitPrice and line.quantity %}
+                            {{ (line.quantity * line.unitPrice)|number_format(2, ',', ' ') }} PLN
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        {% if totalValue > 0 %}
+            <tfoot>
+                <tr>
+                    <td colspan="6" class="text-right">Wartość netto:</td>
+                    <td class="text-right font-mono">{{ totalValue|number_format(2, ',', ' ') }} PLN</td>
+                </tr>
+            </tfoot>
+        {% endif %}
+    </table>
+</div>
+
+<div class="signatures">
+    <div class="signature-line">Przyjął</div>
+    <div class="signature-line">Zatwierdził</div>
+</div>
+
+{% endblock %}

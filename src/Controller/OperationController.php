@@ -91,6 +91,21 @@ class OperationController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/print', name: 'app_operation_print', requirements: ['id' => '\d+'])]
+    public function print(Operation $operation): Response
+    {
+        $view = match ($operation->getDocumentType()) {
+            Operation::TYPE_RECEIPT => 'operation/print/receipt.html.twig',
+            Operation::TYPE_RELEASE => 'operation/print/release.html.twig',
+            Operation::TYPE_RELOCATION => 'operation/print/relocation.html.twig',
+            default => throw new \InvalidArgumentException('Invalid document type: '.$operation->getDocumentType()),
+        };
+
+        return $this->render($view, [
+            'operation' => $operation,
+        ]);
+    }
+
     #[Route('/{id}/confirm', name: 'app_operation_confirm', methods: ['POST'], requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_WAREHOUSE_EMPLOYEE')]
     public function confirm(Request $request, Operation $operation, OperationService $operationService): Response
