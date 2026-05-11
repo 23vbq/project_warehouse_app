@@ -90,29 +90,13 @@
             text-align: center;
         }
 
-        .print-btn {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            padding: 8px 16px;
-            background: #111;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
         @media print {
-            .print-btn { display: none; }
             body { padding: 0; }
             @page { margin: 16mm 20mm; }
         }
     </style>
 </head>
-<body>
-
-<button class="print-btn" onclick="window.print()">Drukuj</button>
+<body onload="window.print()">
 
 {% block content %}{% endblock %}
 
