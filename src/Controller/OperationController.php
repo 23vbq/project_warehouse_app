@@ -285,4 +285,30 @@ class OperationController extends AbstractController
             'cancelUrl' => $this->generateUrl('app_operation_show', ['id' => $operation->getId()]),
         ]);
     }
+
+    #[Route('/{id}/delete', name: 'app_operation_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_WAREHOUSE_EMPLOYEE')]
+    public function delete(Request $request, Operation $operation, EntityManagerInterface $em): Response
+    {
+        if (!$this->isCsrfTokenValid('delete_operation_'.$operation->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Nieprawidłowy token CSRF.');
+
+            return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
+        }
+
+        if ($operation->isConfirmed()) {
+            $this->addFlash('error', 'Nie można usunąć zatwierdzonej operacji.');
+
+            return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
+        }
+
+        $fullNumber = $operation->getFullNumber();
+
+        $em->remove($operation);
+        $em->flush();
+
+        $this->addFlash('success', sprintf('Operacja %s została usunięta.', $fullNumber));
+
+        return $this->redirectToRoute('app_operation_index');
+    }
 }

@@ -3,9 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Operation;
-use App\Entity\Receipt;
-use App\Entity\Release;
-use App\Entity\Relocation;
 use App\Traits\SanitizesOrderBy;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -79,26 +76,17 @@ class OperationRepository extends ServiceEntityRepository
         string $year,
         string $month,
     ): int {
-        $from = new \DateTimeImmutable(sprintf('%s-%s-01 00:00:00', $year, $month));
-        $to = $from->modify('first day of next month');
-
-        $typeMap = [
-            Operation::TYPE_RECEIPT => Receipt::class,
-            Operation::TYPE_RELEASE => Release::class,
-            Operation::TYPE_RELOCATION => Relocation::class,
-        ];
-
         $max = $this->createQueryBuilder('o')
             ->select('MAX(o.number)')
             ->where('o INSTANCE OF :type')
-            ->andWhere('o.documentDate >= :from')
-            ->andWhere('o.documentDate < :to')
-            ->setParameter('type', $typeMap[$type] ?? $type)
-            ->setParameter('from', $from)
-            ->setParameter('to', $to)
+            ->andWhere('YEAR(o.documentDate) = :year')
+            ->andWhere('MONTH(o.documentDate) = :month')
+            ->setParameter('type', $type)
+            ->setParameter('year', $year)
+            ->setParameter('month', $month)
             ->getQuery()
             ->getSingleScalarResult();
 
-        return (null === $max) ? 1 : ((int) $max + 1);
+        return $max ?? 0;
     }
 }

@@ -59,6 +59,16 @@
             </a>
         {% else %}
             {% if is_granted('ROLE_WAREHOUSE_EMPLOYEE') %}
+                <form method="post" action="{{ path('app_operation_delete', {id: operation.id}) }}" data-turbo-frame="_top" onsubmit="return confirm('Czy na pewno chcesz usunąć operację {{ operation.fullNumber }}?')">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_operation_' ~ operation.id) }}">
+                    <button
+                        type="submit"
+                        class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-danger-500 bg-surface-800 border border-danger-500/30 rounded-lg hover:bg-danger-500/10 transition-colors cursor-pointer"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4h6v2"></path></svg>
+                        Usuń
+                    </button>
+                </form>
                 <a
                     href="{{ path('app_operation_edit', {id: operation.id}) }}"
                     class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors"
