@@ -31,13 +31,8 @@ class OperationLineType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $operationType = $options['operation_type'];
-        $entity = $builder->getData();
 
-        $this->addEntityChoices($builder, $operationType, $entity ? [
-            'product' => $entity->getProduct()?->getId(),
-            'locationFrom' => $entity->getLocationFrom()?->getId(),
-            'locationTo' => $entity->getLocationTo()?->getId(),
-        ] : null);
+        $this->addEntityChoices($builder, $operationType, null);
 
         $builder->add('quantity', NumberType::class, [
             'scale' => 3,
@@ -56,6 +51,22 @@ class OperationLineType extends AbstractType
                 ],
             ]);
         }
+
+        $builder->addEventListener(
+            FormEvents::POST_SET_DATA,
+            function (FormEvent $event) use ($operationType): void {
+                $line = $event->getData();
+                if (!$line instanceof OperationLine || null === $line->getId()) {
+                    return;
+                }
+
+                $this->addEntityChoices($event->getForm(), $operationType, [
+                    'product' => $line->getProduct()?->getId(),
+                    'locationFrom' => $line->getLocationFrom()?->getId(),
+                    'locationTo' => $line->getLocationTo()?->getId(),
+                ]);
+            }
+        );
 
         $builder->addEventListener(
             FormEvents::PRE_SUBMIT,
@@ -88,6 +99,7 @@ class OperationLineType extends AbstractType
 
         $form->add('product', EntityType::class, [
             'class' => Product::class,
+            'choice_label' => fn (Product $p) => sprintf('[%s] %s', $p->getSku(), $p->getName()),
             'choice_loader' => new CallbackChoiceLoader(function () use ($productId): array {
                 if (!$productId) {
                     return [];
@@ -108,6 +120,7 @@ class OperationLineType extends AbstractType
         if (in_array($operationType, [Operation::TYPE_RELEASE, Operation::TYPE_RELOCATION], true)) {
             $form->add('locationFrom', EntityType::class, [
                 'class' => Location::class,
+                'choice_label' => fn (Location $l) => $l->getCode().($l->getName() ? ' — '.$l->getName() : ''),
                 'choice_loader' => new CallbackChoiceLoader(function () use ($locationFromId): array {
                     if (!$locationFromId) {
                         return [];
@@ -129,6 +142,7 @@ class OperationLineType extends AbstractType
         if (in_array($operationType, [Operation::TYPE_RECEIPT, Operation::TYPE_RELOCATION], true)) {
             $form->add('locationTo', EntityType::class, [
                 'class' => Location::class,
+                'choice_label' => fn (Location $l) => $l->getCode().($l->getName() ? ' — '.$l->getName() : ''),
                 'choice_loader' => new CallbackChoiceLoader(function () use ($locationToId): array {
                     if (!$locationToId) {
                         return [];

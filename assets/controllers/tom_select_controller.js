@@ -58,6 +58,7 @@ export default class extends Controller {
     }
 
     #productsTemplate() {
+        const fetchUrl = this.fetchUrlValue;
         return {
             ...this.#baseOptions(),
             valueField: 'id',
@@ -65,10 +66,24 @@ export default class extends Controller {
             searchField: ['sku', 'ean', 'name'],
             preload: true,
             load: (query, callback) => {
-                fetch(`${this.fetchUrlValue}?query=${encodeURIComponent(query)}`)
+                fetch(`${fetchUrl}?query=${encodeURIComponent(query)}`)
                     .then(response => response.json())
                     .then(data => callback(data))
                     .catch(() => callback());
+            },
+            onInitialize() {
+                const ts = this;
+                const selectedValue = ts.input.value;
+                if (!selectedValue) return;
+
+                fetch(`${fetchUrl}?id=${selectedValue}`)
+                    .then(r => r.json())
+                    .then(items => {
+                        if (!items.length) return;
+                        items.forEach(item => ts.updateOption(item.id, item));
+                        ts.setValue(selectedValue, true);
+                    })
+                    .catch(() => {});
             },
             render: {
                 option: (data, escape) => `
@@ -94,6 +109,7 @@ export default class extends Controller {
     }
 
     #locationsTemplate() {
+        const fetchUrl = this.fetchUrlValue;
         return {
             ...this.#baseOptions(),
             valueField: 'id',
@@ -101,10 +117,24 @@ export default class extends Controller {
             searchField: ['code', 'name'],
             preload: true,
             load: (query, callback) => {
-                fetch(`${this.fetchUrlValue}?query=${encodeURIComponent(query)}`)
+                fetch(`${fetchUrl}?query=${encodeURIComponent(query)}`)
                     .then(response => response.json())
                     .then(data => callback(data))
                     .catch(() => callback());
+            },
+            onInitialize() {
+                const ts = this;
+                const selectedValue = ts.input.value;
+                if (!selectedValue) return;
+
+                fetch(`${fetchUrl}?id=${selectedValue}`)
+                    .then(r => r.json())
+                    .then(items => {
+                        if (!items.length) return;
+                        items.forEach(item => ts.updateOption(item.id, item));
+                        ts.setValue(selectedValue, true);
+                    })
+                    .catch(() => {});
             },
             render: {
                 option: (data, escape) => `

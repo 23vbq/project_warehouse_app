@@ -19,10 +19,16 @@ class ApiController extends AbstractController
         Request $request,
         ProductRepository $productRepository,
     ): Response {
+        $id = $request->query->get('id');
         $query = $request->query->get('query', '');
         $limit = 10;
 
-        $products = $productRepository->searchByQuery($query, $limit);
+        if ($id) {
+            $product = $productRepository->find($id);
+            $products = $product ? [$product] : [];
+        } else {
+            $products = $productRepository->searchByQuery($query, $limit);
+        }
 
         return $this->json(array_map(fn ($product) => [
             'id' => $product->getId(),
@@ -60,10 +66,16 @@ class ApiController extends AbstractController
         Request $request,
         LocationRepository $locationRepository,
     ): Response {
+        $id = $request->query->get('id');
         $query = $request->query->get('query', '');
         $limit = 10;
 
-        $locations = $locationRepository->searchByQuery($query, $limit);
+        if ($id) {
+            $location = $locationRepository->find($id);
+            $locations = $location ? [$location] : [];
+        } else {
+            $locations = $locationRepository->searchByQuery($query, $limit);
+        }
 
         return $this->json(array_map(fn ($location) => [
             'id' => $location->getId(),

@@ -140,9 +140,12 @@ class OperationController extends AbstractController
             return $this->redirectToRoute('app_operation_show', ['id' => $receipt->getId()]);
         }
 
-        return $this->render('operation/receipt_new.html.twig', [
+        return $this->render('operation/receipt_form.html.twig', [
             'form' => $form,
             'receipt' => $receipt,
+            'pageTitle' => 'Nowe przyjęcie (PZ)',
+            'formAction' => $this->generateUrl('app_operation_new_receipt'),
+            'cancelUrl' => $this->generateUrl('app_operation_index'),
         ]);
     }
 
@@ -175,9 +178,12 @@ class OperationController extends AbstractController
             return $this->redirectToRoute('app_operation_show', ['id' => $release->getId()]);
         }
 
-        return $this->render('operation/release_new.html.twig', [
+        return $this->render('operation/release_form.html.twig', [
             'form' => $form,
             'release' => $release,
+            'pageTitle' => 'Nowe wydanie (WZ)',
+            'formAction' => $this->generateUrl('app_operation_new_release'),
+            'cancelUrl' => $this->generateUrl('app_operation_index'),
         ]);
     }
 
@@ -210,9 +216,58 @@ class OperationController extends AbstractController
             return $this->redirectToRoute('app_operation_show', ['id' => $relocation->getId()]);
         }
 
-        return $this->render('operation/relocation_new.html.twig', [
+        return $this->render('operation/relocation_form.html.twig', [
             'form' => $form,
             'relocation' => $relocation,
+            'pageTitle' => 'Nowe przesunięcie (MM)',
+            'formAction' => $this->generateUrl('app_operation_new_relocation'),
+            'cancelUrl' => $this->generateUrl('app_operation_index'),
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_operation_edit', requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_WAREHOUSE_EMPLOYEE')]
+    public function edit(Request $request, Operation $operation, EntityManagerInterface $em): Response
+    {
+        if ($operation->isConfirmed()) {
+            $this->addFlash('error', 'Nie można edytować zatwierdzonej operacji.');
+
+            return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
+        }
+
+        if ($operation instanceof Receipt) {
+            $form = $this->createForm(ReceiptType::class, $operation);
+            $template = 'operation/receipt_form.html.twig';
+            $pageTitle = 'Edytuj przyjęcie (PZ)';
+            $operationVariable = 'receipt';
+        } elseif ($operation instanceof Release) {
+            $form = $this->createForm(ReleaseType::class, $operation);
+            $template = 'operation/release_form.html.twig';
+            $pageTitle = 'Edytuj wydanie (WZ)';
+            $operationVariable = 'release';
+        } else {
+            $form = $this->createForm(RelocationType::class, $operation);
+            $template = 'operation/relocation_form.html.twig';
+            $pageTitle = 'Edytuj przesunięcie (MM)';
+            $operationVariable = 'relocation';
+        }
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+
+            $this->addFlash('success', sprintf('Operacja %s została zaktualizowana.', $operation->getFullNumber()));
+
+            return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
+        }
+
+        return $this->render($template, [
+            'form' => $form,
+            $operationVariable => $operation,
+            'pageTitle' => $pageTitle,
+            'formAction' => $this->generateUrl('app_operation_edit', ['id' => $operation->getId()]),
+            'cancelUrl' => $this->generateUrl('app_operation_show', ['id' => $operation->getId()]),
         ]);
     }
 }

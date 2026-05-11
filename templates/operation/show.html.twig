@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-<turbo-frame id="page_content">
+<turbo-frame id="page_content" data-turbo-action="advance">
 
 <div class="flex items-center justify-between mb-4 gap-4">
     <div class="flex items-center gap-3.5 min-w-0 flex-1">
@@ -58,7 +58,7 @@
             </button>
         {% else %}
             <a
-                href="#"
+                href="{{ path('app_operation_edit', {id: operation.id}) }}"
                 class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors"
             >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>

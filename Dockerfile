@@ -9,8 +9,8 @@ RUN a2enmod rewrite
 RUN apt-get update && apt-get install -y \
     git unzip libicu-dev libonig-dev libzip-dev libpq-dev
 
-RUN docker-php-ext-install mbstring pdo pdo_mysql intl zip calendar
-RUN docker-php-ext-enable mbstring pdo pdo_mysql intl zip calendar
+RUN docker-php-ext-install mbstring pdo pdo_mysql intl zip calendar bcmath
+RUN docker-php-ext-enable mbstring pdo pdo_mysql intl zip calendar bcmath
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
