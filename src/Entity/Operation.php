@@ -54,7 +54,7 @@ abstract class Operation
     #[ORM\OneToMany(targetEntity: OperationLine::class, mappedBy: 'operation', cascade: ['persist'], orphanRemoval: true)]
     private Collection $operationLines;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $fullNumber = null;
 
     public function __construct()

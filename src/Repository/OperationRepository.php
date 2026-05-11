@@ -52,10 +52,8 @@ class OperationRepository extends ServiceEntityRepository
         }
 
         if (!empty($filters['query'])) {
-            if (is_numeric($filters['query'])) {
-                $qb->andWhere('o.fullNumber LIKE :query')
-                    ->setParameter('query', '%'.$filters['query'].'%');
-            }
+            $qb->andWhere('o.fullNumber LIKE :query')
+                ->setParameter('query', '%'.$filters['query'].'%');
         }
 
         $orderMap = [
@@ -76,7 +74,7 @@ class OperationRepository extends ServiceEntityRepository
         return $qb;
     }
 
-    public function getNextNumber(
+    public function getLastNumber(
         string $type,
         string $year,
         string $month,
