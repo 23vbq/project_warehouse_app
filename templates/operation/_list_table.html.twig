@@ -67,8 +67,8 @@
                     <button
                         type="button"
                         data-action="click->accordion#toggle"
-                        data-accordion-row-id-param="stock-operation-{{ operation.id }}"
-                        data-accordion-url-param="{{ path('app_operation_lines_detail', {id: operation.id}) }}"
+                        data-accordion-row-id-param="operation-lines-{{ operation.id }}"
+                        data-accordion-url-param="{{ path('app_operation_lines_details', {id: operation.id}) }}"
                         class="w-5 h-5 rounded grid place-items-center text-content-700 hover:text-content-300 transition-colors cursor-pointer"
                     >
                         <div class="w-4 h-4 shrink-0">{{ source('svg/chevron-down.svg') }}</div>
@@ -104,7 +104,7 @@
                     {{ include('operation/_partials/status.html.twig', {operation: operation}) }}
                 </td>
             </tr>
-            <tr id="stock-operation-{{ operation.id }}" class="hidden bg-surface-800/30">
+            <tr id="operation-lines-{{ operation.id }}" class="hidden bg-surface-800/30">
                 <td colspan="7" class="p-0">
                     <turbo-frame id="operation-lines-details-{{ operation.id }}" class="relative block min-h-[60px]">
                         {{ include('layout/_partials/loader.html.twig') }}

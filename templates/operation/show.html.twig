@@ -10,8 +10,6 @@
     <span class="text-content-50 font-mono font-medium">{{ operation.fullNumber }}</span>
 {% endblock %}
 
-{% set isConfirmed = operation.status.value == 'confirmed' %}
-
 {% block content %}
 <turbo-frame id="page_content">
 
@@ -40,7 +38,7 @@
                     <span>Operator: <span class="text-content-300">{{ operation.createdBy ? operation.createdBy.getUserIdentifier() : '—' }}</span></span>
                     <span class="text-content-700">·</span>
                     <span>{{ operation.createdAt|date('d.m.Y · H:i') }}</span>
-                    {% if isConfirmed and operation.confirmedAt %}
+                    {% if operation.isConfirmed and operation.confirmedAt %}
                         <span class="text-content-700">·</span>
                         <span class="text-emerald-500">Zatwierdzono {{ operation.confirmedAt|date('d.m.Y H:i') }}</span>
                     {% endif %}
@@ -50,7 +48,7 @@
     </div>
 
     <div class="flex items-center gap-2 shrink-0">
-        {% if isConfirmed %}
+        {% if operation.isConfirmed %}
             <button
                 type="button"
                 class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors cursor-pointer"
@@ -93,13 +91,13 @@
     <div>
         {% if operation.documentType == 'receipt' %}
             {{ include('operation/_partials/receipt_show_details.html.twig', {operation: operation}) }}
-            {{ include('operation/_partials/receipt_show_lines.html.twig', {operation: operation, isConfirmed: isConfirmed}) }}
+            {{ include('operation/_partials/receipt_show_lines.html.twig', {operation: operation}) }}
         {% elseif operation.documentType == 'release' %}
             {{ include('operation/_partials/release_show_details.html.twig', {operation: operation}) }}
-            {{ include('operation/_partials/release_show_lines.html.twig', {operation: operation, isConfirmed: isConfirmed}) }}
+            {{ include('operation/_partials/release_show_lines.html.twig', {operation: operation}) }}
         {% else %}
             {{ include('operation/_partials/relocation_show_details.html.twig', {operation: operation}) }}
-            {{ include('operation/_partials/relocation_show_lines.html.twig', {operation: operation, isConfirmed: isConfirmed}) }}
+            {{ include('operation/_partials/relocation_show_lines.html.twig', {operation: operation}) }}
         {% endif %}
     </div>
 
@@ -125,7 +123,7 @@
                     <dt class="text-[12px] text-content-500 shrink-0">Operator</dt>
                     <dd class="text-[12.5px] text-content-50 text-right">{{ operation.createdBy ? operation.createdBy.getUserIdentifier() : '—' }}</dd>
                 </li>
-                {% if isConfirmed %}
+                {% if operation.isConfirmed %}
                     <li class="flex items-start justify-between py-2.5 gap-3">
                         <dt class="text-[12px] text-content-500 shrink-0">Zatwierdzono</dt>
                         <dd class="text-[12.5px] text-content-50 text-right">{{ operation.confirmedAt ? operation.confirmedAt|date('d.m.Y H:i') : '—' }}</dd>
@@ -159,7 +157,7 @@
                     </div>
                 </li>
                 <li class="grid grid-cols-[16px_1fr] gap-2.5 py-3">
-                    {% if isConfirmed %}
+                    {% if operation.isConfirmed %}
                         <span class="w-2 h-2 rounded-full mt-1.5 ml-1 shrink-0 bg-emerald-400 shadow-[0_0_0_3px_rgba(52,211,153,0.15)]"></span>
                         <div>
                             <div class="text-[12.5px] text-content-50">Zatwierdzono</div>

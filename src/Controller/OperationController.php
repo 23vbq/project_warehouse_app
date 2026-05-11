@@ -69,11 +69,25 @@ class OperationController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/lines', name: 'app_operation_lines_detail', requirements: ['id' => '\d+'])]
-    public function linesDetail(Operation $operation): Response
+    #[Route('/{id}/lines', name: 'app_operation_lines_details', requirements: ['id' => '\d+'])]
+    public function linesDetails(Request $request, Operation $operation): Response
     {
-        return $this->render('operation/lines_detail.html.twig', [
-            'operation' => $operation,
+        if (!$request->headers->has('Turbo-Frame')) {
+            return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
+        }
+
+        $documentType = $operation->getDocumentType();
+
+        $view = match ($documentType) {
+            Operation::TYPE_RECEIPT => 'operation/_partials/receipt_show_lines_table.html.twig',
+            Operation::TYPE_RELEASE => 'operation/_partials/release_show_lines_table.html.twig',
+            Operation::TYPE_RELOCATION => 'operation/_partials/relocation_show_lines_table.html.twig',
+            default => throw new \InvalidArgumentException('Invalid document type: '.$documentType),
+        };
+
+        return $this->render('layout/_partials/turbo_frame_wrapper.html.twig', [
+            'turboFrameId' => 'operation-lines-details-'.$operation->getId(),
+            'content' => $this->renderView($view, ['operation' => $operation]),
         ]);
     }
 

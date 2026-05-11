@@ -13,6 +13,6 @@ export default class extends Controller {
     }
 
     #currentIndex() {
-        return this.element.querySelectorAll("[data-line]").length;
+        return this.element.querySelectorAll("[data-line]").length + 1;
     }
 }

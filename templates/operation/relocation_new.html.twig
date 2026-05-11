@@ -92,7 +92,7 @@
             data-controller="form-collection"
         >
             <template data-form-collection-target="prototype">
-                {{ include('operation/_partials/relocation_line.html.twig', {line: form.operationLines.vars.prototype, loop: {index: null}}) }}
+                {{ include('operation/_partials/new_relocation_line.html.twig', {line: form.operationLines.vars.prototype, loop: {index: null}}) }}
             </template>
 
             <div class="flex items-center justify-between px-5 py-4 border-b border-stroke">
@@ -131,7 +131,7 @@
                 </thead>
                 <tbody data-form-collection-target="list">
                 {% for line in form.operationLines %}
-                    {{ include('operation/_partials/relocation_line.html.twig', {line: line, loop: loop}) }}
+                    {{ include('operation/_partials/new_relocation_line.html.twig', {line: line, loop: loop}) }}
                 {% endfor %}
                 </tbody>
             </table>
