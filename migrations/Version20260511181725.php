@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260509120139 extends AbstractMigration
+final class Version20260511181725 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,7 +20,7 @@ final class Version20260509120139 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE operation (id INT AUTO_INCREMENT NOT NULL, number VARCHAR(255) NOT NULL, status VARCHAR(255) NOT NULL, document_date DATETIME NOT NULL, confirmed_at DATETIME DEFAULT NULL, created_at DATETIME NOT NULL, confirmed_by_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, type VARCHAR(255) NOT NULL, INDEX IDX_1981A66D6F45385D (confirmed_by_id), INDEX IDX_1981A66DB03A8386 (created_by_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
+        $this->addSql('CREATE TABLE operation (id INT AUTO_INCREMENT NOT NULL, number INT NOT NULL, status VARCHAR(255) NOT NULL, document_date DATETIME NOT NULL, confirmed_at DATETIME DEFAULT NULL, created_at DATETIME NOT NULL, full_number VARCHAR(255) NOT NULL, confirmed_by_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, type VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_1981A66DC5A43A6 (full_number), INDEX IDX_1981A66D6F45385D (confirmed_by_id), INDEX IDX_1981A66DB03A8386 (created_by_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE operation_line (id INT AUTO_INCREMENT NOT NULL, quantity NUMERIC(10, 3) NOT NULL, unit_price NUMERIC(10, 2) DEFAULT NULL, operation_id INT NOT NULL, product_id INT NOT NULL, location_from_id INT DEFAULT NULL, location_to_id INT DEFAULT NULL, INDEX IDX_FE64E96744AC3583 (operation_id), INDEX IDX_FE64E9674584665A (product_id), INDEX IDX_FE64E967968BCAAF (location_from_id), INDEX IDX_FE64E96746690F40 (location_to_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE receipt (supplier VARCHAR(255) DEFAULT NULL, invoice_number VARCHAR(255) DEFAULT NULL, delivery_date DATETIME DEFAULT NULL, transport VARCHAR(255) DEFAULT NULL, id INT NOT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE `release` (recipient VARCHAR(255) DEFAULT NULL, customer_order_number VARCHAR(255) DEFAULT NULL, release_date DATETIME DEFAULT NULL, release_method VARCHAR(255) DEFAULT NULL, id INT NOT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
