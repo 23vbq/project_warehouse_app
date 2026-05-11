@@ -93,9 +93,21 @@ class OperationController extends AbstractController
 
     #[Route('/{id}/confirm', name: 'app_operation_confirm', methods: ['POST'], requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_WAREHOUSE_EMPLOYEE')]
-    public function confirm(Operation $operation): Response
+    public function confirm(Request $request, Operation $operation, OperationService $operationService): Response
     {
-        // TODO: implement confirmation logic
+        if (!$this->isCsrfTokenValid('confirm_operation_'.$operation->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Nieprawidłowy token CSRF.');
+
+            return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
+        }
+
+        try {
+            $operationService->confirm($operation, $this->getUser());
+            $this->addFlash('success', sprintf('Operacja %s została zatwierdzona.', $operation->getFullNumber()));
+        } catch (\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
         return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
     }
 

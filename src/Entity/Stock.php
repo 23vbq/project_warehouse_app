@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\UniqueConstraint(columns: ['product_id', 'location_id'])]
 class Stock
 {
+    public const QUANTITY_SCALE = 3;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -23,7 +25,7 @@ class Stock
     #[ORM\JoinColumn(nullable: false)]
     private ?Location $location = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 3)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: self::QUANTITY_SCALE)]
     private string $quantity;
 
     public function __construct()
