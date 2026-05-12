@@ -36,9 +36,11 @@ class DefaultController extends AbstractController
             'locations' => $locationCounts ?? 0,
         ];
 
+        $queryString = $request->getQueryString();
+        $currentUrl = $request->getPathInfo().($queryString ? '?'.$queryString : '');
+
         return $this->render('layout/_partials/sidebar.html.twig', [
-            'currentRoute' => $currentRoute,
-            'currentParams' => $request->query->all(),
+            'currentUrl' => $currentUrl,
             'alerts' => $alerts,
         ]);
     }

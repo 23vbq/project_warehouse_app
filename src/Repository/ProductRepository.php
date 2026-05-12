@@ -21,6 +21,24 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    public function save(Product $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(Product $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
     public function findForUniqueValidation(array $criteria): array
     {
         $criteria['isActive'] = true;
@@ -99,5 +117,23 @@ class ProductRepository extends ServiceEntityRepository
 
         return $qb->getQuery()
             ->getSingleResult();
+    }
+
+    public function searchByQuery(string $query, int $limit = 10): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('p')
+            ->where('
+                p.name LIKE :query
+                OR p.sku LIKE :query
+                OR p.ean LIKE :query
+            ')
+            ->setParameter('query', '%'.$query.'%')
+            ->setMaxResults($limit);
+
+        $this->addActiveFilter($qb, 'p');
+
+        return $qb->getQuery()
+            ->getResult();
     }
 }

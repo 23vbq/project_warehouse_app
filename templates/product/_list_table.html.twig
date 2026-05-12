@@ -91,7 +91,9 @@
                             {{ include('product/_partials/icon.html.twig') }}
                             <div class="min-w-0">
                                 <div class="font-medium text-content-50 truncate">{{ product.name }}</div>
-                                <div class="text-content-500 font-mono text-[12px] mt-0.5 truncate">{{ product.sku }}</div>
+                                <div class="text-content-500 font-mono text-[12px] mt-0.5 truncate">
+                                    <span title="SKU">{{ product.sku }}</span>{% if product.ean %}<span class="text-content-700 mx-1 opacity-40">|</span><span title="EAN">{{ product.ean }}</span>{% endif %}
+                                </div>
                             </div>
                         </div>
                     </td>

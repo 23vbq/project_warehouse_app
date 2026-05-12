@@ -14,6 +14,10 @@ doctrine:
         naming_strategy: doctrine.orm.naming_strategy.underscore
         identity_generation_preferences:
             Doctrine\DBAL\Platforms\PostgreSQLPlatform: identity
+        dql:
+            numeric_functions:
+                year: DoctrineExtensions\Query\Mysql\Year
+                month: DoctrineExtensions\Query\Mysql\Month
         auto_mapping: true
         mappings:
             App:

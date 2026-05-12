@@ -60,4 +60,20 @@ class LocationRepository extends ServiceEntityRepository
 
         return $qb;
     }
+
+    public function searchByQuery(string $query, int $limit = 10): array
+    {
+        $qb = $this->createQueryBuilder('l')
+            ->where('
+                l.code LIKE :query
+                OR l.name LIKE :query
+            ')
+            ->setParameter('query', '%'.$query.'%')
+            ->setMaxResults($limit);
+
+        $this->addActiveFilter($qb, 'l');
+
+        return $qb->getQuery()
+            ->getResult();
+    }
 }
