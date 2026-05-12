@@ -15,6 +15,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[UniqueEntity(fields: ['ean'], repositoryMethod: 'findForUniqueValidation', message: 'Produkt z tym kodem EAN już istnieje.')]
 class Product
 {
+    public const PRICE_SCALE = 2;
+    public const QUANTITY_SCALE = 3;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -35,10 +38,10 @@ class Product
     #[ORM\Column(length: 20)]
     private ?string $unit = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: self::PRICE_SCALE)]
     private ?string $unitPrice = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 3, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: self::QUANTITY_SCALE, nullable: true)]
     private ?string $minStockLevel = null;
 
     #[ORM\Column]

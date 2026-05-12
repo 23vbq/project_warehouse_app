@@ -94,6 +94,12 @@ class OperationController extends AbstractController
     #[Route('/{id}/print', name: 'app_operation_print', requirements: ['id' => '\d+'])]
     public function print(Operation $operation): Response
     {
+        if (!$operation->isConfirmed()) {
+            $this->addFlash('error', 'Można drukować tylko zatwierdzone operacje.');
+
+            return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
+        }
+
         $view = match ($operation->getDocumentType()) {
             Operation::TYPE_RECEIPT => 'operation/print/receipt.html.twig',
             Operation::TYPE_RELEASE => 'operation/print/release.html.twig',

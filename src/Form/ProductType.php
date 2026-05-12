@@ -51,7 +51,7 @@ class ProductType extends AbstractType
                 ],
             ])
             ->add('unitPrice', NumberType::class, [
-                'scale' => 2,
+                'scale' => Product::PRICE_SCALE,
                 'constraints' => [
                     new NotBlank(message: 'Cena jest wymagana.'),
                     new Positive(message: 'Cena musi być większa od zera.'),
@@ -59,7 +59,7 @@ class ProductType extends AbstractType
             ])
             ->add('minStockLevel', NumberType::class, [
                 'required' => false,
-                'scale' => 2,
+                'scale' => Product::QUANTITY_SCALE,
                 'constraints' => [
                     new Positive(message: 'Minimalny stan musi być większy od zera.'),
                 ],

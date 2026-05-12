@@ -175,7 +175,11 @@ abstract class Operation
 
     public function removeOperationLine(OperationLine $operationLine): static
     {
-        $this->operationLines->removeElement($operationLine);
+        if ($this->operationLines->removeElement($operationLine)) {
+            if ($operationLine->getOperation() === $this) {
+                $operationLine->setOperation(null);
+            }
+        }
 
         return $this;
     }

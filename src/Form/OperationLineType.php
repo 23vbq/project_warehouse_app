@@ -35,7 +35,7 @@ class OperationLineType extends AbstractType
         $this->addEntityChoices($builder, $operationType, null);
 
         $builder->add('quantity', NumberType::class, [
-            'scale' => 3,
+            'scale' => OperationLine::QUANTITY_SCALE,
             'constraints' => [
                 new NotBlank(message: 'Ilość jest wymagana.'),
                 new Positive(message: 'Ilość musi być większa od zero.'),
@@ -45,7 +45,7 @@ class OperationLineType extends AbstractType
         if (Operation::TYPE_RELOCATION !== $operationType) {
             $builder->add('unitPrice', NumberType::class, [
                 'required' => false,
-                'scale' => 2,
+                'scale' => OperationLine::PRICE_SCALE,
                 'constraints' => [
                     new Positive(message: 'Cena musi być większa od zera.'),
                 ],

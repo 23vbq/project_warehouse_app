@@ -9,6 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: OperationLineRepository::class)]
 class OperationLine
 {
+    public const QUANTITY_SCALE = 3;
+    public const PRICE_SCALE = 2;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -28,10 +31,10 @@ class OperationLine
     #[ORM\ManyToOne]
     private ?Location $locationTo = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 3)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: self::QUANTITY_SCALE)]
     private ?string $quantity = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: self::PRICE_SCALE, nullable: true)]
     private ?string $unitPrice = null;
 
     public function getId(): ?int

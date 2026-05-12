@@ -21,7 +21,7 @@
         {% if operation.deliveryDate %}
             <div>Data dostawy: <strong>{{ operation.deliveryDate|date('d.m.Y') }}</strong></div>
         {% endif %}
-        <div>Zatwierdzono: <strong>{{ operation.confirmedAt|date('d.m.Y H:i') }}</strong></div>
+        <div>Zatwierdzono: <strong>{{ operation.confirmedAt ? operation.confirmedAt|date('d.m.Y H:i') : '—' }}</strong></div>
         <div>Zatwierdził: <strong>{{ operation.confirmedBy ? operation.confirmedBy.getUserIdentifier() : '—' }}</strong></div>
     </div>
 </div>
