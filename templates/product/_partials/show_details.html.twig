@@ -1,0 +1,53 @@
+<div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
+    <div class="px-4 py-3 border-b border-stroke">
+        <h2 class="text-[13px] font-semibold text-content-50">Szczegóły</h2>
+    </div>
+    <ul class="divide-y divide-stroke px-4">
+        <li class="flex items-start justify-between py-2.5 gap-3">
+            <dt class="text-[12px] text-content-500 shrink-0">SKU</dt>
+            <dd class="font-mono text-[12.5px] text-content-50 text-right">{{ product.sku }}</dd>
+        </li>
+        <li class="flex items-start justify-between py-2.5 gap-3">
+            <dt class="text-[12px] text-content-500 shrink-0">EAN</dt>
+            <dd class="font-mono text-[12.5px] text-content-50 text-right">{{ product.ean ?: '—' }}</dd>
+        </li>
+        <li class="flex items-start justify-between py-2.5 gap-3">
+            <dt class="text-[12px] text-content-500 shrink-0">Kategoria</dt>
+            <dd class="text-right">{{ include('product/_partials/type.html.twig') }}</dd>
+        </li>
+        <li class="flex items-start justify-between py-2.5 gap-3">
+            <dt class="text-[12px] text-content-500 shrink-0">Jednostka</dt>
+            <dd class="text-[12.5px] text-content-50 text-right">{{ product.unit }}</dd>
+        </li>
+        <li class="flex items-start justify-between py-2.5 gap-3">
+            <dt class="text-[12px] text-content-500 shrink-0">Cena jedn.</dt>
+            <dd class="font-mono text-[12.5px] text-content-50 text-right tabular-nums">
+                {{ product.unitPrice|number_format(2, ',', ' ') }}
+                <span class="text-content-500">PLN</span>
+            </dd>
+        </li>
+        <li class="flex items-start justify-between py-2.5 gap-3">
+            <dt class="text-[12px] text-content-500 shrink-0">Min. stan</dt>
+            <dd class="font-mono text-[12.5px] text-content-50 text-right tabular-nums">
+                {% if product.minStockLevel %}
+                    {{ product.minStockLevel|number_format(3, ',', ' ') }}
+                    <span class="text-content-500">{{ product.unit }}</span>
+                {% else %}
+                    <span class="text-content-700">—</span>
+                {% endif %}
+            </dd>
+        </li>
+        <li class="flex items-start justify-between py-2.5 gap-3">
+            <dt class="text-[12px] text-content-500 shrink-0">Status</dt>
+            <dd class="text-right">{{ include('product/_partials/status.html.twig') }}</dd>
+        </li>
+        <li class="flex items-start justify-between py-2.5 gap-3">
+            <dt class="text-[12px] text-content-500 shrink-0">Dodano</dt>
+            <dd class="text-[12.5px] text-content-50 text-right">{{ product.createdAt|date('d.m.Y · H:i') }}</dd>
+        </li>
+        <li class="flex items-start justify-between py-2.5 gap-3">
+            <dt class="text-[12px] text-content-500 shrink-0">Autor</dt>
+            <dd class="text-[12.5px] text-content-50 text-right">{{ product.createdBy ? product.createdBy.getUserIdentifier() : '—' }}</dd>
+        </li>
+    </ul>
+</div>

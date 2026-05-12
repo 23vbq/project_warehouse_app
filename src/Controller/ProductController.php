@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Form\ProductType;
+use App\Repository\OperationLineRepository;
 use App\Repository\ProductRepository;
 use App\Repository\StockRepository;
 use App\Traits\TurboTrait;
@@ -69,6 +70,39 @@ class ProductController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}', name: 'app_product_show', requirements: ['id' => '\d+'])]
+    public function show(Product $product, StockRepository $stockRepository): Response
+    {
+        $stocks = $stockRepository->findByProduct($product->getId());
+
+        return $this->render('product/show.html.twig', [
+            'product' => $product,
+            'stocks' => $stocks,
+        ]);
+    }
+
+    #[Route('/{id}/movements', name: 'app_product_movements', requirements: ['id' => '\d+'])]
+    public function movements(
+        Request $request,
+        Product $product,
+        OperationLineRepository $operationLineRepository,
+    ): Response {
+        if (!$request->headers->has('Turbo-Frame')) {
+            return $this->redirectToRoute('app_product_show', ['id' => $product->getId()]);
+        }
+
+        $qb = $operationLineRepository->createByProductQueryBuilder($product);
+
+        $pager = new Pagerfanta(new QueryAdapter($qb));
+        $pager->setMaxPerPage(15);
+        $pager->setCurrentPage(max(1, $request->query->getInt('page', 1)));
+
+        return $this->render('product/_partials/show_movements.html.twig', [
+            'product' => $product,
+            'pager' => $pager,
+        ]);
+    }
+
     #[Route('/new', name: 'app_product_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
     public function new(Request $request, EntityManagerInterface $em): Response
@@ -114,6 +148,8 @@ class ProductController extends AbstractController
             return $this->turboRedirectToRoute($request, 'app_product_index');
         }
 
+        $returnTo = $request->query->get('return', 'index');
+
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
@@ -123,12 +159,17 @@ class ProductController extends AbstractController
 
             $this->addFlash('success', sprintf('Zmiany w produkcie "%s" zostały zapisane.', $product->getName()));
 
+            if ('show' === $returnTo) {
+                return $this->turboRedirectToRoute($request, 'app_product_show', ['id' => $product->getId()]);
+            }
+
             return $this->turboRedirectToRoute($request, 'app_product_index');
         }
 
         return $this->render('product/edit.html.twig', [
             'form' => $form,
             'product' => $product,
+            'return' => $returnTo,
         ]);
     }
 
