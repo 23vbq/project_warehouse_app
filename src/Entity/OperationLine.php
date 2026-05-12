@@ -47,7 +47,7 @@ class OperationLine
         return $this->operation;
     }
 
-    public function setOperation(Operation $operation): static
+    public function setOperation(?Operation $operation): static
     {
         $this->operation = $operation;
 
