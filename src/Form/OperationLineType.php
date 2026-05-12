@@ -36,6 +36,7 @@ class OperationLineType extends AbstractType
 
         $builder->add('quantity', NumberType::class, [
             'scale' => OperationLine::QUANTITY_SCALE,
+            'input' => 'string',
             'constraints' => [
                 new NotBlank(message: 'Ilość jest wymagana.'),
                 new Positive(message: 'Ilość musi być większa od zero.'),
@@ -46,6 +47,7 @@ class OperationLineType extends AbstractType
             $builder->add('unitPrice', NumberType::class, [
                 'required' => false,
                 'scale' => OperationLine::PRICE_SCALE,
+                'input' => 'string',
                 'constraints' => [
                     new Positive(message: 'Cena musi być większa od zera.'),
                 ],
