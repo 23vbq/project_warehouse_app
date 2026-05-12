@@ -1,0 +1,154 @@
+{% extends 'layout/app.html.twig' %}
+
+{% block title %}{{ pageTitle }} — RimFlowMS{% endblock %}
+
+{% block breadcrumb %}
+    <span>Magazyn</span>
+    <span class="text-content-700">/</span>
+    <a href="{{ path('app_operation_index') }}" class="hover:text-content-300 transition-colors">Operacje</a>
+    <span class="text-content-700">/</span>
+    <span class="text-content-50 font-medium">{{ pageTitle }}</span>
+{% endblock %}
+
+{% macro field(f, label, span) %}
+    <div class="{{ span ?? 'col-span-1' }}">
+        {{ form_label(f, label, {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (f.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
+        <span class="input-wrap {{ f.vars.errors|length ? 'input-wrap--error' }}">
+            {{ form_widget(f) }}
+        </span>
+        {% for error in f.vars.errors %}
+            <p class="text-xs mt-1.5 text-danger-500">{{ error.message }}</p>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% block content %}
+<turbo-frame id="page_content" data-turbo-action="advance">
+{{ form_start(form, {action: formAction, attr: {novalidate: 'novalidate', autocomplete: 'off'}}) }}
+
+<div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+        <a
+            href="{{ cancelUrl }}"
+            class="w-[34px] h-[34px] rounded-lg bg-surface-800 border border-stroke flex items-center justify-center text-content-500 hover:text-content-50 hover:bg-surface-700 transition-colors"
+        >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+        </a>
+        <div>
+            <h1 class="text-[22px] font-semibold tracking-tight text-content-50">{{ pageTitle }}</h1>
+        </div>
+    </div>
+    <div class="flex items-center gap-2">
+        <a
+            href="{{ cancelUrl }}"
+            class="flex items-center h-[34px] px-4 text-[13px] font-medium text-danger-500 border border-danger-500/30 rounded-lg hover:bg-danger-500/10 transition-colors"
+        >
+            Anuluj
+        </a>
+        <button
+            type="submit"
+            class="flex items-center gap-2 h-[34px] px-4 text-[13px] font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-400 transition-colors cursor-pointer"
+        >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v14a2 2 0 0 1-2 2z"></path><path d="M17 21v-8H7v8M7 3v5h8"></path></svg>
+            Zapisz dokument
+        </button>
+    </div>
+</div>
+
+<div class="flex flex-col gap-4">
+
+    {# Summary card #}
+    <div class="bg-surface-900 border border-stroke rounded-xl p-4">
+        <dl class="flex items-center gap-8 text-[13px]">
+            <div class="flex items-center gap-2">
+                <dt class="text-content-500">Typ dokumentu</dt>
+                <dd>{{ include('operation/_partials/type.html.twig', {operation: relocation}) }}</dd>
+            </div>
+            <div class="flex items-center gap-2">
+                <dt class="text-content-500">Status</dt>
+                <dd>{{ include('operation/_partials/status.html.twig', {operation: relocation}) }}</dd>
+            </div>
+            <div class="flex items-center gap-2">
+                <dt class="text-content-500">Utworzono</dt>
+                <dd class="text-content-300">{{ relocation.createdAt|date('d.m.Y H:i') }}</dd>
+            </div>
+        </dl>
+    </div>
+
+        {# Header card #}
+        <div class="bg-surface-900 border border-stroke rounded-xl p-5">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="text-[10.5px] uppercase tracking-[0.08em] font-semibold text-content-700">Dane dokumentu</span>
+                <span class="flex-1 h-px bg-stroke"></span>
+            </div>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-4">
+                {{ _self.field(form.documentDate, 'Data dokumentu') }}
+                {{ _self.field(form.reason, 'Powód przesunięcia') }}
+            </div>
+        </div>
+
+        {# Lines card #}
+        <div
+            class="bg-surface-900 border border-stroke rounded-xl overflow-hidden"
+            data-controller="form-collection"
+        >
+            <template data-form-collection-target="prototype">
+                {{ include('operation/_partials/relocation_form_line.html.twig', {line: form.operationLines.vars.prototype, loop: {index: null}}) }}
+            </template>
+
+            <div class="flex items-center justify-between px-5 py-4 border-b border-stroke">
+                <div>
+                    <div class="text-[14px] font-semibold text-content-50">Pozycje dokumentu</div>
+                    <div class="text-[12px] text-content-500 mt-0.5">Produkty przesuwane między lokalizacjami</div>
+                </div>
+                <button
+                    type="button"
+                    data-action="click->form-collection#addLine"
+                    class="flex items-center gap-1.5 h-[30px] px-3 text-[12.5px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors cursor-pointer"
+                >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+                    Dodaj pozycję
+                </button>
+            </div>
+
+            <table class="w-full text-[13px] table-fixed">
+                <colgroup>
+                    <col class="w-8">
+                    <col class="w-[28%]">
+                    <col class="w-[22%]">
+                    <col class="w-[22%]">
+                    <col class="w-[14%]">
+                    <col class="w-10">
+                </colgroup>
+                <thead>
+                    <tr class="border-b border-stroke bg-surface-800/50">
+                        <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-700">#</th>
+                        <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Produkt</th>
+                        <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Skąd</th>
+                        <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Dokąd</th>
+                        <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Ilość</th>
+                        <th class="px-3 py-2.5"></th>
+                    </tr>
+                </thead>
+                <tbody data-form-collection-target="list">
+                {% for line in form.operationLines %}
+                    {{ include('operation/_partials/relocation_form_line.html.twig', {line: line, loop: loop}) }}
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {% set linesErrors = form.operationLines.vars.errors %}
+            {% if linesErrors|length %}
+                <div class="px-5 py-3 text-left text-danger-500 text-[13px]">
+                    {{ linesErrors[0].message }}
+                </div>
+            {% endif %}
+            {% do form.operationLines.setRendered() %}
+
+        </div>
+
+</div>
+
+{{ form_end(form) }}
+</turbo-frame>
+{% endblock %}

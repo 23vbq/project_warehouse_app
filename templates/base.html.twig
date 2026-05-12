@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}RimFlowMS{% endblock %}</title>
         <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,{{ source('svg/app_icon.svg')|url_encode }}">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,5 +24,8 @@
     </head>
     <body class="h-screen overflow-hidden">
         {% block body %}{% endblock %}
+        <div class="fixed bottom-5 right-5 z-[999] flex flex-col gap-2 items-end">
+            {{ include('layout/_partials/toasts.html.twig') }}
+        </div>
     </body>
 </html>

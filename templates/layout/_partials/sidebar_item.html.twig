@@ -1,7 +1,6 @@
-{% if isSubitem is not defined %}
-    {% set isSubitem = false %}
-{% endif %}
-{% set isActive = currentRoute ? currentRoute == route : false %}
+{% set isSubitem = isSubitem is defined and isSubitem %}
+{% set isActive = currentUrl matches urlPattern %}
+
 <a
     href="{{ path }}"
     class="flex items-center gap-2.5 px-2.5 py-2 my-px rounded-md text-[13.5px] w-full border no-underline transition-colors duration-100
@@ -15,7 +14,7 @@
 >
     <div class="w-4 h-4 shrink-0">{{ svgContent|raw }}</div>
     {{ label }}
-    {% if alert is defined %}
+    {% if alert is defined and alert %}
         <span
             class="ml-auto text-xs font-medium px-2 py-0.5 rounded-full
             {% if isActive %}

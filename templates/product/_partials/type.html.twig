@@ -1,0 +1,21 @@
+{% if product.type == constant('App\\Enum\\ProductType::FINISHED') %}
+    <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-violet-500/10 text-violet-400 border-violet-500/25">
+        <span class="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0"></span>
+        {{ product.type.label() }}
+    </span>
+{% elseif product.type == constant('App\\Enum\\ProductType::SEMI') %}
+    <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-amber-500/10 text-amber-400 border-amber-500/25">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
+        {{ product.type.label() }}
+    </span>
+{% elseif product.type == constant('App\\Enum\\ProductType::RAW') %}
+    <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-teal-500/10 text-teal-400 border-teal-500/25">
+        <span class="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0"></span>
+        {{ product.type.label() }}
+    </span>
+{% elseif product.type == constant('App\\Enum\\ProductType::CONSUMABLES') %}
+    <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-400 border-emerald-500/25">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+        {{ product.type.label() }}
+    </span>
+{% endif %}

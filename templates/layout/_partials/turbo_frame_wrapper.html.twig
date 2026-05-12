@@ -1,0 +1,13 @@
+<turbo-frame
+    id="{{ turboFrameId }}"
+    {% if turboFrameUrl|default(null) %}
+        src="{{ turboFrameUrl }}"
+        loading="lazy"
+    {% endif %}
+>
+    {% if content|default(null) %}
+        {{ content|raw }}
+    {% else %}
+        {{ include('layout/_partials/loader.html.twig') }}
+    {% endif %}
+</turbo-frame>

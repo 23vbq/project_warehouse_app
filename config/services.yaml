@@ -19,5 +19,30 @@ services:
     App\:
         resource: '../src/'
 
+    # Pagerfanta
+    Pagerfanta\RouteGenerator\RouteGeneratorFactoryInterface:
+        alias: App\Pagerfanta\RequestRouteGeneratorFactory
+
+    Pagerfanta\Twig\View\TwigView:
+        arguments:
+            $defaultTemplate: 'pagerfanta/rimflow.html.twig'
+
+    Pagerfanta\View\ViewFactory:
+        calls:
+            - [set, ['default', '@Pagerfanta\Twig\View\TwigView']]
+
+    Pagerfanta\View\ViewFactoryInterface:
+        alias: Pagerfanta\View\ViewFactory
+
+    Pagerfanta\Twig\Extension\PagerfantaExtension:
+        tags:
+            - { name: twig.extension }
+
+    Pagerfanta\Twig\Extension\PagerfantaRuntime:
+        arguments:
+            $defaultView: 'default'
+        tags:
+            - { name: twig.runtime }
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

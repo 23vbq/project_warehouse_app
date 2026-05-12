@@ -21,134 +21,141 @@
         <div class="mb-[18px]">
             <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">Magazyn</p>
 
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: 'app_dashboard',
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/dashboard~',
                 path: path('app_dashboard'),
                 label: 'Pulpit',
-                svgContent: source('svg/menu/dashboard.svg')
-            } %}
+                svgContent: source('svg/menu/dashboard.svg'),
+            }) }}
 
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: null,
-                path: '#',
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/products(\\?(?!.*\\btype=)|$)~',
+                path: path('app_product_index'),
                 label: 'Produkty',
                 svgContent: source('svg/menu/products.svg'),
-                alert: alerts['products'],
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: null,
-                path: '#',
+                alert: alerts.products,
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/products(\\?.*\\btype=finished\\b|/new/finished)~',
+                path: path('app_product_index', {type: 'finished'}),
                 label: 'Felgi gotowe',
                 svgContent: source('svg/menu/finished-wheels.svg'),
                 isSubitem: true,
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: null,
-                path: '#',
+                alert: alerts.finishedProducts,
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/products(\\?.*\\btype=semi\\b|/new/semi)~',
+                path: path('app_product_index', {type: 'semi'}),
                 label: 'Półprodukty',
                 svgContent: source('svg/menu/semiproducts.svg'),
                 isSubitem: true,
-                alert: alerts['semiproducts'],
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: null,
-                path: '#',
+                alert: alerts.semiProducts,
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/products(\\?.*\\btype=raw\\b|/new/raw)~',
+                path: path('app_product_index', {type: 'raw'}),
                 label: 'Surowce',
                 svgContent: source('svg/menu/raw-materials.svg'),
                 isSubitem: true,
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: null,
-                path: '#',
+                alert: alerts.rawProducts,
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/products(\\?.*\\btype=consumables\\b|/new/consumables)~',
+                path: path('app_product_index', {type: 'consumables'}),
                 label: 'Materiały eksploatacyjne',
                 svgContent: source('svg/menu/consumables.svg'),
                 isSubitem: true,
-            } %}
+                alert: alerts.consumableProducts,
+            }) }}
         </div>
 
         <div class="mb-[18px]">
             <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">Operacje</p>
 
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: null,
-                path: '#',
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/operations(\\?(?!.*\\btype=)|/\\d+|$)~',
+                path: path('app_operation_index'),
                 label: 'Operacje',
-                svgContent: source('svg/menu/operations.svg')
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: null,
-                path: '#',
+                svgContent: source('svg/menu/operations.svg'),
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/operations(\\?.*\\btype=receipt\\b|/new/receipt)~',
+                path: path('app_operation_index', {type: 'receipt'}),
                 label: 'Przyjęcia',
-                svgContent: source('svg/menu/receipts.svg')
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: null,
-                path: '#',
+                svgContent: source('svg/menu/receipts.svg'),
+                isSubitem: true,
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/operations(\\?.*\\btype=release\\b|/new/release)~',
+                path: path('app_operation_index', {type: 'release'}),
                 label: 'Wydania',
-                svgContent: source('svg/menu/issues.svg')
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: null,
-                path: '#',
+                svgContent: source('svg/menu/issues.svg'),
+                isSubitem: true,
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/operations(\\?.*\\btype=relocation\\b|/new/relocation)~',
+                path: path('app_operation_index', {type: 'relocation'}),
                 label: 'Przesunięcia MM',
-                svgContent: source('svg/menu/mm-transfers.svg')
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: null,
+                svgContent: source('svg/menu/mm-transfers.svg'),
+                isSubitem: true,
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/inventory~',
                 path: '#',
                 label: 'Inwentaryzacja',
-                svgContent: source('svg/menu/inventory.svg')
-            } %}
+                svgContent: source('svg/menu/inventory.svg'),
+            }) }}
         </div>
 
         <div class="mb-[18px]">
             <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">Zarządzanie</p>
 
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: null,
-                path: '#',
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/locations~',
+                path: path('app_location_index'),
                 label: 'Lokalizacje',
-                svgContent: source('svg/menu/locations.svg')
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: null,
+                svgContent: source('svg/menu/locations.svg'),
+                alert: alerts.locations,
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/contractors~',
                 path: '#',
                 label: 'Kontrahenci',
-                svgContent: source('svg/menu/contractors.svg')
-            } %}
-            {% include 'layout/_partials/sidebar_item.html.twig' with {
-                currentRoute: currentRoute,
-                route: null,
+                svgContent: source('svg/menu/contractors.svg'),
+            }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/reports~',
                 path: '#',
                 label: 'Raporty',
-                svgContent: source('svg/menu/reports.svg')
-            } %}
+                svgContent: source('svg/menu/reports.svg'),
+            }) }}
         </div>
 
         {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
             <div>
                 <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">System</p>
 
-                {% include 'layout/_partials/sidebar_item.html.twig' with {
-                    currentRoute: currentRoute,
-                    route: null,
+                {{ include('layout/_partials/sidebar_item.html.twig', {
+                    currentUrl: currentUrl,
+                    urlPattern: '~^/settings~',
                     path: '#',
                     label: 'Ustawienia',
-                    svgContent: source('svg/menu/settings.svg')
-                } %}
+                    svgContent: source('svg/menu/settings.svg'),
+                }) }}
             </div>
         {% endif %}
 

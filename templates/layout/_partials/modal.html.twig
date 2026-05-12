@@ -1,0 +1,49 @@
+<div
+    id="{{ elementId }}"
+    tabindex="-1"
+    aria-hidden="true"
+    data-modal-backdrop="static"
+    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full inset-0"
+>
+    <div class="relative p-6 w-full max-w-[760px] max-h-full mx-auto">
+        <div class="relative bg-surface-900 border border-stroke-strong rounded-2xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7)] flex flex-col">
+            <div class="flex items-center justify-between px-[22px] py-[18px] border-b border-stroke shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    {% if icon is defined %}
+                        <div class="w-[34px] h-[34px] rounded-[9px] bg-brand-500/10 border border-brand-500/25 text-brand-400 grid place-items-center shrink-0">
+                            <div class="w-4 h-4">{{ icon|raw }}</div>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h2
+                            id="{{ elementId }}-title"
+                            class="text-[15px] font-semibold tracking-tight text-content-50 m-0"
+                        >{{ title }}</h2>
+                        {% if subtitle is defined %}
+                            <div class="text-[12px] text-content-500 mt-px">{{ subtitle }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    data-modal-hide="{{ elementId }}"
+                    aria-label="Zamknij"
+                    class="w-[30px] h-[30px] rounded-md grid place-items-center text-content-500 hover:bg-surface-800 hover:text-content-50 transition-colors cursor-pointer"
+                >
+                    {{ source('svg/x.svg') }}
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto">
+                <turbo-frame
+                    id="{{ turboFrameId }}"
+                    class="relative block"
+                >
+                    <div class="min-h-[360px]">
+                        {{ include('layout/_partials/loader.html.twig') }}
+                    </div>
+                </turbo-frame>
+            </div>
+        </div>
+    </div>
+</div>

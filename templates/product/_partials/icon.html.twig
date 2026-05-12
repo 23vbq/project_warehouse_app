@@ -1,0 +1,17 @@
+<div class="w-9 h-9 rounded-[10px] bg-surface-800 border border-stroke flex items-center justify-center shrink-0
+    {% if product.type == constant('App\\Enum\\ProductType::FINISHED') %}text-violet-400
+    {% elseif product.type == constant('App\\Enum\\ProductType::SEMI') %}text-amber-400
+    {% elseif product.type == constant('App\\Enum\\ProductType::RAW') %}text-teal-400
+    {% elseif product.type == constant('App\\Enum\\ProductType::CONSUMABLES') %}text-emerald-400{% endif %}
+    "
+>
+    <div class="w-5 h-5">
+        {% if product.type == constant('App\\Enum\\ProductType::FINISHED') or product.type == constant('App\\Enum\\ProductType::SEMI') %}
+            {{ source('svg/products/wheel.svg') }}
+        {% elseif product.type == constant('App\\Enum\\ProductType::RAW') %}
+            {{ source('svg/products/raw.svg') }}
+        {% elseif product.type == constant('App\\Enum\\ProductType::CONSUMABLES') %}
+            {{ source('svg/products/consumable.svg') }}
+        {% endif %}
+    </div>
+</div>
