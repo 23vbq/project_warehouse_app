@@ -5,7 +5,6 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.4",
-        "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "beberlei/doctrineextensions": "^1.5",
