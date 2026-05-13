@@ -4,6 +4,9 @@ A warehouse management system for tracking inventory, processing warehouse docum
 
 > Frontend designed with [Claude Design](https://claude.ai/design).
 
+<img width="1866" height="936" alt="image" src="https://github.com/user-attachments/assets/8ea9e452-6ede-46c4-855c-006f09ecd4c0" />
+
+
 ---
 
 ## Features
