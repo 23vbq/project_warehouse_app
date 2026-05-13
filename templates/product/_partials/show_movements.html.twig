@@ -3,42 +3,38 @@
 <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
     <div class="px-5 py-4 border-b border-stroke">
         <div class="text-[14px] font-semibold text-content-50">Historia ruchów</div>
-        <div class="text-[12px] text-content-500 mt-0.5">{{ pager.nbResults }} {{ pager.nbResults == 1 ? 'ruch' : (pager.nbResults in [2, 3, 4] ? 'ruchy' : 'ruchów') }}</div>
     </div>
 
-    {% if pager.nbResults == 0 %}
-        <p class="px-5 py-4 text-[13px] text-content-500">Brak historii ruchów dla tego produktu.</p>
-    {% else %}
-        <table class="w-full text-[13px] table-fixed">
-            <colgroup>
-                <col class="w-8">
-                <col class="w-[18%]">
-                <col class="w-[8%]">
-                <col class="w-[11%]">
-                <col class="w-[20%]">
-                <col class="w-[16%]">
-                <col class="w-[13%]">
-            </colgroup>
-            <thead>
-                <tr class="border-b border-stroke bg-surface-800/50">
-                    <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-700">#</th>
-                    <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Dokument</th>
-                    <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Typ</th>
-                    <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Data</th>
-                    <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Lokalizacja</th>
-                    <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Operator</th>
-                    <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Ilość</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-stroke">
+    <table class="w-full text-[13px] table-fixed">
+        <colgroup>
+            <col class="w-8">
+            <col class="w-[20%]">
+            <col class="w-[10%]">
+            <col class="w-[12%]">
+            <col class="w-[22%]">
+            <col class="w-[19%]">
+            <col class="w-[14%]">
+        </colgroup>
+        <thead>
+            <tr class="border-b border-stroke bg-surface-800/50">
+                <th class="px-2 py-2.5 text-left text-[11px] font-medium text-content-700">#</th>
+                <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Dokument</th>
+                <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Typ</th>
+                <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Data</th>
+                <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Lokalizacja</th>
+                <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Operator</th>
+                <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Ilość</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-stroke">
             {% for line in pager %}
                 {% set operation = line.operation %}
                 <tr class="hover:bg-surface-800/30 transition-colors">
-                    <td class="px-3 py-3 text-content-700 text-[11px]">{{ pager.currentPageOffsetStart + loop.index0 }}</td>
+                    <td class="px-2 py-3 text-content-700 text-[11px]">{{ pager.currentPageOffsetStart + loop.index0 }}</td>
                     <td class="px-3 py-3">
                         <a
                             href="{{ path('app_operation_show', {id: operation.id}) }}"
-                            class="font-mono text-[12.5px] text-content-300 hover:text-content-50 transition-colors"
+                            class="font-mono font-medium text-content-50 underline hover:text-content-300 transition-colors"
                         >{{ operation.fullNumber }}</a>
                     </td>
                     <td class="px-3 py-3">
@@ -63,23 +59,26 @@
                     <td class="px-3 py-3 text-[12px] text-content-500 truncate">
                         {{ operation.createdBy ? operation.createdBy.getUserIdentifier() : '—' }}
                     </td>
-                    <td class="px-3 py-3 text-right font-mono text-[12.5px] tabular-nums">
+                    <td class="px-3 py-3 text-right tabular-nums">
                         {% if line.locationFrom and not line.locationTo %}
-                            <span class="text-danger-500">-{{ line.quantity|number_format(3, ',', ' ') }}</span>
+                            <span class="font-mono text-[12.5px] text-violet-400">−{{ line.quantity|number_format(3, ',', ' ') }}</span>
                         {% elseif line.locationTo and not line.locationFrom %}
-                            <span class="text-emerald-400">+{{ line.quantity|number_format(3, ',', ' ') }}</span>
+                            <span class="font-mono text-[12.5px] text-emerald-400">+{{ line.quantity|number_format(3, ',', ' ') }}</span>
                         {% else %}
-                            <span class="text-amber-400">{{ line.quantity|number_format(3, ',', ' ') }}</span>
+                            <span class="font-mono text-[12.5px] text-amber-400">{{ line.quantity|number_format(3, ',', ' ') }}</span>
                         {% endif %}
-                        <span class="text-content-600">{{ product.unit }}</span>
+                        <span class="text-content-500">{{ product.unit }}</span>
                     </td>
                 </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" class="px-4 py-6 text-center text-[13px] text-content-500">Brak historii ruchów dla tego produktu.</td>
+                </tr>
             {% endfor %}
-            </tbody>
-        </table>
+        </tbody>
+    </table>
 
-        {{ pagerfanta(pager) }}
-    {% endif %}
+    {{ pagerfanta(pager) }}
 </div>
 
 </turbo-frame>
