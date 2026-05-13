@@ -98,8 +98,8 @@ class ProductController extends AbstractController
             'totalReleased' => $totalReleased,
             'receiptsCount' => (int) ($periodStats['receiptsCount'] ?? 0),
             'releasesCount' => (int) ($periodStats['releasesCount'] ?? 0),
-            'dailyAvg'      => $dailyAvg,
-            'daysOfStock'   => $dailyAvg > 0 ? (int) round($currentStock / $dailyAvg) : null,
+            'dailyAvg' => $dailyAvg,
+            'daysOfStock' => $dailyAvg > 0 ? (int) round($currentStock / $dailyAvg) : null,
         ];
 
         return $this->render('product/show.html.twig', [
@@ -128,7 +128,7 @@ class ProductController extends AbstractController
         $data = [];
         $stock = (float) $currentStock;
 
-        for ($i = 30; $i >= 0; $i--) {
+        for ($i = 30; $i >= 0; --$i) {
             $day = (new \DateTimeImmutable("$i days ago"))->format('Y-m-d');
             $labels[$i] = (new \DateTimeImmutable("$i days ago"))->format('d.m');
             $data[$i] = $stock;
