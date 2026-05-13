@@ -81,6 +81,7 @@
 
     <aside>
         {{ include('product/_partials/show_details.html.twig', {product: product}) }}
+        {{ include('product/_partials/show_trend.html.twig', {chart: chart, trendStats: trendStats, product: product}) }}
     </aside>
 
 </div>

@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
 
 #[Route('/products')]
 #[IsGranted('ROLE_USER')]
@@ -71,16 +73,109 @@ class ProductController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_product_show', requirements: ['id' => '\d+'])]
-    public function show(Product $product, StockRepository $stockRepository, ProductRepository $productRepository): Response
-    {
+    public function show(
+        Product $product,
+        StockRepository $stockRepository,
+        ProductRepository $productRepository,
+        OperationLineRepository $operationLineRepository,
+        ChartBuilderInterface $chartBuilder,
+    ): Response {
         $stocks = $stockRepository->findByProduct($product->getId());
         $kpi = $productRepository->getKpiForProduct($product);
+
+        $from = new \DateTimeImmutable('-30 days');
+        $dailyNet = $operationLineRepository->findDailyNetByProduct($product, $from);
+        $periodStats = $operationLineRepository->findPeriodStatsByProduct($product, $from);
+
+        $chart = $this->buildStockTrendChart($chartBuilder, $kpi['totalStock'] ?? '0', $dailyNet, $from);
+
+        $totalReleased = (float) ($periodStats['totalReleased'] ?? 0);
+        $dailyAvg = $totalReleased > 0 ? $totalReleased / 30 : 0;
+        $currentStock = (float) ($kpi['totalStock'] ?? 0);
+
+        $trendStats = [
+            'totalReceived' => (float) ($periodStats['totalReceived'] ?? 0),
+            'totalReleased' => $totalReleased,
+            'receiptsCount' => (int) ($periodStats['receiptsCount'] ?? 0),
+            'releasesCount' => (int) ($periodStats['releasesCount'] ?? 0),
+            'dailyAvg'      => $dailyAvg,
+            'daysOfStock'   => $dailyAvg > 0 ? (int) round($currentStock / $dailyAvg) : null,
+        ];
 
         return $this->render('product/show.html.twig', [
             'product' => $product,
             'stocks' => $stocks,
             'kpi' => $kpi,
+            'chart' => $chart,
+            'trendStats' => $trendStats,
         ]);
+    }
+
+    private function buildStockTrendChart(
+        ChartBuilderInterface $chartBuilder,
+        string $currentStock,
+        array $dailyNet,
+        \DateTimeImmutable $from,
+    ): Chart {
+        // index movements by day
+        $netByDay = [];
+        foreach ($dailyNet as $row) {
+            $netByDay[$row['day']] = (float) $row['netChange'];
+        }
+
+        // build 31-point series (today inclusive) from current stock backwards
+        $labels = [];
+        $data = [];
+        $stock = (float) $currentStock;
+
+        for ($i = 30; $i >= 0; $i--) {
+            $day = (new \DateTimeImmutable("$i days ago"))->format('Y-m-d');
+            $labels[$i] = (new \DateTimeImmutable("$i days ago"))->format('d.m');
+            $data[$i] = $stock;
+            if ($i > 0) {
+                $stock -= $netByDay[$day] ?? 0;
+            }
+        }
+
+        ksort($labels);
+        ksort($data);
+
+        $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
+        $chart->setData([
+            'labels' => array_values($labels),
+            'datasets' => [[
+                'data' => array_values($data),
+                'borderColor' => 'oklch(0.65 0.19 295)',
+                'backgroundColor' => 'oklch(0.65 0.19 295 / 0.08)',
+                'fill' => true,
+                'tension' => 0.3,
+                'pointRadius' => 0,
+                'pointHoverRadius' => 4,
+                'borderWidth' => 1.5,
+            ]],
+        ]);
+        $chart->setOptions([
+            'responsive' => true,
+            'maintainAspectRatio' => false,
+            'plugins' => [
+                'legend' => ['display' => false],
+                'tooltip' => ['mode' => 'index', 'intersect' => false],
+            ],
+            'scales' => [
+                'x' => [
+                    'grid' => ['display' => false],
+                    'ticks' => ['maxTicksLimit' => 6, 'color' => '#5e5e67', 'font' => ['size' => 10]],
+                    'border' => ['display' => false],
+                ],
+                'y' => [
+                    'grid' => ['color' => '#26262c'],
+                    'ticks' => ['color' => '#5e5e67', 'font' => ['size' => 10]],
+                    'border' => ['display' => false],
+                ],
+            ],
+        ]);
+
+        return $chart;
     }
 
     #[Route('/{id}/movements', name: 'app_product_movements', requirements: ['id' => '\d+'])]

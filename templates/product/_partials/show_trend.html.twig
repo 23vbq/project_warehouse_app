@@ -1,0 +1,68 @@
+<div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden mb-3.5">
+    <div class="px-4 py-3 border-b border-stroke">
+        <div class="text-[13px] font-semibold text-content-50">Trend stanu · 30 dni</div>
+    </div>
+    <div class="px-4 pt-3 pb-4">
+        <div style="height: 110px;">
+            {{ render_chart(chart, {'class': 'w-full h-full'}) }}
+        </div>
+    </div>
+
+    <div class="border-t border-stroke grid grid-cols-2">
+
+        {# Przyjęcia 30d #}
+        <div class="px-3.5 py-3 border-r border-b border-stroke">
+            <div class="text-[10.5px] font-semibold text-content-700 uppercase tracking-[0.06em]">Przyjęcia 30d</div>
+            <div class="font-mono text-[16px] font-semibold text-emerald-400 tabular-nums mt-1">
+                +{{ trendStats.totalReceived ? trendStats.totalReceived|number_format(3, ',', ' ') : '0,000' }}
+                <span class="text-[11px] font-medium text-content-500">{{ product.unit }}</span>
+            </div>
+            <div class="text-[11px] text-content-700 mt-0.5">{{ trendStats.receiptsCount }} {{ trendStats.receiptsCount == 1 ? 'dokument' : 'dokumentów' }}</div>
+        </div>
+
+        {# Wydania 30d #}
+        <div class="px-3.5 py-3 border-b border-stroke">
+            <div class="text-[10.5px] font-semibold text-content-700 uppercase tracking-[0.06em]">Wydania 30d</div>
+            <div class="font-mono text-[16px] font-semibold text-violet-400 tabular-nums mt-1">
+                −{{ trendStats.totalReleased ? trendStats.totalReleased|number_format(3, ',', ' ') : '0,000' }}
+                <span class="text-[11px] font-medium text-content-500">{{ product.unit }}</span>
+            </div>
+            <div class="text-[11px] text-content-700 mt-0.5">{{ trendStats.releasesCount }} {{ trendStats.releasesCount == 1 ? 'dokument' : 'dokumentów' }}</div>
+        </div>
+
+        {# Śr. dzienna #}
+        <div class="px-3.5 py-3 border-r border-stroke">
+            <div class="text-[10.5px] font-semibold text-content-700 uppercase tracking-[0.06em]">Śr. dzienna</div>
+            <div class="font-mono text-[16px] font-semibold text-content-50 tabular-nums mt-1">
+                {{ trendStats.dailyAvg > 0 ? trendStats.dailyAvg|number_format(3, ',', ' ') : '0,000' }}
+                <span class="text-[11px] font-medium text-content-500">{{ product.unit }}/d</span>
+            </div>
+            <div class="text-[11px] text-content-700 mt-0.5">na podstawie wydań</div>
+        </div>
+
+        {# Dni zapasu #}
+        {% if trendStats.daysOfStock is null %}
+            {% set dosCls = 'text-content-50' %}
+            {% set dosSub = 'brak rotacji' %}
+        {% elseif trendStats.daysOfStock < 7 %}
+            {% set dosCls = 'text-danger-500' %}
+            {% set dosSub = 'krytycznie' %}
+        {% elseif trendStats.daysOfStock < 30 %}
+            {% set dosCls = 'text-amber-400' %}
+            {% set dosSub = 'do uzupełnienia' %}
+        {% else %}
+            {% set dosCls = 'text-emerald-400' %}
+            {% set dosSub = 'wystarczy' %}
+        {% endif %}
+
+        <div class="px-3.5 py-3">
+            <div class="text-[10.5px] font-semibold text-content-700 uppercase tracking-[0.06em]">Dni zapasu</div>
+            <div class="font-mono text-[16px] font-semibold tabular-nums mt-1 {{ dosCls }}">
+                {{ trendStats.daysOfStock ?? '∞' }}
+                {% if trendStats.daysOfStock is not null %}<span class="text-[11px] font-medium text-content-500">d</span>{% endif %}
+            </div>
+            <div class="text-[11px] text-content-700 mt-0.5">{{ dosSub }}</div>
+        </div>
+
+    </div>
+</div>
