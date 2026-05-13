@@ -71,13 +71,15 @@ class ProductController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_product_show', requirements: ['id' => '\d+'])]
-    public function show(Product $product, StockRepository $stockRepository): Response
+    public function show(Product $product, StockRepository $stockRepository, ProductRepository $productRepository): Response
     {
         $stocks = $stockRepository->findByProduct($product->getId());
+        $kpi = $productRepository->getKpiForProduct($product);
 
         return $this->render('product/show.html.twig', [
             'product' => $product,
             'stocks' => $stocks,
+            'kpi' => $kpi,
         ]);
     }
 

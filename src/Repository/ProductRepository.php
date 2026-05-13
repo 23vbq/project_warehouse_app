@@ -136,4 +136,20 @@ class ProductRepository extends ServiceEntityRepository
         return $qb->getQuery()
             ->getResult();
     }
+
+    public function getKpiForProduct(Product $product): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select(
+                'SUM(s.quantity) as totalStock',
+                'SUM(s.quantity * p.unitPrice) as totalValue',
+                'COUNT(DISTINCT s.location) as locationCount'
+            )
+            ->leftJoin('p.stocks', 's')
+            ->where('p.id = :productId')
+            ->setParameter('productId', $product->getId())
+            ->groupBy('p.id')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
