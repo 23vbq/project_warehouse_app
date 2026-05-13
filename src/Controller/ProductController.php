@@ -123,18 +123,17 @@ class ProductController extends AbstractController
             $netByDay[$row['day']] = (float) $row['netChange'];
         }
 
-        // build 31-point series (today inclusive) from current stock backwards
+        // build 31-point series: index 0 = 30 days ago, index 30 = today
         $labels = [];
         $data = [];
         $stock = (float) $currentStock;
 
         for ($i = 30; $i >= 0; --$i) {
-            $day = (new \DateTimeImmutable("$i days ago"))->format('Y-m-d');
-            $labels[$i] = (new \DateTimeImmutable("$i days ago"))->format('d.m');
+            $daysAgo = 30 - $i;
+            $day = (new \DateTimeImmutable("$daysAgo days ago"))->format('Y-m-d');
+            $labels[$i] = (new \DateTimeImmutable("$daysAgo days ago"))->format('d.m');
             $data[$i] = $stock;
-            if ($i > 0) {
-                $stock -= $netByDay[$day] ?? 0;
-            }
+            $stock -= $netByDay[$day] ?? 0;
         }
 
         ksort($labels);
