@@ -181,7 +181,7 @@
                     </td>
                 </tr>
                 <tr id="stock-product-{{ product.id }}" class="hidden bg-surface-800/30">
-                    <td colspan="9" class="p-0">
+                    <td colspan="100%" class="p-0">
                         <turbo-frame id="product-stock-details-{{ product.id }}" class="relative block min-h-[60px]">
                             {{ include('layout/_partials/loader.html.twig') }}
                         </turbo-frame>
@@ -189,7 +189,7 @@
                 </tr>
         {% else %}
             <tr>
-                <td colspan="9" class="px-4 py-6 text-center text-content-500">Brak produktów.</td>
+                <td colspan="100%" class="px-4 py-6 text-center text-content-500">Brak produktów.</td>
             </tr>
         {% endfor %}
         </tbody>
