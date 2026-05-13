@@ -1,0 +1,63 @@
+{% set stockPct = 0 %}
+{% set stockClass = 'ok' %}
+{% if product.minStockLevel %}
+    {% set totalStockNum = kpi.totalStock ?? 0 %}
+    {% set stockPct = min(totalStockNum / product.minStockLevel * 100, 100) %}
+    {% if totalStockNum < product.minStockLevel %}
+        {% set stockClass = 'crit' %}
+    {% elseif totalStockNum < product.minStockLevel * 1.5 %}
+        {% set stockClass = 'warn' %}
+    {% endif %}
+{% endif %}
+
+<div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden mb-3.5 grid grid-cols-3">
+
+    {# Stan łączny #}
+    <div class="px-4 py-4 border-r border-stroke">
+        <div class="flex items-center gap-1.5 text-[10.5px] font-semibold text-content-700 uppercase tracking-[0.06em]">
+            <div class="w-3.5 h-3.5 shrink-0">{{ source('svg/menu/consumables.svg') }}</div>
+            Stan łączny
+        </div>
+        <div class="font-mono text-[22px] font-semibold text-content-50 tabular-nums leading-none mt-2">
+            {{ kpi.totalStock ? kpi.totalStock|number_format(3, ',', ' ') : '0,000' }}<span class="text-[12px] font-medium text-content-500 ml-1">{{ product.unit }}</span>
+        </div>
+        {% if product.minStockLevel %}
+            <div class="text-[11.5px] text-content-700 mt-1.5">
+                min. {{ product.minStockLevel|number_format(3, ',', ' ') }} {{ product.unit }}
+                · próg <span class="{{ stockClass == 'crit' ? 'text-danger-500' : (stockClass == 'warn' ? 'text-amber-400' : 'text-emerald-400') }}">{{ stockClass == 'crit' ? 'krytyczny' : (stockClass == 'warn' ? 'niski' : 'OK') }}</span>
+            </div>
+            <div class="mt-2.5 h-1 bg-surface-700 rounded-full overflow-hidden">
+                <div class="h-full rounded-full {{ stockClass == 'crit' ? 'bg-danger-500' : (stockClass == 'warn' ? 'bg-amber-400' : 'bg-emerald-400') }}" style="width: {{ stockPct }}%"></div>
+            </div>
+        {% else %}
+            <div class="text-[11.5px] text-content-700 mt-1.5">brak progu minimalnego</div>
+        {% endif %}
+    </div>
+
+    {# Wartość magazynu #}
+    <div class="px-4 py-4 border-r border-stroke">
+        <div class="flex items-center gap-1.5 text-[10.5px] font-semibold text-content-700 uppercase tracking-[0.06em]">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            Wartość magazynu
+        </div>
+        <div class="font-mono text-[22px] font-semibold text-content-50 tabular-nums leading-none mt-2">
+            {{ kpi.totalValue ? kpi.totalValue|number_format(2, ',', ' ') : '0,00' }}<span class="text-[12px] font-medium text-content-500 ml-1">PLN</span>
+        </div>
+        <div class="text-[11.5px] text-content-700 mt-1.5">
+            cena jedn. <span class="font-mono text-content-500">{{ product.unitPrice|number_format(2, ',', ' ') }} PLN</span>
+        </div>
+    </div>
+
+    {# Lokalizacje #}
+    <div class="px-4 py-4 border-r border-stroke">
+        <div class="flex items-center gap-1.5 text-[10.5px] font-semibold text-content-700 uppercase tracking-[0.06em]">
+            <div class="w-3.5 h-3.5 shrink-0">{{ source('svg/menu/locations.svg') }}</div>
+            Lokalizacje
+        </div>
+        <div class="font-mono text-[22px] font-semibold text-content-50 tabular-nums leading-none mt-2">
+            {{ kpi.locationCount ?? 0 }}<span class="text-[12px] font-medium text-content-500 ml-1">{{ kpi.locationCount == 1 ? 'miejsce' : (kpi.locationCount < 5 ? 'miejsca' : 'miejsc') }}</span>
+        </div>
+        <div class="text-[11.5px] text-content-700 mt-1.5">w magazynie</div>
+    </div>
+
+</div>

@@ -1,6 +1,6 @@
 <turbo-frame id="product_edit">
 
-{{ form_start(form, {action: path('app_product_edit', {id: product.id}), attr: {class: 'flex flex-col', novalidate: 'novalidate', autocomplete: 'off'}}) }}
+{{ form_start(form, {action: path('app_product_edit', {id: product.id, return: return ?? null}), attr: {class: 'flex flex-col', novalidate: 'novalidate', autocomplete: 'off'}}) }}
 
 {% set dotColors = {
     finished: 'bg-violet-400',

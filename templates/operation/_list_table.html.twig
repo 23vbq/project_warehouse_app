@@ -105,7 +105,7 @@
                 </td>
             </tr>
             <tr id="operation-lines-{{ operation.id }}" class="hidden bg-surface-800/30">
-                <td colspan="7" class="p-0">
+                <td colspan="100%" class="p-0">
                     <turbo-frame id="operation-lines-details-{{ operation.id }}" class="relative block min-h-[60px]">
                         {{ include('layout/_partials/loader.html.twig') }}
                     </turbo-frame>
@@ -113,7 +113,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="7" class="px-4 py-6 text-center text-content-500">Brak operacji.</td>
+                <td colspan="100%" class="px-4 py-6 text-center text-content-500">Brak operacji.</td>
             </tr>
         {% endfor %}
         </tbody>
