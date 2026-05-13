@@ -44,12 +44,13 @@ class OperationLineRepository extends ServiceEntityRepository
             ->select(
                 'SUM(CASE WHEN ol.locationTo IS NOT NULL AND ol.locationFrom IS NULL THEN ol.quantity ELSE 0 END) as totalReceived',
                 'SUM(CASE WHEN ol.locationFrom IS NOT NULL AND ol.locationTo IS NULL THEN ol.quantity ELSE 0 END) as totalReleased',
-                'COUNT(DISTINCT CASE WHEN ol.locationTo IS NOT NULL AND ol.locationFrom IS NULL THEN o.id ELSE NULL END) as receiptsCount',
-                'COUNT(DISTINCT CASE WHEN ol.locationFrom IS NOT NULL AND ol.locationTo IS NULL THEN o.id ELSE NULL END) as releasesCount'
+                'COUNT(DISTINCT CASE WHEN ol.locationTo IS NOT NULL AND ol.locationFrom IS NULL THEN o.id ELSE :null END) as receiptsCount',
+                'COUNT(DISTINCT CASE WHEN ol.locationFrom IS NOT NULL AND ol.locationTo IS NULL THEN o.id ELSE :null END) as releasesCount'
             )
             ->innerJoin('ol.operation', 'o')
             ->where('ol.product = :product')
             ->andWhere('o.documentDate >= :from')
+            ->setParameter('null', null)
             ->setParameter('product', $product)
             ->setParameter('from', $from)
             ->getQuery()
