@@ -21,7 +21,7 @@
                 {% for stock in stocks %}
                     <tr>
                         <td class="px-4 py-2 font-mono text-content-50">
-                            <a href="{{ path('app_location_index', {query: stock.location.code}) }}" class="underline hover:text-content-300 transition-colors">{{ stock.location.code }}</a>
+                            <a href="{{ path('app_location_index', {query: stock.location.code}) }}" class="font-medium underline hover:text-content-300 transition-colors">{{ stock.location.code }}</a>
                         </td>
                         <td class="px-4 py-2 text-content-500 truncate">{{ stock.location.name ?: '—' }}</td>
                         <td class="px-4 py-2 text-right font-mono text-content-300">

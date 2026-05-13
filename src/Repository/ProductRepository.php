@@ -137,7 +137,7 @@ class ProductRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getKpiForProduct(Product $product): array
+    public function getKpiQueryBuilder(): QueryBuilder
     {
         return $this->createQueryBuilder('p')
             ->select(
@@ -145,7 +145,12 @@ class ProductRepository extends ServiceEntityRepository
                 'SUM(s.quantity * p.unitPrice) as totalValue',
                 'COUNT(DISTINCT s.location) as locationCount'
             )
-            ->leftJoin('p.stocks', 's')
+            ->leftJoin('p.stocks', 's');
+    }
+
+    public function getKpiForProduct(Product $product): array
+    {
+        return $this->getKpiQueryBuilder()
             ->where('p.id = :productId')
             ->setParameter('productId', $product->getId())
             ->groupBy('p.id')
