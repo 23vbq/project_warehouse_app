@@ -40,6 +40,7 @@ class DashboardController extends AbstractController
             'movementsChart'   => $movements['chart'],
             'movementStats'    => $movements['stats'],
             'recentOperations' => $analytics->getRecentOperations(),
+            'locationHeatmap'  => $analytics->getLocationHeatmap(),
         ]);
     }
 }

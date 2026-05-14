@@ -76,4 +76,18 @@ class LocationRepository extends ServiceEntityRepository
         return $qb->getQuery()
             ->getResult();
     }
+
+    public function getStockTotalsByLocation(): array
+    {
+        $qb = $this->createQueryBuilder('l')
+            ->select('l.code', 'l.name', 'COALESCE(SUM(s.quantity), 0) as total')
+            ->leftJoin('l.stocks', 's')
+            ->groupBy('l.id')
+            ->orderBy('l.code', 'ASC');
+
+        $this->addActiveFilter($qb, 'l');
+        
+        return $qb->getQuery()
+            ->getResult();
+    }
 }

@@ -76,6 +76,8 @@ class OperationRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('o')
             ->leftJoin('o.createdBy', 'u')
             ->orderBy('o.createdAt', 'DESC')
+            ->where('o.status != :draftStatus')
+            ->setParameter('draftStatus', 'draft')
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();

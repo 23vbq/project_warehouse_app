@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Repository\LocationRepository;
 use App\Repository\OperationLineRepository;
 use App\Repository\OperationRepository;
 use App\Repository\ProductRepository;
@@ -14,6 +15,7 @@ class DashboardAnalyticsService
         private readonly ProductRepository $productRepository,
         private readonly OperationRepository $operationRepository,
         private readonly OperationLineRepository $operationLineRepository,
+        private readonly LocationRepository $locationRepository,
         private readonly ChartBuilderInterface $chartBuilder,
     ) {
     }
@@ -37,6 +39,30 @@ class DashboardAnalyticsService
     public function getRecentOperations(int $limit = 8): array
     {
         return $this->operationRepository->findRecent($limit);
+    }
+
+    public function getLocationHeatmap(): array
+    {
+        $rows = $this->locationRepository->getStockTotalsByLocation();
+
+        if (empty($rows)) {
+            return [];
+        }
+
+        $max = max(array_map(fn ($r) => (float) $r['total'], $rows));
+
+        return array_map(function (array $row) use ($max) {
+            $opacity = $max > 0
+                ? round((float) $row['total'] / $max, 3)
+                : 0.0;
+
+            return [
+                'code'    => $row['code'],
+                'name'    => $row['name'],
+                'total'   => $row['total'],
+                'opacity' => $opacity,
+            ];
+        }, $rows);
     }
 
     public function getMovementsChart(\DateTimeImmutable $from): Chart
