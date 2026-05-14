@@ -57,9 +57,9 @@ class DashboardAnalyticsService
                 : 0.0;
 
             return [
-                'code'    => $row['code'],
-                'name'    => $row['name'],
-                'total'   => $row['total'],
+                'code' => $row['code'],
+                'name' => $row['name'],
+                'total' => $row['total'],
                 'opacity' => $opacity,
             ];
         }, $rows);

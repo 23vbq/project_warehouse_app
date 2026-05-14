@@ -86,7 +86,7 @@ class LocationRepository extends ServiceEntityRepository
             ->orderBy('l.code', 'ASC');
 
         $this->addActiveFilter($qb, 'l');
-        
+
         return $qb->getQuery()
             ->getResult();
     }

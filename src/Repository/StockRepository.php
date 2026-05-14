@@ -55,5 +55,4 @@ class StockRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
 }
