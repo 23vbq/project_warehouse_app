@@ -157,4 +157,14 @@ class ProductRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function getGlobalKpi(): array
+    {
+        $qb = $this->getKpiQueryBuilder()
+            ->addSelect('COUNT(DISTINCT p.id) as productCount');
+
+        $this->addActiveFilter($qb, 'p');
+
+        return $qb->getQuery()->getSingleResult() ?? [];
+    }
 }

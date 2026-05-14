@@ -1,0 +1,52 @@
+<div class="grid grid-cols-4 gap-3 mb-4">
+
+    {# Stan magazynu #}
+    <div class="bg-surface-900 border border-stroke rounded-xl px-[18px] py-4 overflow-hidden">
+        <div class="flex items-center gap-1.5 text-[11.5px] font-medium text-content-700 uppercase tracking-[0.06em] mb-2.5">
+            <div class="w-4 h-4 shrink-0">{{ source('svg/menu/consumables.svg') }}</div>
+            Stan magazynu
+        </div>
+        <div class="font-mono text-[26px] font-semibold text-content-50 leading-none mb-2 tabular-nums">
+            {{ kpi.totalStock ? kpi.totalStock|number_format(0, ',', ' ') : '—' }}
+        </div>
+        <div class="text-[12px] text-content-700">łączna ilość na stanie</div>
+    </div>
+
+    {# Wartość zapasów #}
+    <div class="bg-surface-900 border border-stroke rounded-xl px-[18px] py-4 overflow-hidden">
+        <div class="flex items-center gap-1.5 text-[11.5px] font-medium text-content-700 uppercase tracking-[0.06em] mb-2.5">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Wartość zapasów
+        </div>
+        <div class="font-mono text-[26px] font-semibold text-content-50 leading-none mb-2 tabular-nums">
+            {{ kpi.totalValue ? kpi.totalValue|number_format(0, ',', ' ') : '—' }}
+            {% if kpi.totalValue %}<span class="text-[13px] font-medium text-content-500 ml-1">PLN</span>{% endif %}
+        </div>
+        <div class="text-[12px] text-content-700">wycena po cenie jednostkowej</div>
+    </div>
+
+    {# Aktywne SKU #}
+    <div class="bg-surface-900 border border-stroke rounded-xl px-[18px] py-4 overflow-hidden">
+        <div class="flex items-center gap-1.5 text-[11.5px] font-medium text-content-700 uppercase tracking-[0.06em] mb-2.5">
+            <div class="w-4 h-4 shrink-0">{{ source('svg/menu/products.svg') }}</div>
+            Aktywne SKU
+        </div>
+        <div class="font-mono text-[26px] font-semibold text-content-50 leading-none mb-2 tabular-nums">
+            {{ kpi.productCount ?? '—' }}
+        </div>
+        <div class="text-[12px] text-content-700">aktywnych indeksów</div>
+    </div>
+
+    {# Lokalizacje z towarem #}
+    <div class="bg-surface-900 border border-stroke rounded-xl px-[18px] py-4 overflow-hidden">
+        <div class="flex items-center gap-1.5 text-[11.5px] font-medium text-content-700 uppercase tracking-[0.06em] mb-2.5">
+            <div class="w-4 h-4 shrink-0">{{ source('svg/menu/locations.svg') }}</div>
+            Lokalizacje z towarem
+        </div>
+        <div class="font-mono text-[26px] font-semibold text-content-50 leading-none mb-2 tabular-nums">
+            {{ kpi.locationCount ?? '—' }}
+        </div>
+        <div class="text-[12px] text-content-700">zajętych miejsc składowania</div>
+    </div>
+
+</div>
