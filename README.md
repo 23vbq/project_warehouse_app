@@ -18,9 +18,9 @@ A warehouse management system for tracking inventory, processing warehouse docum
   - **PZ** (Receipt) — incoming goods
   - **WZ** (Release) — outgoing goods
   - **MM** (Relocation) — inter-location transfers
-- **Dashboard** — inventory overview and low-stock alerts
+- **Dashboard** — inventory overview (in progress)
 - **Auto-numbering** — sequential document numbers per type/month (e.g. `PZ/2025/05/0001`)
-- **Role-based access** — `ROLE_USER`, `ROLE_WAREHOUSE_MANAGER` hierarchy
+- **Role-based access** — `ROLE_WAREHOUSE_EMPLOYEE` and `ROLE_WAREHOUSE_MANAGER` (every user also receives `ROLE_USER` automatically)
 
 ---
 
@@ -75,7 +75,7 @@ docker-compose exec app bin/console app:create-user
 
 ```
 src/
-├── Controller/     # HTTP layer — 6 controllers (Product, Location, Operation, Dashboard, API, Security)
+├── Controller/     # HTTP layer (Product, Location, Operation, Dashboard, API, Security, Default)
 ├── Entity/         # Doctrine entities (User, Product, Location, Stock, Operation hierarchy)
 ├── Form/           # Symfony form types
 ├── Repository/     # Custom query logic per entity
@@ -93,7 +93,7 @@ migrations/         # Doctrine migration files
 
 ## Operations Model
 
-Operations use Doctrine JOINED inheritance — a single `operation` discriminator column determines whether a row is a Receipt, Release, or Relocation. All operations start in `DRAFT` status and transition to `CONFIRMED` once validated, at which point `StockService` applies the inventory delta.
+Operations use Doctrine JOINED inheritance — a single `type` discriminator column determines whether a row is a Receipt, Release, or Relocation. All operations start in `DRAFT` status and transition to `CONFIRMED` once validated, at which point `StockService` applies the inventory delta.
 
 ```
 DRAFT → (validate) → CONFIRMED
@@ -109,22 +109,21 @@ Internal JSON endpoints consumed by form autocomplete (requires `ROLE_USER`):
 
 | Method | Path | Description |
 |---|---|---|
-| GET | `/api/product/search?query=&limit=` | Search products by name/SKU/EAN |
+| GET | `/api/product/search?query=` | Search products by name/SKU/EAN (returns up to 10 results) |
 | GET | `/api/product/get?id=` | Get single product with price |
-| GET | `/api/location/search?query=&limit=` | Search locations by code/name |
+| GET | `/api/location/search?query=` | Search locations by code/name (returns up to 10 results) |
 
 ---
 
 ## Code Quality
 
-The codebase enforces PSR-12 for PHP and consistent formatting for Twig templates via two linters: **PHP CS Fixer** and **Twig CS Fixer**. Both run automatically in CI on every pull request targeting `develop` or `main`.
+**PHP CS Fixer** and **Twig CS Fixer** are enforced in CI on every pull request targeting `develop` or `main`.
 
-To run locally (inside the container):
+To fix locally (inside the container):
 
 ```bash
-docker-compose exec app vendor/bin/php-cs-fixer check
 docker-compose exec app vendor/bin/php-cs-fixer fix
-docker-compose exec app vendor/bin/twig-cs-fixer check
+docker-compose exec app vendor/bin/twig-cs-fixer fix
 ```
 
 ---
