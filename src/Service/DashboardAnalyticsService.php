@@ -19,11 +19,11 @@ class DashboardAnalyticsService
     public function resolveDateFrom(string $period): \DateTimeImmutable
     {
         return match ($period) {
-            '24h'     => new \DateTimeImmutable('-1 day'),
-            '7d'      => new \DateTimeImmutable('-7 days'),
-            '30d'     => new \DateTimeImmutable('-30 days'),
+            '24h' => new \DateTimeImmutable('-1 day'),
+            '7d' => new \DateTimeImmutable('-7 days'),
+            '30d' => new \DateTimeImmutable('-30 days'),
             'quarter' => new \DateTimeImmutable('-3 months'),
-            default   => throw new \InvalidArgumentException('Invalid period: ' . $period),
+            default => throw new \InvalidArgumentException('Invalid period: '.$period),
         };
     }
 
@@ -64,7 +64,7 @@ class DashboardAnalyticsService
         return [
             'receiptsCount' => (int) $receiptsCount,
             'releasesCount' => (int) $releasesCount,
-            'netBalance'    => (int) $receiptsCount - (int) $releasesCount,
+            'netBalance' => (int) $receiptsCount - (int) $releasesCount,
         ];
     }
 
@@ -105,13 +105,13 @@ class DashboardAnalyticsService
         }
 
         $days = count($labels);
-        $windowSize = match(true) {
-            $days <= 7  => 3,
+        $windowSize = match (true) {
+            $days <= 7 => 3,
             $days <= 30 => 7,
-            default     => 14,
+            default => 14,
         };
         $trendData = $this->rollingAverage(
-            array_map(fn($r, $l) => $r + $l, $receivedData, $releasedData),
+            array_map(fn ($r, $l) => $r + $l, $receivedData, $releasedData),
             $windowSize,
         );
 
