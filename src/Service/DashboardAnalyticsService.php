@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Repository\OperationLineRepository;
+use App\Repository\OperationRepository;
 use App\Repository\ProductRepository;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
@@ -11,6 +12,7 @@ class DashboardAnalyticsService
 {
     public function __construct(
         private readonly ProductRepository $productRepository,
+        private readonly OperationRepository $operationRepository,
         private readonly OperationLineRepository $operationLineRepository,
         private readonly ChartBuilderInterface $chartBuilder,
     ) {
@@ -30,6 +32,11 @@ class DashboardAnalyticsService
     public function getGlobalKpi(): array
     {
         return $this->productRepository->getGlobalKpi();
+    }
+
+    public function getRecentOperations(int $limit = 8): array
+    {
+        return $this->operationRepository->findRecent($limit);
     }
 
     public function getMovementsChart(\DateTimeImmutable $from): Chart

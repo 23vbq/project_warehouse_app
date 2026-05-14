@@ -1,0 +1,39 @@
+{% set icons  = {receipt: 'svg/pz.svg', release: 'svg/wz.svg', relocation: 'svg/mm.svg'} %}
+{% set colors  = {receipt: 'text-emerald-400', release: 'text-violet-400', relocation: 'text-amber-400'} %}
+
+<div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
+
+    <div class="px-5 py-4 border-b border-stroke flex items-center justify-between">
+        <h2 class="text-[13px] font-semibold text-content-50">Ostatnie operacje</h2>
+        <a href="{{ path('app_operation_index') }}" class="text-[12px] text-content-500 hover:text-content-300 transition-colors">
+            Wszystkie →
+        </a>
+    </div>
+
+    <ul class="divide-y divide-stroke">
+        {% for operation in recentOperations %}
+            <li class="flex items-center gap-3 px-4 py-3 hover:bg-surface-800/30 transition-colors">
+                <div class="w-8 h-8 rounded-lg bg-surface-800 border border-stroke flex items-center justify-center shrink-0 {{ colors[operation.documentType] ?? 'text-content-500' }}">
+                    <div class="w-4 h-4">{{ source(icons[operation.documentType] ?? 'svg/pz.svg') }}</div>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <a href="{{ path('app_operation_show', {id: operation.id}) }}" class="font-mono font-medium text-content-50 underline hover:text-content-300 transition-colors block truncate text-[12.5px]">
+                        {{ operation.fullNumber }}
+                    </a>
+                    <div class="text-[11px] text-content-700 mt-0.5">
+                        {{ operation.documentDate|date('d.m.Y') }}
+                        {% if operation.createdBy %}
+                            · {{ operation.createdBy.getUserIdentifier() }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="shrink-0">
+                    {{ include('operation/_partials/status.html.twig') }}
+                </div>
+            </li>
+        {% else %}
+            <li class="px-5 py-4 text-[13px] text-content-500">Brak operacji.</li>
+        {% endfor %}
+    </ul>
+
+</div>

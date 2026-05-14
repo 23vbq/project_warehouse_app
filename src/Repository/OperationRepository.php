@@ -71,6 +71,16 @@ class OperationRepository extends ServiceEntityRepository
         return $qb;
     }
 
+    public function findRecent(int $limit = 8): array
+    {
+        return $this->createQueryBuilder('o')
+            ->leftJoin('o.createdBy', 'u')
+            ->orderBy('o.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getLastNumber(
         string $type,
         string $year,

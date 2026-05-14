@@ -1,4 +1,28 @@
-<turbo-frame id="dashboard_content">
+<turbo-frame id="dashboard_content" data-turbo-action="advance">
+
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-[22px] font-semibold tracking-tight text-content-50 mb-1">Pulpit magazynu</h1>
+        </div>
+        <div class="flex items-center gap-2">
+            {% set periods = [
+                {key: '24h',     label: '24h'},
+                {key: '7d',      label: '7 dni'},
+                {key: '30d',     label: '30 dni'},
+                {key: 'quarter', label: 'Kwartał'},
+            ] %}
+            <div class="inline-flex items-center bg-surface-800 border border-stroke rounded-lg p-0.5">
+                {% for period in periods %}
+                    <a
+                        href="{{ path('app_dashboard', {period: period.key}) }}"
+                        class="px-2.5 py-[5px] text-[12.5px] rounded-md transition-colors {{ filters.period == period.key
+                            ? 'bg-surface-600 text-content-50 shadow-[0_1px_0_rgba(255,255,255,0.04)]'
+                            : 'text-content-500 hover:text-content-300' }}"
+                    >{{ period.label }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 
     {{ include('dashboard/_partials/kpi.html.twig') }}
 
@@ -8,8 +32,8 @@
             {{ include('dashboard/_partials/movements_chart.html.twig') }}
         </div>
 
-        {# prawa kolumna — alerty / ostatnie operacje #}
         <div class="flex flex-col gap-3">
+            {{ include('dashboard/_partials/recent_operations.html.twig') }}
         </div>
 
     </div>

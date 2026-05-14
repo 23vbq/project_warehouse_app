@@ -35,10 +35,11 @@ class DashboardController extends AbstractController
         }
 
         return $this->render($view, [
-            'filters' => $filters,
-            'kpi' => $analytics->getGlobalKpi(),
-            'movementsChart' => $movements['chart'],
-            'movementStats' => $movements['stats'],
+            'filters'          => $filters,
+            'kpi'              => $analytics->getGlobalKpi(),
+            'movementsChart'   => $movements['chart'],
+            'movementStats'    => $movements['stats'],
+            'recentOperations' => $analytics->getRecentOperations(),
         ]);
     }
 }
