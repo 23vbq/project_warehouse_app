@@ -2,4 +2,16 @@
 
     {{ include('dashboard/_partials/kpi.html.twig') }}
 
+    <div class="grid grid-cols-3 gap-3">
+
+        <div class="col-span-2">
+            {{ include('dashboard/_partials/movements_chart.html.twig') }}
+        </div>
+
+        {# prawa kolumna — alerty / ostatnie operacje #}
+        <div class="flex flex-col gap-3">
+        </div>
+
+    </div>
+
 </turbo-frame>

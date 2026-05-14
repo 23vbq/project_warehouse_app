@@ -57,6 +57,24 @@ class OperationLineRepository extends ServiceEntityRepository
             ->getSingleResult();
     }
 
+    public function findDailyActivityForPeriod(\DateTimeImmutable $from): array
+    {
+        return $this->createQueryBuilder('ol')
+            ->select(
+                'DATE(o.documentDate) as day',
+                'COUNT(DISTINCT CASE WHEN ol.locationTo IS NOT NULL AND ol.locationFrom IS NULL THEN o.id ELSE :null END) as receiptsCount',
+                'COUNT(DISTINCT CASE WHEN ol.locationFrom IS NOT NULL AND ol.locationTo IS NULL THEN o.id ELSE :null END) as releasesCount'
+            )
+            ->innerJoin('ol.operation', 'o')
+            ->where('o.documentDate >= :from')
+            ->groupBy('day')
+            ->orderBy('day', 'ASC')
+            ->setParameter('null', null)
+            ->setParameter('from', $from)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function createByProductQueryBuilder(Product $product): QueryBuilder
     {
         return $this->createQueryBuilder('ol')

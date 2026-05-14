@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Repository\ProductRepository;
+use App\Service\DashboardAnalyticsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,19 +18,16 @@ class DashboardController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function index(
         Request $request,
-        ProductRepository $productRepository
-    ): Response
-    {
+        DashboardAnalyticsService $analytics,
+    ): Response {
         $period = $request->query->get('period', '7d');
         if (!\in_array($period, self::VALID_PERIODS, true)) {
             $period = '7d';
         }
 
-        $filters = [
-            'period' => $period,
-        ];
-
-        $kpi = $productRepository->getGlobalKpi();
+        $filters = ['period' => $period];
+        $from = $analytics->resolveDateFrom($period);
+        $movements = $analytics->getMovementsData($from);
 
         $view = 'dashboard/index.html.twig';
         if ('dashboard_content' === $request->headers->get('Turbo-Frame')) {
@@ -38,8 +35,10 @@ class DashboardController extends AbstractController
         }
 
         return $this->render($view, [
-            'filters' => $filters,
-            'kpi' => $kpi,
+            'filters'        => $filters,
+            'kpi'            => $analytics->getGlobalKpi(),
+            'movementsChart' => $movements['chart'],
+            'movementStats'  => $movements['stats'],
         ]);
     }
 }

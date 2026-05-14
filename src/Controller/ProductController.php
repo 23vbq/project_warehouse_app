@@ -163,12 +163,12 @@ class ProductController extends AbstractController
             'scales' => [
                 'x' => [
                     'grid' => ['display' => false],
-                    'ticks' => ['maxTicksLimit' => 6, 'color' => '#5e5e67', 'font' => ['size' => 10]],
+                    'ticks' => ['maxTicksLimit' => 6, 'color' => '#5e5e67', 'font' => ['size' => 10, 'family' => "'JetBrains Mono'"]],
                     'border' => ['display' => false],
                 ],
                 'y' => [
                     'grid' => ['color' => '#26262c'],
-                    'ticks' => ['color' => '#5e5e67', 'font' => ['size' => 10]],
+                    'ticks' => ['color' => '#5e5e67', 'font' => ['size' => 10, 'family' => "'JetBrains Mono'"]],
                     'border' => ['display' => false],
                 ],
             ],
