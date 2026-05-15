@@ -6,20 +6,15 @@ use App\Repository\AdjustmentRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AdjustmentRepository::class)]
-class Adjustment
+class Adjustment extends Operation
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\OneToOne(inversedBy: 'adjustment', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Stocktaking $stocktaking = null;
 
-    public function getId(): ?int
+    public function getDocumentType(): string
     {
-        return $this->id;
+        return Operation::TYPE_ADJUSTMENT;
     }
 
     public function getStocktaking(): ?Stocktaking
