@@ -1,7 +1,7 @@
 {% set lines = stocktaking.stocktakingLines|sort((a, b) =>
     a.location.code == b.location.code
         ? (a.product.name < b.product.name ? -1 : 1)
-        : (a.location.code < b.location.code ? -1 : 1)
+        : (a.location.code < b.location.code ? -1 : 1),
 ) %}
 
 <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
