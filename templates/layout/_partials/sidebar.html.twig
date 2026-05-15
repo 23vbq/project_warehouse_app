@@ -73,6 +73,14 @@
                 isSubitem: true,
                 alert: alerts.consumableProducts,
             }) }}
+            {{ include('layout/_partials/sidebar_item.html.twig', {
+                currentUrl: currentUrl,
+                urlPattern: '~^/locations~',
+                path: path('app_location_index'),
+                label: 'Lokalizacje',
+                svgContent: source('svg/menu/locations.svg'),
+                alert: alerts.locations,
+            }) }}
         </div>
 
         <div class="mb-[18px]">
@@ -118,46 +126,6 @@
             }) }}
         </div>
 
-        <div class="mb-[18px]">
-            <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">Zarządzanie</p>
-
-            {{ include('layout/_partials/sidebar_item.html.twig', {
-                currentUrl: currentUrl,
-                urlPattern: '~^/locations~',
-                path: path('app_location_index'),
-                label: 'Lokalizacje',
-                svgContent: source('svg/menu/locations.svg'),
-                alert: alerts.locations,
-            }) }}
-            {{ include('layout/_partials/sidebar_item.html.twig', {
-                currentUrl: currentUrl,
-                urlPattern: '~^/contractors~',
-                path: '#',
-                label: 'Kontrahenci',
-                svgContent: source('svg/menu/contractors.svg'),
-            }) }}
-            {{ include('layout/_partials/sidebar_item.html.twig', {
-                currentUrl: currentUrl,
-                urlPattern: '~^/reports~',
-                path: '#',
-                label: 'Raporty',
-                svgContent: source('svg/menu/reports.svg'),
-            }) }}
-        </div>
-
-        {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
-            <div>
-                <p class="text-[10.5px] uppercase tracking-[0.08em] text-content-700 px-2.5 pb-2 pt-1.5 font-semibold">System</p>
-
-                {{ include('layout/_partials/sidebar_item.html.twig', {
-                    currentUrl: currentUrl,
-                    urlPattern: '~^/settings~',
-                    path: '#',
-                    label: 'Ustawienia',
-                    svgContent: source('svg/menu/settings.svg'),
-                }) }}
-            </div>
-        {% endif %}
 
     </nav>
 
