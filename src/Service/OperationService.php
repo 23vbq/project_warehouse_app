@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Adjustment;
 use App\Entity\Operation;
 use App\Entity\Receipt;
 use App\Entity\Release;
@@ -28,6 +29,7 @@ class OperationService
             Operation::TYPE_RECEIPT => 'PZ',
             Operation::TYPE_RELEASE => 'WZ',
             Operation::TYPE_RELOCATION => 'MM',
+            Operation::TYPE_ADJUSTMENT => 'INW',
         ];
 
         $documentType = $operation->getDocumentType();
@@ -61,6 +63,8 @@ class OperationService
             $this->confirmRelease($operation);
         } elseif ($operation instanceof Relocation) {
             $this->confirmRelocation($operation);
+        } elseif ($operation instanceof Adjustment) {
+            // Stock already updated by StocktakingService before confirm() is called
         }
 
         $operation->setStatus(OperationStatus::CONFIRMED);
