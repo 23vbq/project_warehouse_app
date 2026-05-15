@@ -77,27 +77,51 @@ class StocktakingController extends AbstractController
     #[Route('/{id}', name: 'app_stocktaking_show', requirements: ['id' => '\d+'])]
     public function show(Stocktaking $stocktaking): Response
     {
-        throw new \Exception('Not implemented');
+        return $this->render('stocktaking/show.html.twig', [
+            'stocktaking' => $stocktaking,
+        ]);
     }
 
     #[Route('/{id}/lines/{line}', name: 'app_stocktaking_line_save', requirements: ['id' => '\d+', 'line' => '\d+'], methods: ['POST'])]
-    #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
-    public function saveLine(Stocktaking $stocktaking, StocktakingLine $line): Response
+    #[IsGranted('ROLE_WAREHOUSE_EMPLOYEE')]
+    public function saveLine(Request $request, Stocktaking $stocktaking, StocktakingLine $line, StocktakingService $service): Response
     {
-        throw new \Exception('Not implemented');
+        if ($line->getStocktaking() !== $stocktaking) {
+            throw $this->createNotFoundException();
+        }
+
+        $service->saveLine($line, $request->request->get('counted_quantity'), $this->getUser());
+
+        return $this->turboRedirectToRoute($request, 'app_stocktaking_show', ['id' => $stocktaking->getId()]);
     }
 
     #[Route('/{id}/complete', name: 'app_stocktaking_complete', requirements: ['id' => '\d+'], methods: ['POST'])]
     #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
-    public function complete(Request $request, Stocktaking $stocktaking): Response
+    public function complete(Request $request, Stocktaking $stocktaking, StocktakingService $service): Response
     {
-        throw new \Exception('Not implemented');
+        if (!$this->isCsrfTokenValid('complete_stocktaking_'.$stocktaking->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $service->complete($stocktaking, $this->getUser());
+
+        $this->addFlash('success', 'Inwentaryzacja została zatwierdzona.');
+
+        return $this->redirectToRoute('app_stocktaking_show', ['id' => $stocktaking->getId()]);
     }
 
     #[Route('/{id}/cancel', name: 'app_stocktaking_cancel', requirements: ['id' => '\d+'], methods: ['POST'])]
     #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
-    public function cancel(Request $request, Stocktaking $stocktaking): Response
+    public function cancel(Request $request, Stocktaking $stocktaking, StocktakingService $service): Response
     {
-        throw new \Exception('Not implemented');
+        if (!$this->isCsrfTokenValid('cancel_stocktaking_'.$stocktaking->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $service->cancel($stocktaking, $this->getUser());
+
+        $this->addFlash('success', 'Inwentaryzacja została anulowana.');
+
+        return $this->redirectToRoute('app_stocktaking_show', ['id' => $stocktaking->getId()]);
     }
 }

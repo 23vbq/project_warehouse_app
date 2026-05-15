@@ -60,6 +60,11 @@ class Stocktaking
         return $this->status;
     }
 
+    public function isActive(): bool
+    {
+        return in_array($this->status, [StocktakingStatus::OPEN, StocktakingStatus::IN_PROGRESS], true);
+    }
+
     public function setStatus(StocktakingStatus $status): static
     {
         $this->status = $status;

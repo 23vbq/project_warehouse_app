@@ -1,0 +1,191 @@
+{% extends 'layout/app.html.twig' %}
+
+{% block title %}Inwentaryzacja #{{ stocktaking.id }} — RimFlowMS{% endblock %}
+
+{% block breadcrumb %}
+    <a href="{{ path('app_stocktaking_index') }}" class="hover:text-content-300 transition-colors">Inwentaryzacje</a>
+    <span class="text-content-700">/</span>
+    <span class="text-content-50 font-mono font-medium">#{{ stocktaking.id }}</span>
+{% endblock %}
+
+{% block content %}
+<turbo-frame id="page_content" data-turbo-action="advance">
+
+{% set counted = stocktaking.stocktakingLines|filter(l => l.countedQuantity is not null)|length %}
+{% set total = stocktaking.stocktakingLines|length %}
+
+<div class="flex items-center justify-between mb-4 gap-4">
+    <div class="flex items-center gap-3.5 min-w-0 flex-1">
+        <a
+            href="{{ path('app_stocktaking_index') }}"
+            target="_top"
+            class="w-[34px] h-[34px] rounded-lg bg-surface-800 border border-stroke flex items-center justify-center text-content-500 hover:text-content-50 hover:bg-surface-700 transition-colors shrink-0"
+        >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+        </a>
+
+        <div class="min-w-0">
+            <div class="flex items-center gap-2.5 flex-wrap">
+                <h1 class="font-mono text-[19px] font-semibold text-content-50 tracking-tight">#{{ stocktaking.id }}</h1>
+                {{ include('stocktaking/_partials/status.html.twig') }}
+            </div>
+            <div class="flex items-center gap-2 text-[12.5px] text-content-500 mt-1 flex-wrap">
+                <span>Operator: <span class="text-content-300">{{ stocktaking.createdBy ? stocktaking.createdBy.getUserIdentifier() : '—' }}</span></span>
+                <span class="text-content-700">·</span>
+                <span>{{ stocktaking.createdAt|date('d.m.Y · H:i') }}</span>
+                {% if stocktaking.completedAt and not stocktaking.isActive %}
+                    <span class="text-content-700">·</span>
+                    <span class="{{ stocktaking.status.value == 'completed' ? 'text-emerald-500' : 'text-content-500' }}">
+                        {{ stocktaking.status.value == 'completed' ? 'Zakończono' : 'Anulowano' }} {{ stocktaking.completedAt|date('d.m.Y H:i') }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if is_granted('ROLE_WAREHOUSE_MANAGER') and stocktaking.isActive %}
+        <div class="flex items-center gap-2 shrink-0">
+            <form method="post" action="{{ path('app_stocktaking_cancel', {id: stocktaking.id}) }}" data-turbo-frame="_top" onsubmit="return confirm('Czy na pewno chcesz anulować inwentaryzację #{{ stocktaking.id }}?')">
+                <input type="hidden" name="_token" value="{{ csrf_token('cancel_stocktaking_' ~ stocktaking.id) }}">
+                <button type="submit" class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-danger-500 bg-surface-800 border border-danger-500/30 rounded-lg hover:bg-danger-500/10 transition-colors cursor-pointer">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    Anuluj
+                </button>
+            </form>
+            <form method="post" action="{{ path('app_stocktaking_complete', {id: stocktaking.id}) }}" data-turbo-frame="_top" onsubmit="return confirm('Czy na pewno chcesz zatwierdzić inwentaryzację? Nieskompletowane linie zostaną pominięte.')">
+                <input type="hidden" name="_token" value="{{ csrf_token('complete_stocktaking_' ~ stocktaking.id) }}">
+                <button type="submit" class="flex items-center gap-2 h-[34px] px-4 text-[13px] font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-500 transition-colors cursor-pointer">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Zatwierdź
+                </button>
+            </form>
+        </div>
+    {% endif %}
+</div>
+
+<div class="grid grid-cols-4 border border-stroke rounded-xl overflow-hidden bg-surface-900 mb-4">
+    <div class="flex gap-3 p-4 border-r border-stroke min-w-0">
+        <div class="w-7 h-7 rounded-lg bg-surface-700 border border-stroke text-content-500 grid place-items-center shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+        </div>
+        <div class="min-w-0">
+            <div class="text-[10.5px] uppercase tracking-[0.06em] font-semibold text-content-700">Linie</div>
+            <div class="font-mono text-[13px] text-content-50 font-medium mt-0.5">{{ total }}</div>
+        </div>
+    </div>
+    <div class="flex gap-3 p-4 border-r border-stroke min-w-0">
+        <div class="w-7 h-7 rounded-lg bg-surface-700 border border-stroke text-content-500 grid place-items-center shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+        </div>
+        <div class="min-w-0">
+            <div class="text-[10.5px] uppercase tracking-[0.06em] font-semibold text-content-700">Policzono</div>
+            <div class="font-mono text-[13px] text-content-50 font-medium mt-0.5">{{ counted }}</div>
+        </div>
+    </div>
+    <div class="flex gap-3 p-4 border-r border-stroke min-w-0">
+        <div class="w-7 h-7 rounded-lg bg-surface-700 border border-stroke text-content-500 grid place-items-center shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        </div>
+        <div class="min-w-0">
+            <div class="text-[10.5px] uppercase tracking-[0.06em] font-semibold text-content-700">Postęp</div>
+            <div class="font-mono text-[13px] font-medium mt-0.5 {{ counted == total and total > 0 ? 'text-emerald-400' : 'text-content-50' }}">
+                {{ total > 0 ? ((counted / total * 100)|round) ~ '%' : '—' }}
+            </div>
+        </div>
+    </div>
+    <div class="flex gap-3 p-4 min-w-0">
+        <div class="w-7 h-7 rounded-lg bg-surface-700 border border-stroke text-content-500 grid place-items-center shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        </div>
+        <div class="min-w-0">
+            <div class="text-[10.5px] uppercase tracking-[0.06em] font-semibold text-content-700">Dokument</div>
+            {% if stocktaking.adjustment %}
+                <a href="{{ path('app_operation_show', {id: stocktaking.adjustment.id}) }}" class="font-mono text-[13px] text-content-50 font-medium mt-0.5 underline hover:text-content-300 transition-colors block">{{ stocktaking.adjustment.fullNumber }}</a>
+            {% else %}
+                <div class="text-[13px] text-content-700 mt-0.5">—</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-[1fr_280px] gap-3.5 items-start">
+
+    <div>
+        {{ include('stocktaking/_partials/lines_table.html.twig') }}
+    </div>
+
+    <aside>
+        <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
+            <div class="px-4 py-3 border-b border-stroke">
+                <h2 class="text-[13px] font-semibold text-content-50">Szczegóły</h2>
+            </div>
+            <ul class="divide-y divide-stroke px-4">
+                <li class="flex items-start justify-between py-2.5 gap-3">
+                    <dt class="text-[12px] text-content-500 shrink-0">Status</dt>
+                    <dd class="text-right">{{ include('stocktaking/_partials/status.html.twig') }}</dd>
+                </li>
+                <li class="flex items-start justify-between py-2.5 gap-3">
+                    <dt class="text-[12px] text-content-500 shrink-0">Operator</dt>
+                    <dd class="text-[12.5px] text-content-50 text-right">{{ stocktaking.createdBy ? stocktaking.createdBy.getUserIdentifier() : '—' }}</dd>
+                </li>
+                <li class="flex items-start justify-between py-2.5 gap-3">
+                    <dt class="text-[12px] text-content-500 shrink-0">Utworzono</dt>
+                    <dd class="text-[12.5px] text-content-50 text-right">{{ stocktaking.createdAt|date('d.m.Y H:i') }}</dd>
+                </li>
+                {% if stocktaking.completedAt %}
+                    <li class="flex items-start justify-between py-2.5 gap-3">
+                        <dt class="text-[12px] text-content-500 shrink-0">{{ stocktaking.status.value == 'cancelled' ? 'Anulowano' : 'Zakończono' }}</dt>
+                        <dd class="text-[12.5px] text-content-50 text-right">{{ stocktaking.completedAt|date('d.m.Y H:i') }}</dd>
+                    </li>
+                    <li class="flex items-start justify-between py-2.5 gap-3">
+                        <dt class="text-[12px] text-content-500 shrink-0">{{ stocktaking.status.value == 'cancelled' ? 'Anulował' : 'Zakończył' }}</dt>
+                        <dd class="text-[12.5px] text-content-50 text-right">{{ stocktaking.completedBy ? stocktaking.completedBy.getUserIdentifier() : '—' }}</dd>
+                    </li>
+                {% endif %}
+                {% if stocktaking.notes %}
+                    <li class="flex items-start justify-between py-2.5 gap-3">
+                        <dt class="text-[12px] text-content-500 shrink-0">Uwagi</dt>
+                        <dd class="text-[12.5px] text-content-300 text-right break-words">{{ stocktaking.notes }}</dd>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden mt-3">
+            <div class="px-4 py-3 border-b border-stroke">
+                <h2 class="text-[13px] font-semibold text-content-50">Obieg</h2>
+            </div>
+            <ul class="px-4 py-1">
+                <li class="grid grid-cols-[16px_1fr] gap-2.5 py-3">
+                    <div class="flex flex-col items-center">
+                        <span class="w-2 h-2 rounded-full shrink-0 bg-emerald-400 shadow-[0_0_0_3px_rgba(52,211,153,0.15)] mt-1.5"></span>
+                        <div class="flex-1 w-px bg-stroke mt-1.5"></div>
+                    </div>
+                    <div>
+                        <div class="text-[12.5px] text-content-50">Utworzono</div>
+                        <div class="text-[11.5px] text-content-500 mt-0.5">{{ stocktaking.createdBy ? stocktaking.createdBy.getUserIdentifier() : '—' }} · {{ stocktaking.createdAt|date('d.m.Y H:i') }}</div>
+                    </div>
+                </li>
+                <li class="grid grid-cols-[16px_1fr] gap-2.5 py-3">
+                    {% if stocktaking.completedAt %}
+                        <span class="w-2 h-2 rounded-full mt-1.5 ml-1 shrink-0 {{ stocktaking.status.value == 'completed' ? 'bg-emerald-400 shadow-[0_0_0_3px_rgba(52,211,153,0.15)]' : 'bg-content-700' }}"></span>
+                        <div>
+                            <div class="text-[12.5px] text-content-50">{{ stocktaking.status.value == 'cancelled' ? 'Anulowano' : 'Zakończono' }}</div>
+                            <div class="text-[11.5px] text-content-500 mt-0.5">{{ stocktaking.completedBy ? stocktaking.completedBy.getUserIdentifier() : '—' }} · {{ stocktaking.completedAt|date('d.m.Y H:i') }}</div>
+                        </div>
+                    {% else %}
+                        <span class="w-2 h-2 rounded-full mt-1.5 ml-1 shrink-0 bg-surface-600 border border-stroke"></span>
+                        <div>
+                            <div class="text-[12.5px] text-content-500">Zatwierdzenie</div>
+                            <div class="text-[11.5px] text-content-700 mt-0.5">— oczekuje</div>
+                        </div>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+</div>
+
+</turbo-frame>
+{% endblock %}

@@ -103,9 +103,11 @@ class StocktakingService
         $this->operationService->confirm($adjustment, $completedBy);
     }
 
-    public function cancel(Stocktaking $stocktaking): void
+    public function cancel(Stocktaking $stocktaking, User $cancelledBy): void
     {
         $stocktaking->setStatus(StocktakingStatus::CANCELLED);
+        $stocktaking->setCompletedAt(new \DateTimeImmutable());
+        $stocktaking->setCompletedBy($cancelledBy);
         $this->entityManager->flush();
     }
 }
