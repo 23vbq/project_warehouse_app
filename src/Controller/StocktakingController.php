@@ -25,7 +25,15 @@ class StocktakingController extends AbstractController
     #[Route('', name: 'app_stocktaking_index')]
     public function index(Request $request, StocktakingRepository $repository): Response
     {
-        $qb = $repository->createIndexQueryBuilder();
+        $filters = [
+            'query' => $request->query->get('query'),
+        ];
+        $orderBy = [
+            'field' => $request->query->get('sort', 'createdAt'),
+            'direction' => $request->query->get('direction', 'desc'),
+        ];
+
+        $qb = $repository->createIndexQueryBuilder($filters, [$orderBy['field'] => $orderBy['direction']]);
 
         $pager = new Pagerfanta(new QueryAdapter($qb));
         $pager->setMaxPerPage(25);
@@ -38,6 +46,8 @@ class StocktakingController extends AbstractController
 
         return $this->render($view, [
             'pager' => $pager,
+            'filters' => $filters,
+            'orderBy' => $orderBy,
         ]);
     }
 
