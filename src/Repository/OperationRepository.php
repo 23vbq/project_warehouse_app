@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Operation;
+use App\Enum\OperationStatus;
 use App\Traits\SanitizesOrderBy;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -75,9 +76,10 @@ class OperationRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('o')
             ->leftJoin('o.createdBy', 'u')
+            ->addSelect('u')
             ->orderBy('o.createdAt', 'DESC')
             ->where('o.status != :draftStatus')
-            ->setParameter('draftStatus', 'draft')
+            ->setParameter('draftStatus', OperationStatus::DRAFT)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();

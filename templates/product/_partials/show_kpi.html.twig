@@ -19,7 +19,7 @@
             Stan łączny
         </div>
         <div class="font-mono text-[22px] font-semibold text-content-50 tabular-nums leading-none mt-2">
-            {{ kpi.totalStock ? kpi.totalStock|number_format(3, ',', ' ') : '0,000' }}<span class="text-[12px] font-medium text-content-500 ml-1">{{ product.unit }}</span>
+            {{ kpi.totalStock is not null ? kpi.totalStock|number_format(3, ',', ' ') : '0,000' }}<span class="text-[12px] font-medium text-content-500 ml-1">{{ product.unit }}</span>
         </div>
         {% if product.minStockLevel %}
             <div class="text-[11.5px] text-content-700 mt-1.5">
@@ -41,7 +41,7 @@
             Wartość magazynu
         </div>
         <div class="font-mono text-[22px] font-semibold text-content-50 tabular-nums leading-none mt-2">
-            {{ kpi.totalValue ? kpi.totalValue|number_format(2, ',', ' ') : '0,00' }}<span class="text-[12px] font-medium text-content-500 ml-1">PLN</span>
+            {{ kpi.totalValue is not null ? kpi.totalValue|number_format(2, ',', ' ') : '0,00' }}<span class="text-[12px] font-medium text-content-500 ml-1">PLN</span>
         </div>
         <div class="text-[11.5px] text-content-700 mt-1.5">
             cena jedn. <span class="font-mono text-content-500">{{ product.unitPrice|number_format(2, ',', ' ') }} PLN</span>

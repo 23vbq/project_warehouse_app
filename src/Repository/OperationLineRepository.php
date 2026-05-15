@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\OperationLine;
 use App\Entity\Product;
+use App\Enum\OperationStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -67,10 +68,12 @@ class OperationLineRepository extends ServiceEntityRepository
             )
             ->innerJoin('ol.operation', 'o')
             ->where('o.documentDate >= :from')
+            ->andWhere('o.status != :draftStatus')
             ->groupBy('day')
             ->orderBy('day', 'ASC')
             ->setParameter('null', null)
             ->setParameter('from', $from)
+            ->setParameter('draftStatus', OperationStatus::DRAFT)
             ->getQuery()
             ->getResult();
     }

@@ -7,7 +7,7 @@
             Stan magazynu
         </div>
         <div class="font-mono text-[26px] font-semibold text-content-50 leading-none mb-2 tabular-nums">
-            {{ kpi.totalStock ? kpi.totalStock|number_format(0, ',', ' ') : '—' }}
+            {{ kpi.totalStock is not null ? kpi.totalStock|number_format(0, ',', ' ') : '—' }}
         </div>
         <div class="text-[12px] text-content-700">łączna ilość na stanie</div>
     </div>
@@ -19,8 +19,8 @@
             Wartość zapasów
         </div>
         <div class="font-mono text-[26px] font-semibold text-content-50 leading-none mb-2 tabular-nums">
-            {{ kpi.totalValue ? kpi.totalValue|number_format(0, ',', ' ') : '—' }}
-            {% if kpi.totalValue %}<span class="text-[13px] font-medium text-content-500 ml-1">PLN</span>{% endif %}
+            {{ kpi.totalValue is not null ? kpi.totalValue|number_format(0, ',', ' ') : '—' }}
+            {% if kpi.totalValue is not null %}<span class="text-[13px] font-medium text-content-500 ml-1">PLN</span>{% endif %}
         </div>
         <div class="text-[12px] text-content-700">wycena po cenie jednostkowej</div>
     </div>
