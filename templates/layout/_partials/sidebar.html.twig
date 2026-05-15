@@ -111,8 +111,8 @@
             }) }}
             {{ include('layout/_partials/sidebar_item.html.twig', {
                 currentUrl: currentUrl,
-                urlPattern: '~^/inventory~',
-                path: '#',
+                urlPattern: '~^/stocktaking~',
+                path: path('app_stocktaking_index'),
                 label: 'Inwentaryzacja',
                 svgContent: source('svg/menu/inventory.svg'),
             }) }}

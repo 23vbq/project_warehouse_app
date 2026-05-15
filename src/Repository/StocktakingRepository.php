@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Stocktaking;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -14,6 +15,13 @@ class StocktakingRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Stocktaking::class);
+    }
+
+    public function createIndexQueryBuilder(): QueryBuilder
+    {
+        return $this->createQueryBuilder('st')
+            ->leftJoin('st.createdBy', 'u')
+            ->orderBy('st.createdAt', 'DESC');
     }
 
     //    /**

@@ -119,6 +119,17 @@ class ProductRepository extends ServiceEntityRepository
             ->getSingleResult();
     }
 
+    public function countAll(): int
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)');
+
+        $this->addActiveFilter($qb, 'p');
+
+        return (int) $qb->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function searchByQuery(string $query, int $limit = 10): array
     {
         $qb = $this->createQueryBuilder('p')

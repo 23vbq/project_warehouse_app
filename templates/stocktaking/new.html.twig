@@ -1,0 +1,55 @@
+{% extends 'layout/app.html.twig' %}
+
+{% block title %}Nowa inwentaryzacja — RimFlowMS{% endblock %}
+
+{% block breadcrumb_current %}Nowa inwentaryzacja{% endblock %}
+
+{% block content %}
+<turbo-frame id="page_content" data-turbo="true">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <a href="{{ path('app_stocktaking_index') }}" class="inline-flex items-center gap-1.5 text-[13px] text-content-500 hover:text-content-300 transition-colors mb-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+                Inwentaryzacje
+            </a>
+            <h1 class="text-[22px] font-semibold tracking-tight text-content-50 mb-1">Nowa inwentaryzacja</h1>
+            <p class="text-content-500 text-[13px]">System wygeneruje arkusz na podstawie aktualnych stanów magazynowych.</p>
+        </div>
+    </div>
+
+    <div class="max-w-lg">
+        <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
+            <div class="px-5 py-4 border-b border-stroke">
+                <h2 class="text-[13px] font-semibold text-content-50">Szczegóły</h2>
+            </div>
+
+            {{ form_start(form, {action: path('app_stocktaking_new'), attr: {class: 'flex flex-col', novalidate: 'novalidate', autocomplete: 'off'}}) }}
+
+            <div class="px-5 py-5">
+                {{ form_label(form.notes, 'Uwagi', {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (form.notes.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
+                {{ form_widget(form.notes, {attr: {placeholder: 'Opcjonalne uwagi do inwentaryzacji…', rows: 3, class: 'input-textarea ' ~ (form.notes.vars.errors|length ? 'input-textarea--error' : '')}}) }}
+                {% for error in form.notes.vars.errors %}
+                    <p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="flex items-center justify-end gap-2 px-5 py-4 border-t border-stroke">
+                <a
+                    href="{{ path('app_stocktaking_index') }}"
+                    class="h-[34px] px-4 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors"
+                >
+                    Anuluj
+                </a>
+                <button
+                    type="submit"
+                    class="h-[34px] px-4 text-[13px] font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-400 transition-colors cursor-pointer"
+                >
+                    Rozpocznij inwentaryzację
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</turbo-frame>
+{% endblock %}

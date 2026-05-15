@@ -1,0 +1,10 @@
+{% set config = {
+    'open':        {label: 'Otwarta',     class: 'text-sky-400 bg-sky-500/10 border-sky-500/20'},
+    'in_progress': {label: 'W toku',      class: 'text-amber-400 bg-amber-500/10 border-amber-500/20'},
+    'completed':   {label: 'Zakończona',  class: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'},
+    'cancelled':   {label: 'Anulowana',   class: 'text-content-500 bg-surface-700 border-stroke'},
+} %}
+{% set s = config[stocktaking.status.value] ?? {label: stocktaking.status.value, class: 'text-content-500 bg-surface-700 border-stroke'} %}
+<span class="inline-flex items-center px-2 py-0.5 rounded border text-[11px] font-medium {{ s.class }}">
+    {{ s.label }}
+</span>

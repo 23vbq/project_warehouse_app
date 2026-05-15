@@ -38,7 +38,7 @@ class Stocktaking
     /**
      * @var Collection<int, StocktakingLine>
      */
-    #[ORM\OneToMany(targetEntity: StocktakingLine::class, mappedBy: 'stocktaking', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: StocktakingLine::class, mappedBy: 'stocktaking', cascade: ['persist'], orphanRemoval: true)]
     private Collection $stocktakingLines;
 
     #[ORM\OneToOne(mappedBy: 'stocktaking', cascade: ['persist', 'remove'])]
@@ -46,6 +46,7 @@ class Stocktaking
 
     public function __construct()
     {
+        $this->createdAt = new \DateTimeImmutable();
         $this->stocktakingLines = new ArrayCollection();
     }
 
@@ -83,7 +84,7 @@ class Stocktaking
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    private function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 
