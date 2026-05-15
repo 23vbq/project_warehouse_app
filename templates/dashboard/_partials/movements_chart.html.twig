@@ -1,0 +1,61 @@
+{% set periodLabels = {
+    '24h': 'ostatnie 24 godziny',
+    '7d': 'ostatnie 7 dni',
+    '30d': 'ostatnie 30 dni',
+    quarter: 'ostatni kwartał',
+} %}
+
+<div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
+
+    <div class="px-5 py-4 border-b border-stroke flex items-start justify-between gap-4">
+        <div>
+            <h2 class="text-[13px] font-semibold text-content-50">Ruchy magazynowe</h2>
+            <div class="text-[12px] text-content-500 mt-0.5">
+                Przyjęcia vs. wydania · {{ periodLabels[filters.period] ?? 'ostatnie 7 dni' }}
+            </div>
+        </div>
+        <div class="flex items-center gap-3 text-[12px] text-content-500 shrink-0 pt-0.5">
+            <span class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500/70 shrink-0"></span>
+                Przyjęcia
+            </span>
+            <span class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-violet-500/85 shrink-0"></span>
+                Wydania
+            </span>
+            <span class="flex items-center gap-1.5">
+                <span class="w-4 h-px bg-amber-400/90 shrink-0" style="border-top: 1.5px dashed oklch(0.78 0.14 75 / 0.9)"></span>
+                Trend
+            </span>
+        </div>
+    </div>
+
+    <div class="px-5 pt-4 pb-3" style="height: 220px;">
+        {{ render_chart(movementsChart, {class: 'w-full h-full'}) }}
+    </div>
+
+    <div class="border-t border-stroke grid grid-cols-3">
+        <div class="px-5 py-3 border-r border-stroke">
+            <div class="text-[11px] font-medium text-content-700 uppercase tracking-[0.06em]">Ilość przyjęć</div>
+            <div class="font-mono text-[17px] font-semibold text-emerald-400 tabular-nums mt-1">
+                {{ movementStats.receiptsCount }}
+                <span class="text-[12px] font-medium text-content-500">PZ</span>
+            </div>
+        </div>
+        <div class="px-5 py-3 border-r border-stroke">
+            <div class="text-[11px] font-medium text-content-700 uppercase tracking-[0.06em]">Ilość wydań</div>
+            <div class="font-mono text-[17px] font-semibold text-violet-400 tabular-nums mt-1">
+                {{ movementStats.releasesCount }}
+                <span class="text-[12px] font-medium text-content-500">WZ</span>
+            </div>
+        </div>
+        <div class="px-5 py-3">
+            <div class="text-[11px] font-medium text-content-700 uppercase tracking-[0.06em]">Bilans</div>
+            <div class="font-mono text-[17px] font-semibold tabular-nums mt-1 {{ movementStats.netBalance >= 0 ? 'text-emerald-400' : 'text-danger-500' }}">
+                {{ movementStats.netBalance > 0 ? '+' : '' }}{{ movementStats.netBalance }}
+                <span class="text-[12px] font-medium text-content-500">dok.</span>
+            </div>
+        </div>
+    </div>
+
+</div>

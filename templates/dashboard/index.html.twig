@@ -5,13 +5,7 @@
 {% block breadcrumb_current %}Pulpit{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-between mb-6">
-    <div>
-        <h1 class="text-[22px] font-semibold tracking-tight text-content-50 mb-1">Pulpit magazynu</h1>
-        <p class="text-content-500 text-[13px]">Magazyn główny B-1, Bytom</p>
-    </div>
-</div>
-<div class="w-32 h-96 bg-red-500/10"></div>
-<div class="w-32 h-96 bg-blue-500/10"></div>
-<div class="w-32 h-96 bg-green-500/10"></div>
+<turbo-frame id="page_content" data-turbo-action="advance">
+    {{ include('dashboard/content.html.twig') }}
+</turbo-frame>
 {% endblock %}
