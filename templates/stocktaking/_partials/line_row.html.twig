@@ -9,6 +9,12 @@
         <div class="text-[13px] text-content-50 truncate">{{ line.product.name }}</div>
         <div class="font-mono text-[11px] text-content-500 truncate mt-0.5">{{ line.product.sku }}</div>
     </td>
+    {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
+        <td class="px-3 py-3 text-right tabular-nums">
+            <span class="font-mono text-[12.5px] text-content-500">{{ line.expectedQuantity|number_format(3, ',', ' ') }}</span>
+            <span class="text-content-700 text-[11px]">{{ line.product.unit }}</span>
+        </td>
+    {% endif %}
     <td class="px-3 py-3">
         <form
             method="post"

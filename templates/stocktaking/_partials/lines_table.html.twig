@@ -16,14 +16,18 @@
         {% if stocktaking.isActive %}
             <colgroup>
                 <col class="w-[22%]">
-                <col class="w-[38%]">
-                <col class="w-[24%]">
-                <col class="w-[16%]">
+                <col class="{{ is_granted('ROLE_WAREHOUSE_MANAGER') ? 'w-[30%]' : 'w-[38%]' }}">
+                {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}<col class="w-[14%]">{% endif %}
+                <col class="w-[22%]">
+                <col class="w-[12%]">
             </colgroup>
             <thead>
                 <tr class="border-b border-stroke bg-surface-800/50">
                     <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Lokalizacja</th>
                     <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Produkt</th>
+                    {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
+                        <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Oczekiwano</th>
+                    {% endif %}
                     <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Policzono</th>
                     <th class="px-3 py-2.5 text-[11px] font-medium text-content-500"></th>
                 </tr>

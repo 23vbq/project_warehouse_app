@@ -2,11 +2,22 @@
     receipt: {label: 'PZ', icon: 'svg/pz.svg', class: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'},
     release: {label: 'WZ', icon: 'svg/wz.svg', class: 'text-violet-400 bg-violet-500/10 border-violet-500/20'},
     relocation: {label: 'MM', icon: 'svg/mm.svg', class: 'text-amber-400 bg-amber-500/10 border-amber-500/20'},
+    adjustment: {label: 'INW', icon: 'svg/inw.svg', class: 'text-orange-400 bg-orange-500/10 border-orange-500/20'},
 } %}
-{% set t = types[operation.documentType] ?? null %}
-{% if t %}
-    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border text-[11px] font-medium {{ t.class }}">
-        <div class="w-3 h-3 shrink-0">{{ source(t.icon) }}</div>
-        {{ t.label }}
-    </span>
+{% set type = types[operation.documentType] ?? null %}
+{% if type %}
+    {% if layout == 'icon' %}
+        <div class="w-11 h-11 rounded-[12px] border grid place-items-center shrink-0 {{ type.class }}">
+            <div class="w-5 h-5">{{ source(type.icon) }}</div>
+        </div>
+    {% elseif layout == 'icon-neutral' %}
+        <div class="w-8 h-8 rounded-lg bg-surface-800 border border-stroke flex items-center justify-center shrink-0 {{ type.class|split(' ')|first }}">
+            <div class="w-4 h-4">{{ source(type.icon) }}</div>
+        </div>
+    {% else %}
+        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border text-[11px] font-medium {{ type.class }}">
+            <div class="w-3 h-3 shrink-0">{{ source(type.icon) }}</div>
+            {{ type.label }}
+        </span>
+    {% endif %}
 {% endif %}
