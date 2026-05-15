@@ -64,7 +64,7 @@ class OperationService
         } elseif ($operation instanceof Relocation) {
             $this->confirmRelocation($operation);
         } elseif ($operation instanceof Adjustment) {
-            // Stock already updated by StocktakingService before confirm() is called
+            $this->confirmAdjustment($operation);
         }
 
         $operation->setStatus(OperationStatus::CONFIRMED);
@@ -94,6 +94,17 @@ class OperationService
                 $line->getLocationFrom(),
                 $line->getQuantity()
             );
+        }
+    }
+
+    private function confirmAdjustment(Adjustment $operation): void
+    {
+        foreach ($operation->getOperationLines() as $line) {
+            if (null !== $line->getLocationTo()) {
+                $this->stockService->add($line->getProduct(), $line->getLocationTo(), $line->getQuantity());
+            } else {
+                $this->stockService->subtract($line->getProduct(), $line->getLocationFrom(), $line->getQuantity());
+            }
         }
     }
 

@@ -16,7 +16,6 @@ class StocktakingService
 {
     public function __construct(
         private readonly StockRepository $stockRepository,
-        private readonly StockService $stockService,
         private readonly OperationService $operationService,
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -71,9 +70,7 @@ class StocktakingService
                 continue;
             }
 
-            $counted = $line->getCountedQuantity();
-            $expected = $line->getExpectedQuantity();
-            $diff = bcsub($counted, $expected, Stock::QUANTITY_SCALE);
+            $diff = bcsub($line->getCountedQuantity(), $line->getExpectedQuantity(), Stock::QUANTITY_SCALE);
 
             if (0 === bccomp($diff, '0', Stock::QUANTITY_SCALE)) {
                 continue;
@@ -91,7 +88,6 @@ class StocktakingService
             }
 
             $adjustment->addOperationLine($operationLine);
-            $this->stockService->set($line->getProduct(), $line->getLocation(), $counted);
         }
 
         $stocktaking->setStatus(StocktakingStatus::COMPLETED);

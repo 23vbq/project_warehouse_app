@@ -51,22 +51,6 @@ class StockService
         }
     }
 
-    public function set(
-        Product $product,
-        Location $location,
-        string $quantity,
-        bool $flush = false,
-    ): void {
-        $stock = $this->getStock($product, $location);
-        $stock->setQuantity($quantity);
-
-        if (0 === bccomp($quantity, '0', Stock::QUANTITY_SCALE)) {
-            $this->removeStock($stock, $flush);
-        } else {
-            $this->stockRepository->save($stock, $flush);
-        }
-    }
-
     private function getStock(
         Product $product,
         Location $location,
@@ -91,19 +75,5 @@ class StockService
         $this->cache[$cacheKey] = $stock;
 
         return $stock;
-    }
-
-    private function removeStock(
-        Stock $stock,
-        bool $flush = false,
-    ): void {
-        $cacheKey = $stock->getProduct()->getId().'_'.$stock->getLocation()->getId();
-        unset($this->cache[$cacheKey]);
-
-        if (null === $stock->getId()) {
-            return;
-        }
-
-        $this->stockRepository->remove($stock, $flush);
     }
 }
