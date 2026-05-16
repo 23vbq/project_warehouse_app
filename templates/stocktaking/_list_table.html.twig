@@ -1,0 +1,119 @@
+{% macro sortLink(label, field, align, orderBy, filters) %}
+    {% set isActive = orderBy.field == field %}
+    {% set nextDir = isActive and orderBy.direction == 'asc' ? 'desc' : 'asc' %}
+    {% set href = path('app_stocktaking_index', {
+        query: filters.query ?: null,
+        sort: field,
+        direction: nextDir,
+    }) %}
+    <a
+        href="{{ href }}"
+        data-turbo-action="advance"
+        class="flex items-center gap-1 {{ align == 'right' ? 'justify-end' : '' }} transition-colors {{ isActive ? 'text-content-50' : 'hover:text-content-50' }}"
+    >
+        {{ label }}
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            {% if isActive and orderBy.direction == 'asc' %}
+                <path d="M7 10l5-5 5 5"></path>
+            {% elseif isActive and orderBy.direction == 'desc' %}
+                <path d="M7 14l5 5 5-5"></path>
+            {% else %}
+                <path d="M7 10l5-5 5 5M7 14l5 5 5-5"></path>
+            {% endif %}
+        </svg>
+    </a>
+{% endmacro %}
+
+<turbo-frame id="stocktaking_list_table" data-turbo-filter-target="frame">
+<div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
+    <table class="w-full text-[13px] table-fixed">
+        <colgroup>
+            <col class="w-[7%]">
+            <col class="w-[13%]">
+            <col class="w-[13%]">
+            <col class="w-[13%]">
+            <col class="w-[9%]">
+            <col class="w-[13%]">
+            <col class="w-[16%]">
+            <col class="w-[16%]">
+        </colgroup>
+        <thead>
+            <tr class="border-b border-stroke">
+                <th class="px-4 py-3 text-left font-medium text-content-500">#</th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">
+                    {{ _self.sortLink('Utworzono', 'createdAt', 'left', orderBy, filters) }}
+                </th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">Operator</th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">
+                    {{ _self.sortLink('Status', 'status', 'left', orderBy, filters) }}
+                </th>
+                <th class="px-4 py-3 text-right font-medium text-content-500">Linie</th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">Dokument</th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">Uwagi</th>
+                <th class="px-4 py-3 text-left font-medium text-content-500">
+                    {{ _self.sortLink('Zakończono', 'completedAt', 'left', orderBy, filters) }}
+                </th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-stroke">
+            {% for row in pager %}
+                {% set stocktaking = row.stocktaking %}
+                <tr class="hover:bg-surface-800/50 transition-colors">
+                    <td class="px-4 py-3">
+                        <a href="{{ path('app_stocktaking_show', {id: stocktaking.id}) }}" class="font-mono font-medium text-content-50 underline hover:text-content-300 transition-colors">
+                            #{{ stocktaking.id }}
+                        </a>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="text-content-300">{{ stocktaking.createdAt|date('d.m.Y') }}</div>
+                        <div class="text-content-700 text-[11px]">{{ stocktaking.createdAt|date('H:i') }}</div>
+                    </td>
+                    <td class="px-4 py-3 text-content-300 truncate">
+                        {{ stocktaking.createdBy ? stocktaking.createdBy.getUserIdentifier() : '—' }}
+                    </td>
+                    <td class="px-4 py-3">
+                        {{ include('stocktaking/_partials/status.html.twig') }}
+                    </td>
+                    <td class="px-4 py-3 text-right font-mono text-content-300">
+                        <span class="{{ row.countedCount == row.totalCount and row.totalCount > 0 ? 'text-emerald-400' : 'text-content-300' }}">{{ row.countedCount }}</span>
+                        <span class="text-content-700">/</span>
+                        {{ row.totalCount }}
+                    </td>
+                    <td class="px-4 py-3">
+                        {% if stocktaking.adjustment %}
+                            <a href="{{ path('app_operation_show', {id: stocktaking.adjustment.id}) }}" class="font-mono text-[12px] font-medium text-content-50 underline hover:text-content-300 transition-colors">
+                                {{ stocktaking.adjustment.fullNumber }}
+                            </a>
+                        {% else %}
+                            <span class="text-content-700">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3 min-w-0">
+                        {% if stocktaking.notes %}
+                            <div data-controller="tooltip" class="min-w-0">
+                                <span class="text-content-500 truncate block cursor-default">{{ stocktaking.notes }}</span>
+                                {{ include('layout/_partials/tooltip.html.twig', {content: stocktaking.notes}) }}
+                            </div>
+                        {% else %}
+                            <span class="text-content-700">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3 text-content-500">
+                        {% if stocktaking.completedAt %}
+                            {{ stocktaking.completedAt|date('d.m.Y H:i') }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="100%" class="px-4 py-6 text-center text-content-500">Brak inwentaryzacji.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {{ pagerfanta(pager) }}
+</div>
+</turbo-frame>

@@ -14,7 +14,7 @@
         {{ product.type.label() }}
     </span>
 {% elseif product.type == constant('App\\Enum\\ProductType::CONSUMABLES') %}
-    <span class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-400 border-emerald-500/25">
+    <span title="Materiały eksploatacyjne" class="inline-flex items-center gap-1.5 text-[12px] font-medium px-2.5 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-400 border-emerald-500/25">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
         {{ product.type.label() }}
     </span>

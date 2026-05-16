@@ -15,12 +15,14 @@ use Doctrine\ORM\Mapping as ORM;
     Operation::TYPE_RECEIPT => Receipt::class,
     Operation::TYPE_RELEASE => Release::class,
     Operation::TYPE_RELOCATION => Relocation::class,
+    Operation::TYPE_ADJUSTMENT => Adjustment::class,
 ])]
 abstract class Operation
 {
     public const TYPE_RECEIPT = 'receipt';
     public const TYPE_RELEASE = 'release';
     public const TYPE_RELOCATION = 'relocation';
+    public const TYPE_ADJUSTMENT = 'adjustment';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

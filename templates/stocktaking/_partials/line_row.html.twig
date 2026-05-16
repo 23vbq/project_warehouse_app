@@ -1,0 +1,53 @@
+<tr id="stocktaking-line-{{ line.id }}" class="hover:bg-surface-800/30 transition-colors">
+    <td class="px-3 py-3 min-w-0">
+        <div class="font-mono text-[12.5px] text-content-50 truncate">{{ line.location.code }}</div>
+        {% if line.location.name %}
+            <div class="text-[11px] text-content-500 truncate mt-0.5">{{ line.location.name }}</div>
+        {% endif %}
+    </td>
+    <td class="px-3 py-3 min-w-0">
+        <div class="text-[13px] text-content-50 truncate">{{ line.product.name }}</div>
+        <div class="font-mono text-[11px] text-content-500 truncate mt-0.5">{{ line.product.sku }}</div>
+    </td>
+    {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
+        <td class="px-3 py-3 text-right tabular-nums">
+            <span class="font-mono text-[12.5px] text-content-500">{{ line.expectedQuantity|number_format(3, ',', ' ') }}</span>
+            <span class="text-content-700 text-[11px]">{{ line.product.unit }}</span>
+        </td>
+    {% endif %}
+    <td class="px-3 py-3">
+        <form
+            method="post"
+            action="{{ path('app_stocktaking_line_save', {id: stocktaking.id, line: line.id}) }}"
+            class="flex items-center justify-end gap-2"
+        >
+            <input type="hidden" name="_token" value="{{ csrf_token('save_line_' ~ line.id) }}">
+            <span class="input-wrap h-[30px] w-28">
+                <input
+                    type="number"
+                    name="counted_quantity"
+                    value="{{ line.countedQuantity }}"
+                    step="0.001"
+                    min="0"
+                    placeholder="0.000"
+                    class="text-right"
+                    autocomplete="off"
+                >
+            </span>
+            <button
+                type="submit"
+                class="h-[30px] px-3 text-[12px] font-medium text-content-300 bg-surface-700 border border-stroke rounded-lg hover:bg-surface-600 hover:text-content-50 transition-colors cursor-pointer shrink-0"
+            >
+                Zapisz
+            </button>
+        </form>
+    </td>
+    <td class="px-3 py-3">
+        {% if line.isSaved %}
+            <div class="flex items-center gap-1.5 text-emerald-400">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span class="text-[11.5px]">{{ line.savedAt|date('H:i') }}</span>
+            </div>
+        {% endif %}
+    </td>
+</tr>

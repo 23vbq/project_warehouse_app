@@ -24,9 +24,7 @@
         </a>
 
         <div class="flex items-center gap-3.5 min-w-0 flex-1">
-            <div class="w-11 h-11 rounded-[12px] border grid place-items-center shrink-0 {% if operation.documentType == 'receipt' %}bg-emerald-500/15 text-emerald-400 border-emerald-500/30{% elseif operation.documentType == 'release' %}bg-violet-500/15 text-violet-400 border-violet-500/35{% else %}bg-amber-500/15 text-amber-400 border-amber-500/30{% endif %}">
-                <div class="w-5 h-5">{% if operation.documentType == 'receipt' %}{{ source('svg/pz.svg') }}{% elseif operation.documentType == 'release' %}{{ source('svg/wz.svg') }}{% else %}{{ source('svg/mm.svg') }}{% endif %}</div>
-            </div>
+            {{ include('operation/_partials/type.html.twig', {operation: operation, layout: 'icon'}) }}
 
             <div class="min-w-0">
                 <div class="flex items-center gap-2.5 flex-wrap">
@@ -95,6 +93,8 @@
     {{ include('operation/_partials/receipt_show_meta.html.twig', {operation: operation}) }}
 {% elseif operation.documentType == 'release' %}
     {{ include('operation/_partials/release_show_meta.html.twig', {operation: operation}) }}
+{% elseif operation.documentType == 'adjustment' %}
+    {{ include('operation/_partials/adjustment_show_meta.html.twig', {operation: operation}) }}
 {% else %}
     {{ include('operation/_partials/relocation_show_meta.html.twig', {operation: operation}) }}
 {% endif %}
@@ -108,6 +108,8 @@
         {% elseif operation.documentType == 'release' %}
             {{ include('operation/_partials/release_show_details.html.twig', {operation: operation}) }}
             {{ include('operation/_partials/release_show_lines.html.twig', {operation: operation}) }}
+        {% elseif operation.documentType == 'adjustment' %}
+            {{ include('operation/_partials/adjustment_show_lines.html.twig', {operation: operation}) }}
         {% else %}
             {{ include('operation/_partials/relocation_show_details.html.twig', {operation: operation}) }}
             {{ include('operation/_partials/relocation_show_lines.html.twig', {operation: operation}) }}

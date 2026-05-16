@@ -1,0 +1,33 @@
+<turbo-frame id="stocktaking_edit">
+
+{{ form_start(form, {action: path('app_stocktaking_edit', {id: stocktaking.id}), attr: {class: 'flex flex-col', novalidate: 'novalidate', autocomplete: 'off'}}) }}
+
+<div class="px-[22px] py-[18px] flex flex-col gap-[18px]">
+
+    <div>
+        {{ form_label(form.notes, 'Uwagi', {label_attr: {class: 'block text-xs font-medium mb-1.5 ' ~ (form.notes.vars.errors|length ? 'text-danger-500' : 'text-content-500')}}) }}
+        {{ form_widget(form.notes, {attr: {rows: 4, placeholder: 'Opcjonalne uwagi do inwentaryzacji...', class: 'input-textarea ' ~ (form.notes.vars.errors|length ? 'input-textarea--error' : '')}}) }}
+        {% for error in form.notes.vars.errors %}<p class="text-xs mt-1.5" style="color:var(--color-danger-500)">{{ error.message }}</p>{% endfor %}
+    </div>
+
+</div>
+
+<div class="flex items-center justify-end gap-2 px-[22px] py-4 border-t border-stroke shrink-0">
+    <button
+        type="button"
+        data-modal-hide="modal-stocktaking-edit"
+        class="h-[34px] px-4 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors cursor-pointer"
+    >
+        Anuluj
+    </button>
+    <button
+        type="submit"
+        class="h-[34px] px-4 text-[13px] font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-400 transition-colors cursor-pointer"
+    >
+        Zapisz zmiany
+    </button>
+</div>
+
+{{ form_end(form) }}
+
+</turbo-frame>

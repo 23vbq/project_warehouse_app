@@ -1,0 +1,104 @@
+<div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-stroke">
+        <div>
+            <div class="text-[14px] font-semibold text-content-50">Arkusz inwentaryzacyjny</div>
+            <div class="text-[12px] text-content-500 mt-0.5">{{ stocktaking.stocktakingLines|length }} pozycji</div>
+        </div>
+    </div>
+
+    <table class="w-full text-[13px] table-fixed">
+        {% if stocktaking.isActive %}
+            <colgroup>
+                <col class="w-[22%]">
+                <col class="{{ is_granted('ROLE_WAREHOUSE_MANAGER') ? 'w-[34%]' : 'w-[42%]' }}">
+                {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}<col class="w-[14%]">{% endif %}
+                <col class="w-[22%]">
+                <col class="w-[6%]">
+            </colgroup>
+            <thead>
+                <tr class="border-b border-stroke bg-surface-800/50">
+                    <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Lokalizacja</th>
+                    <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Produkt</th>
+                    {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
+                        <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Oczekiwano</th>
+                    {% endif %}
+                    <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Policzono</th>
+                    <th class="px-3 py-2.5 text-[11px] font-medium text-content-500"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-stroke">
+                {% for line in lines %}
+                    {{ include('stocktaking/_partials/line_row.html.twig') }}
+                {% else %}
+                    <tr>
+                        <td colspan="100%" class="px-4 py-6 text-center text-content-500">Brak linii inwentaryzacyjnych.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        {% else %}
+            <colgroup>
+                <col class="w-[20%]">
+                <col class="w-[34%]">
+                <col class="w-[15%]">
+                <col class="w-[15%]">
+                <col class="w-[16%]">
+            </colgroup>
+            <thead>
+                <tr class="border-b border-stroke bg-surface-800/50">
+                    <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Lokalizacja</th>
+                    <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Produkt</th>
+                    <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Oczekiwano</th>
+                    <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Policzono</th>
+                    <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Różnica</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-stroke">
+                {% for line in lines %}
+                    {% set diff = line.countedQuantity is not null ? (line.countedQuantity - line.expectedQuantity) : null %}
+                    <tr class="hover:bg-surface-800/30 transition-colors">
+                        <td class="px-3 py-3 min-w-0">
+                            <div class="font-mono text-[12.5px] text-content-50 truncate">{{ line.location.code }}</div>
+                            {% if line.location.name %}
+                                <div class="text-[11px] text-content-500 truncate mt-0.5">{{ line.location.name }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="px-3 py-3 min-w-0">
+                            <div class="text-[13px] text-content-50 truncate">{{ line.product.name }}</div>
+                            <div class="font-mono text-[11px] text-content-500 truncate mt-0.5">{{ line.product.sku }}</div>
+                        </td>
+                        <td class="px-3 py-3 text-right tabular-nums">
+                            <span class="font-mono text-[12.5px] text-content-500">{{ line.expectedQuantity|number_format(3, ',', ' ') }}</span>
+                            <span class="text-content-700 text-[11px]">{{ line.product.unit }}</span>
+                        </td>
+                        <td class="px-3 py-3 text-right tabular-nums">
+                            {% if line.countedQuantity is not null %}
+                                <span class="font-mono text-[12.5px] text-content-50">{{ line.countedQuantity|number_format(3, ',', ' ') }}</span>
+                                <span class="text-content-700 text-[11px]">{{ line.product.unit }}</span>
+                            {% else %}
+                                <span class="text-content-700">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-3 py-3 text-right tabular-nums">
+                            {% if diff is not null %}
+                                {% if diff > 0 %}
+                                    <span class="font-mono text-[12.5px] text-emerald-400">+{{ diff|number_format(3, ',', ' ') }}</span>
+                                {% elseif diff < 0 %}
+                                    <span class="font-mono text-[12.5px] text-danger-500">{{ diff|number_format(3, ',', ' ') }}</span>
+                                {% else %}
+                                    <span class="font-mono text-[12.5px] text-content-500">0,000</span>
+                                {% endif %}
+                                <span class="text-content-700 text-[11px]">{{ line.product.unit }}</span>
+                            {% else %}
+                                <span class="text-content-700">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="px-4 py-6 text-center text-content-500">Brak linii inwentaryzacyjnych.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        {% endif %}
+    </table>
+</div>

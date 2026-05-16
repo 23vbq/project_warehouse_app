@@ -1,0 +1,98 @@
+{% extends 'layout/app.html.twig' %}
+
+{% block title %}{{ product.name }} — RimFlowMS{% endblock %}
+
+{% block breadcrumb %}
+    <span>Magazyn</span>
+    <span class="text-content-700">/</span>
+    <a href="{{ path('app_product_index') }}" class="hover:text-content-300 transition-colors">Produkty</a>
+    <span class="text-content-700">/</span>
+    <span class="text-content-50 font-medium">{{ product.name }}</span>
+{% endblock %}
+
+{% block content %}
+<turbo-frame id="page_content" data-turbo-action="advance">
+
+<div class="flex items-center justify-between mb-6 gap-4">
+    <div class="flex items-center gap-3.5 min-w-0 flex-1">
+        <a
+            href="{{ path('app_product_index') }}"
+            target="_top"
+            class="w-[34px] h-[34px] rounded-lg bg-surface-800 border border-stroke flex items-center justify-center text-content-500 hover:text-content-50 hover:bg-surface-700 transition-colors shrink-0"
+        >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+        </a>
+
+        <div class="flex items-center gap-3.5 min-w-0 flex-1">
+            {{ include('product/_partials/icon.html.twig') }}
+
+            <div class="min-w-0">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <h1 class="text-[19px] font-semibold text-content-50 tracking-tight">{{ product.name }}</h1>
+                    {{ include('product/_partials/type.html.twig') }}
+                    {{ include('product/_partials/status.html.twig') }}
+                </div>
+                <div class="flex items-center gap-2 text-[12.5px] text-content-500 mt-1">
+                    <span class="font-mono" title="SKU">{{ product.sku }}</span>
+                    {% if product.ean %}
+                        <span class="text-content-700">|</span>
+                        <span class="font-mono" title="EAN">{{ product.ean }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-2 shrink-0">
+        {% if is_granted('ROLE_WAREHOUSE_MANAGER') and product.isActive %}
+            <button
+                type="button"
+                data-controller="turbo"
+                data-action="click->turbo#open"
+                data-turbo-frame-id="product_edit"
+                data-url="{{ path('app_product_edit', {id: product.id, return: 'show'}) }}"
+                data-modal-target="modal-product-edit"
+                data-modal-toggle="modal-product-edit"
+                class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors cursor-pointer"
+            >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                Edytuj
+            </button>
+        {% endif %}
+    </div>
+</div>
+
+{{ include('product/_partials/show_kpi.html.twig', {product: product, kpi: kpi}) }}
+
+<div class="grid grid-cols-[1fr_300px] gap-3.5 items-start">
+
+    <div>
+        {{ include('product/_partials/show_stock.html.twig', {product: product, stocks: stocks}) }}
+
+        <turbo-frame
+            id="product-movements-{{ product.id }}"
+            src="{{ path('app_product_movements', {id: product.id}) }}"
+            loading="lazy"
+            class="relative block min-h-[120px]"
+        >
+            {{ include('layout/_partials/loader.html.twig') }}
+        </turbo-frame>
+    </div>
+
+    <aside class="space-y-3.5">
+        {{ include('product/_partials/show_details.html.twig', {product: product}) }}
+        {{ include('product/_partials/show_trend.html.twig', {chart: chart, trendStats: trendStats, product: product}) }}
+    </aside>
+
+</div>
+
+{{ include('layout/_partials/modal.html.twig', {
+    elementId: 'modal-product-edit',
+    turboFrameId: 'product_edit',
+    title: 'Edytuj produkt',
+    subtitle: 'Zmień dane indeksu magazynowego',
+    icon: source('svg/edit.svg'),
+}) }}
+
+</turbo-frame>
+{% endblock %}

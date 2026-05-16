@@ -119,6 +119,17 @@ class ProductRepository extends ServiceEntityRepository
             ->getSingleResult();
     }
 
+    public function countAll(): int
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)');
+
+        $this->addActiveFilter($qb, 'p');
+
+        return (int) $qb->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function searchByQuery(string $query, int $limit = 10): array
     {
         $qb = $this->createQueryBuilder('p')
@@ -135,5 +146,36 @@ class ProductRepository extends ServiceEntityRepository
 
         return $qb->getQuery()
             ->getResult();
+    }
+
+    public function getKpiQueryBuilder(): QueryBuilder
+    {
+        return $this->createQueryBuilder('p')
+            ->select(
+                'SUM(s.quantity) as totalStock',
+                'SUM(s.quantity * p.unitPrice) as totalValue',
+                'COUNT(DISTINCT s.location) as locationCount'
+            )
+            ->leftJoin('p.stocks', 's');
+    }
+
+    public function getKpiForProduct(Product $product): array
+    {
+        return $this->getKpiQueryBuilder()
+            ->where('p.id = :productId')
+            ->setParameter('productId', $product->getId())
+            ->groupBy('p.id')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function getGlobalKpi(): array
+    {
+        $qb = $this->getKpiQueryBuilder()
+            ->addSelect('COUNT(DISTINCT p.id) as productCount');
+
+        $this->addActiveFilter($qb, 'p');
+
+        return $qb->getQuery()->getSingleResult() ?? [];
     }
 }

@@ -18,6 +18,7 @@ doctrine:
             numeric_functions:
                 year: DoctrineExtensions\Query\Mysql\Year
                 month: DoctrineExtensions\Query\Mysql\Month
+                date: DoctrineExtensions\Query\Mysql\Date
         auto_mapping: true
         mappings:
             App:

@@ -1,0 +1,40 @@
+<div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
+
+    <div class="px-5 py-4 border-b border-stroke">
+        <h2 class="text-[13px] font-semibold text-content-50">Heatmapa lokalizacji</h2>
+    </div>
+
+    <div class="p-4">
+        {% if locationHeatmap is empty %}
+            <p class="text-[13px] text-content-500">Brak danych magazynowych.</p>
+        {% else %}
+            {% set maxTotal = 0 %}
+            {% for tile in locationHeatmap %}
+                {% if tile.total > maxTotal %}{% set maxTotal = tile.total %}{% endif %}
+            {% endfor %}
+
+            <div class="flex flex-wrap gap-1">
+                {% for tile in locationHeatmap %}
+                    <div
+                        class="flex items-center justify-center rounded px-2 py-1.5 min-w-[48px] cursor-default {{ tile.opacity == 0 ? 'bg-surface-800' : '' }}"
+                        {% if tile.opacity > 0 %}
+                            style="background-color: oklch(0.72 0.14 155 / {{ tile.opacity }})"
+                        {% endif %}
+                        title="{{ tile.name }}: {{ tile.total }}"
+                    >
+                        <span class="font-mono text-[11px] font-medium text-white leading-none">{{ tile.code }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-8 space-y-1">
+                <div class="h-1.5 rounded-full" style="background: linear-gradient(to right, oklch(0.72 0.14 155 / 0), oklch(0.72 0.14 155 / 1))"></div>
+                <div class="flex justify-between">
+                    <span class="font-mono text-[11px] text-content-500">0.000</span>
+                    <span class="font-mono text-[11px] text-content-500">{{ maxTotal }}</span>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
