@@ -39,12 +39,16 @@ class StocktakingService
         $this->entityManager->flush();
     }
 
-    public function saveLine(StocktakingLine $line, string $countedQuantity, User $savedBy): void
+    public function saveLine(StocktakingLine $line, ?string $countedQuantity, User $savedBy): void
     {
         $stocktaking = $line->getStocktaking();
 
-        if (StocktakingStatus::COMPLETED === $stocktaking->getStatus()) {
-            throw new \DomainException('Cannot modify line of completed stocktaking');
+        if (!$stocktaking->isActive()) {
+            throw new \DomainException('Nie można modyfikować linii zakończonej lub anulowanej inwentaryzacji.');
+        }
+
+        if (null !== $countedQuantity && (!is_numeric($countedQuantity) || bccomp($countedQuantity, '0', Stock::QUANTITY_SCALE) < 0)) {
+            throw new \DomainException('Podana ilość jest nieprawidłowa.');
         }
 
         $line->setCountedQuantity($countedQuantity);
@@ -60,6 +64,10 @@ class StocktakingService
 
     public function complete(Stocktaking $stocktaking, User $completedBy): void
     {
+        if (!$stocktaking->isActive()) {
+            throw new \DomainException('Nie można zatwierdzić zakończonej lub anulowanej inwentaryzacji.');
+        }
+
         $adjustment = new Adjustment();
         $adjustment->setDocumentDate(new \DateTimeImmutable());
         $adjustment->setCreatedBy($completedBy);
@@ -101,6 +109,10 @@ class StocktakingService
 
     public function cancel(Stocktaking $stocktaking, User $cancelledBy): void
     {
+        if (!$stocktaking->isActive()) {
+            throw new \DomainException('Nie można anulować zakończonej lub anulowanej inwentaryzacji.');
+        }
+
         $stocktaking->setStatus(StocktakingStatus::CANCELLED);
         $stocktaking->setCompletedAt(new \DateTimeImmutable());
         $stocktaking->setCompletedBy($cancelledBy);

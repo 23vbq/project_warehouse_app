@@ -90,7 +90,18 @@ class StocktakingController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $service->saveLine($line, $request->request->get('counted_quantity'), $this->getUser());
+        if (!$this->isCsrfTokenValid('save_line_'.$line->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $raw = $request->request->get('counted_quantity');
+        $countedQuantity = ('' === $raw || null === $raw) ? null : $raw;
+
+        try {
+            $service->saveLine($line, $countedQuantity, $this->getUser());
+        } catch (\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
 
         return $this->turboRedirectToRoute($request, 'app_stocktaking_show', ['id' => $stocktaking->getId()]);
     }
@@ -103,9 +114,12 @@ class StocktakingController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $service->complete($stocktaking, $this->getUser());
-
-        $this->addFlash('success', 'Inwentaryzacja została zatwierdzona.');
+        try {
+            $service->complete($stocktaking, $this->getUser());
+            $this->addFlash('success', 'Inwentaryzacja została zatwierdzona.');
+        } catch (\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
 
         return $this->redirectToRoute('app_stocktaking_show', ['id' => $stocktaking->getId()]);
     }
@@ -118,9 +132,12 @@ class StocktakingController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $service->cancel($stocktaking, $this->getUser());
-
-        $this->addFlash('success', 'Inwentaryzacja została anulowana.');
+        try {
+            $service->cancel($stocktaking, $this->getUser());
+            $this->addFlash('success', 'Inwentaryzacja została anulowana.');
+        } catch (\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
 
         return $this->redirectToRoute('app_stocktaking_show', ['id' => $stocktaking->getId()]);
     }
