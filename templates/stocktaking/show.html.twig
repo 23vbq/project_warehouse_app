@@ -45,6 +45,19 @@
 
     {% if is_granted('ROLE_WAREHOUSE_MANAGER') and stocktaking.isActive %}
         <div class="flex items-center gap-2 shrink-0">
+            <button
+                type="button"
+                data-controller="turbo"
+                data-action="click->turbo#open"
+                data-turbo-frame-id="stocktaking_edit"
+                data-url="{{ path('app_stocktaking_edit', {id: stocktaking.id}) }}"
+                data-modal-target="modal-stocktaking-edit"
+                data-modal-toggle="modal-stocktaking-edit"
+                class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors cursor-pointer"
+            >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                Edytuj
+            </button>
             <form method="post" action="{{ path('app_stocktaking_cancel', {id: stocktaking.id}) }}" data-turbo-frame="_top" onsubmit="return confirm('Czy na pewno chcesz anulować inwentaryzację #{{ stocktaking.id }}?')">
                 <input type="hidden" name="_token" value="{{ csrf_token('cancel_stocktaking_' ~ stocktaking.id) }}">
                 <button type="submit" class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-danger-500 bg-surface-800 border border-danger-500/30 rounded-lg hover:bg-danger-500/10 transition-colors cursor-pointer">
@@ -111,6 +124,13 @@
 <div class="grid grid-cols-[1fr_280px] gap-3.5 items-start">
 
     <div>
+        <div class="bg-surface-900 border border-stroke rounded-xl p-4 mb-3.5 flex flex-col gap-3">
+            <div>
+                <div class="text-[11px] text-content-500 uppercase tracking-[0.06em] font-semibold">Uwagi</div>
+                <div class="text-[13px] text-content-50 mt-1 whitespace-pre-wrap">{{ stocktaking.notes ?: '—' }}</div>
+            </div>
+        </div>
+
         {{ include('stocktaking/_partials/lines_table.html.twig') }}
     </div>
 
@@ -140,12 +160,6 @@
                     <li class="flex items-start justify-between py-2.5 gap-3">
                         <dt class="text-[12px] text-content-500 shrink-0">{{ stocktaking.status.value == 'cancelled' ? 'Anulował' : 'Zakończył' }}</dt>
                         <dd class="text-[12.5px] text-content-50 text-right">{{ stocktaking.completedBy ? stocktaking.completedBy.getUserIdentifier() : '—' }}</dd>
-                    </li>
-                {% endif %}
-                {% if stocktaking.notes %}
-                    <li class="flex items-start justify-between py-2.5 gap-3">
-                        <dt class="text-[12px] text-content-500 shrink-0">Uwagi</dt>
-                        <dd class="text-[12.5px] text-content-300 text-right break-words">{{ stocktaking.notes }}</dd>
                     </li>
                 {% endif %}
             </ul>
@@ -188,4 +202,15 @@
 </div>
 
 </turbo-frame>
+
+{% if is_granted('ROLE_WAREHOUSE_MANAGER') %}
+    {{ include('layout/_partials/modal.html.twig', {
+        elementId: 'modal-stocktaking-edit',
+        turboFrameId: 'stocktaking_edit',
+        title: 'Edytuj inwentaryzację',
+        subtitle: '#' ~ stocktaking.id,
+        icon: source('svg/edit.svg'),
+    }) }}
+{% endif %}
+
 {% endblock %}

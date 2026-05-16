@@ -9,6 +9,7 @@ use App\Repository\StocktakingLineRepository;
 use App\Repository\StocktakingRepository;
 use App\Service\StocktakingService;
 use App\Traits\TurboTrait;
+use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -81,6 +82,37 @@ class StocktakingController extends AbstractController
         return $this->render('stocktaking/show.html.twig', [
             'stocktaking' => $stocktaking,
             'lines' => $lineRepository->findSortedByStocktaking($stocktaking),
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_stocktaking_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_WAREHOUSE_MANAGER')]
+    public function edit(Request $request, Stocktaking $stocktaking, EntityManagerInterface $em): Response
+    {
+        if (!$request->headers->has('Turbo-Frame')) {
+            return $this->redirectToRoute('app_stocktaking_show', ['id' => $stocktaking->getId()]);
+        }
+
+        if (!$stocktaking->isActive()) {
+            $this->addFlash('error', 'Nie można edytować zakończonej lub anulowanej inwentaryzacji.');
+
+            return $this->turboRedirectToRoute($request, 'app_stocktaking_show', ['id' => $stocktaking->getId()]);
+        }
+
+        $form = $this->createForm(StocktakingType::class, $stocktaking);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+
+            $this->addFlash('success', 'Inwentaryzacja została zaktualizowana.');
+
+            return $this->turboRedirectToRoute($request, 'app_stocktaking_show', ['id' => $stocktaking->getId()]);
+        }
+
+        return $this->render('stocktaking/edit.html.twig', [
+            'form' => $form,
+            'stocktaking' => $stocktaking,
         ]);
     }
 
