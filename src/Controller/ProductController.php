@@ -44,18 +44,22 @@ class ProductController extends AbstractController
         $pager->setMaxPerPage(25);
         $pager->setCurrentPage(max(1, $request->query->getInt('page', 1)));
 
+        $allProductsCount = null;
         $view = 'product/index.html.twig';
         $turboFrameId = $request->headers->get('Turbo-Frame');
         if ('product_list' === $turboFrameId) {
             $view = 'product/list.html.twig';
         } elseif ('product_list_table' === $turboFrameId) {
             $view = 'product/_list_table.html.twig';
+        } else {
+            $allProductsCount = $repository->countAll();
         }
 
         return $this->render($view, [
             'pager' => $pager,
             'filters' => $filters,
             'orderBy' => $orderBy,
+            'allProductsCount' => $allProductsCount,
         ]);
     }
 

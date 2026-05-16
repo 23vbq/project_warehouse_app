@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Adjustment;
 use App\Entity\Operation;
 use App\Entity\Receipt;
 use App\Entity\Release;
@@ -28,6 +29,7 @@ class OperationService
             Operation::TYPE_RECEIPT => 'PZ',
             Operation::TYPE_RELEASE => 'WZ',
             Operation::TYPE_RELOCATION => 'MM',
+            Operation::TYPE_ADJUSTMENT => 'INW',
         ];
 
         $documentType = $operation->getDocumentType();
@@ -61,6 +63,8 @@ class OperationService
             $this->confirmRelease($operation);
         } elseif ($operation instanceof Relocation) {
             $this->confirmRelocation($operation);
+        } elseif ($operation instanceof Adjustment) {
+            $this->confirmAdjustment($operation);
         }
 
         $operation->setStatus(OperationStatus::CONFIRMED);
@@ -90,6 +94,17 @@ class OperationService
                 $line->getLocationFrom(),
                 $line->getQuantity()
             );
+        }
+    }
+
+    private function confirmAdjustment(Adjustment $operation): void
+    {
+        foreach ($operation->getOperationLines() as $line) {
+            if (null !== $line->getLocationTo()) {
+                $this->stockService->add($line->getProduct(), $line->getLocationTo(), $line->getQuantity());
+            } else {
+                $this->stockService->subtract($line->getProduct(), $line->getLocationFrom(), $line->getQuantity());
+            }
         }
     }
 
@@ -126,6 +141,8 @@ class OperationService
             $this->validateReleaseForConfirmation($operation);
         } elseif ($operation instanceof Relocation) {
             $this->validateRelocationForConfirmation($operation);
+        } elseif ($operation instanceof Adjustment) {
+            $this->validateAdjustmentForConfirmation($operation);
         }
     }
 
@@ -189,6 +206,22 @@ class OperationService
             }
             if ($locationFrom === $locationTo) {
                 throw new \DomainException(sprintf('Lokalizacja źródłowa i docelowa nie mogą być takie same dla pozycji "%s".', $line->getProduct()->getName()));
+            }
+        }
+    }
+
+    private function validateAdjustmentForConfirmation(Adjustment $operation): void
+    {
+        foreach ($operation->getOperationLines() as $line) {
+            if (null === $line->getQuantity()) {
+                continue;
+            }
+
+            $hasLocationFrom = null !== $line->getLocationFrom();
+            $hasLocationTo = null !== $line->getLocationTo();
+
+            if ($hasLocationFrom === $hasLocationTo) {
+                throw new \DomainException(sprintf('Pozycja "%s" musi mieć ustawioną dokładnie jedną lokalizację (źródłową lub docelową).', $line->getProduct()->getName()));
             }
         }
     }

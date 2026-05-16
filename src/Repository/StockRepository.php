@@ -34,6 +34,16 @@ class StockRepository extends ServiceEntityRepository
         }
     }
 
+    public function findAllWithRelations(): array
+    {
+        return $this->createQueryBuilder('s')
+            ->select('s', 'p', 'l')
+            ->innerJoin('s.product', 'p')
+            ->innerJoin('s.location', 'l')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findByProduct(int $productId): array
     {
         return $this->createQueryBuilder('s')

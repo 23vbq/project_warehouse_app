@@ -1,0 +1,47 @@
+<table class="w-full text-[13px] table-fixed">
+    <colgroup>
+        <col class="w-8">
+        <col class="w-[40%]">
+        <col class="w-[30%]">
+        <col class="w-[22%]">
+    </colgroup>
+    <thead>
+        <tr class="border-b border-stroke bg-surface-800/50">
+            <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-700">#</th>
+            <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Produkt / SKU</th>
+            <th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Lokalizacja</th>
+            <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Korekta</th>
+        </tr>
+    </thead>
+    <tbody class="divide-y divide-stroke">
+    {% for line in operation.operationLines %}
+        {% set isGain = line.locationTo is not null %}
+        {% set location = isGain ? line.locationTo : line.locationFrom %}
+        <tr class="hover:bg-surface-800/30 transition-colors">
+            <td class="px-3 py-3 text-content-700 text-[11px]">{{ loop.index }}</td>
+            <td class="px-3 py-3 min-w-0">
+                <a href="{{ path('app_product_show', {id: line.product.id}) }}" class="text-[13px] font-medium text-content-50 leading-tight truncate underline hover:text-content-300 transition-colors block">{{ line.product.name }}</a>
+                <div class="font-mono text-[11.5px] text-content-500 leading-tight truncate mt-0.5">{{ line.product.sku }}</div>
+            </td>
+            <td class="px-3 py-3">
+                {% if location %}
+                    <div class="font-mono text-[12.5px] text-content-50 leading-tight">{{ location.code }}</div>
+                    {% if location.name %}
+                        <div class="text-[11px] text-content-500 leading-tight mt-0.5 truncate">{{ location.name }}</div>
+                    {% endif %}
+                {% else %}
+                    <span class="text-content-700">—</span>
+                {% endif %}
+            </td>
+            <td class="px-3 py-3 text-right tabular-nums">
+                <span class="font-mono text-[12.5px] {{ operation.isConfirmed ? (isGain ? 'text-emerald-400' : 'text-danger-500') : 'text-content-300' }}">{{ isGain ? '+' : '−' }}{{ line.quantity|number_format(3, ',', ' ') }}</span>
+                <span class="text-content-500">{{ line.product.unit }}</span>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="4" class="px-4 py-6 text-center text-content-500">Brak pozycji korekty.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
