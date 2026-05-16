@@ -56,7 +56,8 @@
             </tr>
         </thead>
         <tbody class="divide-y divide-stroke">
-            {% for stocktaking in pager %}
+            {% for row in pager %}
+                {% set stocktaking = row.stocktaking %}
                 <tr class="hover:bg-surface-800/50 transition-colors">
                     <td class="px-4 py-3">
                         <a href="{{ path('app_stocktaking_show', {id: stocktaking.id}) }}" class="font-mono font-medium text-content-50 underline hover:text-content-300 transition-colors">
@@ -74,11 +75,9 @@
                         {{ include('stocktaking/_partials/status.html.twig') }}
                     </td>
                     <td class="px-4 py-3 text-right font-mono text-content-300">
-                        {% set counted = stocktaking.stocktakingLines|filter(l => l.countedQuantity is not null)|length %}
-                        {% set total = stocktaking.stocktakingLines|length %}
-                        <span class="{{ counted == total and total > 0 ? 'text-emerald-400' : 'text-content-300' }}">{{ counted }}</span>
+                        <span class="{{ row.countedCount == row.totalCount and row.totalCount > 0 ? 'text-emerald-400' : 'text-content-300' }}">{{ row.countedCount }}</span>
                         <span class="text-content-700">/</span>
-                        {{ total }}
+                        {{ row.totalCount }}
                     </td>
                     <td class="px-4 py-3">
                         {% if stocktaking.adjustment %}

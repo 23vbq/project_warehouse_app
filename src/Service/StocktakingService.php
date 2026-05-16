@@ -23,7 +23,7 @@ class StocktakingService
 
     public function create(Stocktaking $stocktaking): void
     {
-        $stocks = $this->stockRepository->findAll();
+        $stocks = $this->stockRepository->findAllWithRelations();
 
         foreach ($stocks as $stock) {
             $line = (new StocktakingLine())

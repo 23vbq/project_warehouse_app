@@ -23,8 +23,13 @@ class StocktakingRepository extends ServiceEntityRepository
     public function createIndexQueryBuilder(array $filters = [], array $orderBy = []): QueryBuilder
     {
         $qb = $this->createQueryBuilder('st')
+            ->select('st as stocktaking')
             ->leftJoin('st.createdBy', 'u')
-            ->addSelect('u');
+            ->addSelect('u')
+            ->leftJoin('st.stocktakingLines', 'sl')
+            ->addSelect('COUNT(sl.id) as totalCount')
+            ->addSelect('COUNT(sl.savedAt) as countedCount')
+            ->groupBy('st.id');
 
         if (!empty($filters['query'])) {
             $qb->andWhere('st.id = :query')
