@@ -1,9 +1,3 @@
-{% set lines = stocktaking.stocktakingLines|sort((a, b) =>
-    a.location.code == b.location.code
-        ? (a.product.name < b.product.name ? -1 : 1)
-        : (a.location.code < b.location.code ? -1 : 1),
-) %}
-
 <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
     <div class="flex items-center justify-between px-5 py-4 border-b border-stroke">
         <div>
@@ -16,10 +10,10 @@
         {% if stocktaking.isActive %}
             <colgroup>
                 <col class="w-[22%]">
-                <col class="{{ is_granted('ROLE_WAREHOUSE_MANAGER') ? 'w-[30%]' : 'w-[38%]' }}">
+                <col class="{{ is_granted('ROLE_WAREHOUSE_MANAGER') ? 'w-[34%]' : 'w-[42%]' }}">
                 {% if is_granted('ROLE_WAREHOUSE_MANAGER') %}<col class="w-[14%]">{% endif %}
                 <col class="w-[22%]">
-                <col class="w-[12%]">
+                <col class="w-[6%]">
             </colgroup>
             <thead>
                 <tr class="border-b border-stroke bg-surface-800/50">

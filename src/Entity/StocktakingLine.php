@@ -115,6 +115,11 @@ class StocktakingLine
         return $this;
     }
 
+    public function isSaved(): bool
+    {
+        return null !== $this->savedAt;
+    }
+
     public function getSavedBy(): ?User
     {
         return $this->savedBy;

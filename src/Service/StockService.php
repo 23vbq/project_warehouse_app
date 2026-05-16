@@ -76,4 +76,14 @@ class StockService
 
         return $stock;
     }
+
+    private function removeStock(
+        Stock $stock,
+        bool $flush = false,
+    ): void {
+        $cacheKey = $stock->getProduct()->getId().'_'.$stock->getLocation()->getId();
+        unset($this->cache[$cacheKey]);
+
+        $this->stockRepository->remove($stock, $flush);
+    }
 }

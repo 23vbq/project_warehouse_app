@@ -214,7 +214,7 @@ class OperationService
     {
         foreach ($operation->getOperationLines() as $line) {
             if (null === $line->getQuantity()) {
-                throw new \DomainException(sprintf('Ilość jest wymagana dla pozycji "%s".', $line->getProduct()->getName()));
+                continue;
             }
 
             $hasLocationFrom = null !== $line->getLocationFrom();

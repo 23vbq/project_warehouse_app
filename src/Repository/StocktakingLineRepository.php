@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Stocktaking;
 use App\Entity\StocktakingLine;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +17,20 @@ class StocktakingLineRepository extends ServiceEntityRepository
         parent::__construct($registry, StocktakingLine::class);
     }
 
-    //    /**
-    //     * @return StocktakingLine[] Returns an array of StocktakingLine objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?StocktakingLine
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * @return StocktakingLine[]
+     */
+    public function findSortedByStocktaking(Stocktaking $stocktaking): array
+    {
+        return $this->createQueryBuilder('sl')
+            ->innerJoin('sl.location', 'l')
+            ->innerJoin('sl.product', 'p')
+            ->addSelect('l', 'p')
+            ->where('sl.stocktaking = :stocktaking')
+            ->orderBy('l.code', 'ASC')
+            ->addOrderBy('p.name', 'ASC')
+            ->setParameter('stocktaking', $stocktaking)
+            ->getQuery()
+            ->getResult();
+    }
 }

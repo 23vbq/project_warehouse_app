@@ -52,8 +52,13 @@ class StocktakingService
         }
 
         $line->setCountedQuantity($countedQuantity);
-        $line->setSavedAt(new \DateTimeImmutable());
-        $line->setSavedBy($savedBy);
+        if (null !== $countedQuantity) {
+            $line->setSavedAt(new \DateTimeImmutable());
+            $line->setSavedBy($savedBy);
+        } else {
+            $line->setSavedAt(null);
+            $line->setSavedBy(null);
+        }
 
         if (StocktakingStatus::OPEN === $stocktaking->getStatus()) {
             $stocktaking->setStatus(StocktakingStatus::IN_PROGRESS);
@@ -74,7 +79,7 @@ class StocktakingService
         $adjustment->setStocktaking($stocktaking);
 
         foreach ($stocktaking->getStocktakingLines() as $line) {
-            if (null === $line->getCountedQuantity()) {
+            if (!$line->isSaved()) {
                 continue;
             }
 

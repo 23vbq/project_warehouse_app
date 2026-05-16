@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Stocktaking;
 use App\Entity\StocktakingLine;
 use App\Form\StocktakingType;
+use App\Repository\StocktakingLineRepository;
 use App\Repository\StocktakingRepository;
 use App\Service\StocktakingService;
 use App\Traits\TurboTrait;
@@ -75,10 +76,11 @@ class StocktakingController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_stocktaking_show', requirements: ['id' => '\d+'])]
-    public function show(Stocktaking $stocktaking): Response
+    public function show(Stocktaking $stocktaking, StocktakingLineRepository $lineRepository): Response
     {
         return $this->render('stocktaking/show.html.twig', [
             'stocktaking' => $stocktaking,
+            'lines' => $lineRepository->findSortedByStocktaking($stocktaking),
         ]);
     }
 
