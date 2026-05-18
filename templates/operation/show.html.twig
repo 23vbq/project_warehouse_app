@@ -101,7 +101,7 @@
 {% if corrections is defined and corrections|length > 0 %}
     <div class="flex items-center gap-3 px-4 py-3 mb-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[13px] text-amber-400">
         <span class="shrink-0 w-4 h-4">{{ source('svg/alert-triangle.svg') }}</span>
-        <span class="font-medium">Operacja posiada {{ corrections|length == 1 ? 'korektę' : 'korekty' }} ({{ corrections|length }})</span>
+        <span class="font-medium">Operacja posiada {{ corrections|length }} {{ pluralize(corrections|length, 'korektę', 'korekty', 'korekt') }}</span>
         <span class="text-amber-500/70">— stan magazynowy mógł ulec zmianie</span>
     </div>
 {% endif %}
@@ -140,7 +140,7 @@
             <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden mt-3.5">
                 <div class="flex items-center justify-between px-5 py-4 border-b border-stroke">
                     <div class="text-[14px] font-semibold text-content-50">Korekty dokumentu</div>
-                    <span class="text-[12px] text-content-500">{{ corrections|length }} {{ corrections|length == 1 ? 'korekta' : 'korekty' }}</span>
+                    <span class="text-[12px] text-content-500">{{ corrections|length }} {{ pluralize(corrections|length, 'korekta', 'korekty', 'korekt') }}</span>
                 </div>
                 <table class="w-full text-[13px]">
                     <thead>

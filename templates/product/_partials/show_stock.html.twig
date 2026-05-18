@@ -2,7 +2,7 @@
     <div class="px-5 py-4 border-b border-stroke">
         <div class="text-[14px] font-semibold text-content-50">Stany magazynowe</div>
         <div class="text-[12px] text-content-500 mt-0.5">
-            {{ stocks|length }} {{ stocks|length == 1 ? 'lokalizacja' : (stocks|length in [2, 3, 4] ? 'lokalizacje' : 'lokalizacji') }}
+            {{ stocks|length }} {{ pluralize(stocks|length, 'lokalizacja', 'lokalizacje', 'lokalizacji') }}
         </div>
     </div>
 

@@ -49,14 +49,16 @@
         </span>
     </td>
     <td class="px-2 py-2 text-center">
-        <button
-            type="button"
-            data-action="click->form-collection#removeLine"
-            class="w-6 h-6 rounded flex items-center justify-center text-content-700 hover:text-danger-500 hover:bg-danger-500/10 transition-colors cursor-pointer"
-            title="Usuń pozycję"
-        >
-            <div class="w-3.5 h-3.5">{{ source('svg/x.svg') }}</div>
-        </button>
+        {% if not (isOriginalLine ?? false) %}
+            <button
+                type="button"
+                data-action="click->form-collection#removeLine"
+                class="w-6 h-6 rounded flex items-center justify-center text-content-700 hover:text-danger-500 hover:bg-danger-500/10 transition-colors cursor-pointer"
+                title="Usuń pozycję"
+            >
+                <div class="w-3.5 h-3.5">{{ source('svg/x.svg') }}</div>
+            </button>
+        {% endif %}
     </td>
     {{ form_rest(line) }}
 </tr>

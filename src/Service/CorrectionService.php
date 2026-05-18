@@ -6,6 +6,7 @@ use App\Entity\Correction;
 use App\Entity\Location;
 use App\Entity\Operation;
 use App\Entity\OperationLine;
+use App\Entity\Product;
 
 class CorrectionService
 {
@@ -31,10 +32,13 @@ class CorrectionService
      * Pure computation: given the desired state per line (from the form) and the original operation,
      * returns the actual correction OperationLines to be persisted.
      *
-     * Same product + same location → single delta line (quantity difference).
+     * Same product + same location → delta line(s) (quantity difference).
      * Changed product or location  → full reversal of original + application of desired.
      * Line removed from form       → full reversal of original.
      * Extra lines beyond original  → passed through as-is.
+     *
+     * Relocation lines always produce two XOR lines (subtract + add) to satisfy the
+     * constraint that every OperationLine has exactly one location set.
      *
      * @param OperationLine[] $desiredLines
      *
@@ -50,7 +54,7 @@ class CorrectionService
             $desiredLine = $desiredLines[$i] ?? null;
 
             if (null === $desiredLine) {
-                $result[] = $this->createReversalLine($originalLine, $documentType);
+                array_push($result, ...$this->createReversalLines($originalLine, $documentType));
                 continue;
             }
 
@@ -62,8 +66,8 @@ class CorrectionService
                 || $desiredLine->getLocationTo()?->getId() !== $expectedTo?->getId();
 
             if (!$sameProduct || $locationChanged) {
-                $result[] = $this->createReversalLine($originalLine, $documentType);
-                $result[] = $this->createApplicationLine($desiredLine);
+                array_push($result, ...$this->createReversalLines($originalLine, $documentType));
+                array_push($result, ...$this->createApplicationLines($desiredLine));
                 continue;
             }
 
@@ -76,19 +80,25 @@ class CorrectionService
 
             $absDelta = $cmp > 0 ? $delta : bcsub('0', $delta, OperationLine::QUANTITY_SCALE);
 
-            $deltaLine = new OperationLine();
-            $deltaLine->setProduct($desiredLine->getProduct());
-            $deltaLine->setQuantity($absDelta);
-
             if ($cmp > 0) {
-                $deltaLine->setLocationFrom($desiredLine->getLocationFrom());
-                $deltaLine->setLocationTo($desiredLine->getLocationTo());
+                // original > desired: delta in the correction direction (as shown in the form)
+                $deltaLines = $this->createSplitLines(
+                    $desiredLine->getProduct(),
+                    $absDelta,
+                    $desiredLine->getLocationFrom(),
+                    $desiredLine->getLocationTo()
+                );
             } else {
-                $deltaLine->setLocationFrom($desiredLine->getLocationTo());
-                $deltaLine->setLocationTo($desiredLine->getLocationFrom());
+                // desired > original: delta in the opposite direction
+                $deltaLines = $this->createSplitLines(
+                    $desiredLine->getProduct(),
+                    $absDelta,
+                    $desiredLine->getLocationTo(),
+                    $desiredLine->getLocationFrom()
+                );
             }
 
-            $result[] = $deltaLine;
+            array_push($result, ...$deltaLines);
         }
 
         foreach (array_slice($desiredLines, count($originalLines)) as $extraLine) {
@@ -141,31 +151,59 @@ class CorrectionService
         };
     }
 
-    private function createReversalLine(OperationLine $originalLine, string $documentType): OperationLine
+    /** @return OperationLine[] */
+    private function createReversalLines(OperationLine $originalLine, string $documentType): array
     {
         [$locationFrom, $locationTo] = $this->getReversalLocations($originalLine, $documentType);
 
-        $line = new OperationLine();
-        $line->setProduct($originalLine->getProduct());
-        $line->setQuantity($originalLine->getQuantity());
-        $line->setLocationFrom($locationFrom);
-        $line->setLocationTo($locationTo);
-
-        return $line;
+        return $this->createSplitLines($originalLine->getProduct(), $originalLine->getQuantity(), $locationFrom, $locationTo);
     }
 
     /**
-     * Creates a line applying the desired state in the original direction.
+     * Creates line(s) applying the desired state in the original direction.
      * The form's locationFrom/locationTo represent the correction direction — swapping gives the original direction.
+     *
+     * @return OperationLine[]
      */
-    private function createApplicationLine(OperationLine $desiredLine): OperationLine
+    private function createApplicationLines(OperationLine $desiredLine): array
     {
-        $line = new OperationLine();
-        $line->setProduct($desiredLine->getProduct());
-        $line->setQuantity($desiredLine->getQuantity());
-        $line->setLocationFrom($desiredLine->getLocationTo());
-        $line->setLocationTo($desiredLine->getLocationFrom());
+        return $this->createSplitLines(
+            $desiredLine->getProduct(),
+            $desiredLine->getQuantity(),
+            $desiredLine->getLocationTo(),
+            $desiredLine->getLocationFrom()
+        );
+    }
 
-        return $line;
+    /**
+     * Creates one or two OperationLines depending on whether both locations are non-null.
+     * If both are non-null (relocation case), splits into a subtract line (locationFrom only)
+     * and an add line (locationTo only), ensuring every line has exactly one location set.
+     *
+     * @return OperationLine[]
+     */
+    private function createSplitLines(?Product $product, string $quantity, ?Location $locationFrom, ?Location $locationTo): array
+    {
+        if (null !== $locationFrom && null !== $locationTo) {
+            $subtractLine = new OperationLine();
+            $subtractLine->setProduct($product);
+            $subtractLine->setQuantity($quantity);
+            $subtractLine->setLocationFrom($locationFrom);
+
+            $addLine = new OperationLine();
+            $addLine->setProduct($product);
+            $addLine->setQuantity($quantity);
+            $addLine->setLocationTo($locationTo);
+
+            return [$subtractLine, $addLine];
+        }
+
+        $line = new OperationLine();
+        $line->setProduct($product);
+        $line->setQuantity($quantity);
+        $line->setLocationFrom($locationFrom);
+        $line->setLocationTo($locationTo);
+
+        return [$line];
     }
 }
