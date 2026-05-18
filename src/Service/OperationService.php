@@ -17,6 +17,7 @@ class OperationService
     public function __construct(
         private readonly OperationRepository $operationRepository,
         private readonly StockService $stockService,
+        private readonly CorrectionService $correctionService,
     ) {
     }
 
@@ -76,7 +77,7 @@ class OperationService
         } elseif ($operation instanceof Adjustment) {
             $this->confirmAdjustment($operation);
         } elseif ($operation instanceof Correction) {
-            $this->confirmCorrection($operation);
+            $this->correctionService->confirm($operation);
         }
 
         $operation->setStatus(OperationStatus::CONFIRMED);
@@ -156,7 +157,7 @@ class OperationService
         } elseif ($operation instanceof Adjustment) {
             $this->validateAdjustmentForConfirmation($operation);
         } elseif ($operation instanceof Correction) {
-            $this->validateCorrectionForConfirmation($operation);
+            $this->correctionService->validateForConfirmation($operation);
         }
     }
 
@@ -229,37 +230,6 @@ class OperationService
         foreach ($operation->getOperationLines() as $line) {
             if (null === $line->getQuantity()) {
                 continue;
-            }
-
-            $hasLocationFrom = null !== $line->getLocationFrom();
-            $hasLocationTo = null !== $line->getLocationTo();
-
-            if ($hasLocationFrom === $hasLocationTo) {
-                throw new \DomainException(sprintf('Pozycja "%s" musi mieć ustawioną dokładnie jedną lokalizację (źródłową lub docelową).', $line->getProduct()->getName()));
-            }
-        }
-    }
-
-    private function confirmCorrection(Correction $operation): void
-    {
-        foreach ($operation->getOperationLines() as $line) {
-            if (null !== $line->getLocationTo()) {
-                $this->stockService->add($line->getProduct(), $line->getLocationTo(), $line->getQuantity());
-            } else {
-                $this->stockService->subtract($line->getProduct(), $line->getLocationFrom(), $line->getQuantity());
-            }
-        }
-    }
-
-    private function validateCorrectionForConfirmation(Correction $operation): void
-    {
-        if ($operation->getOperationLines()->isEmpty()) {
-            throw new \DomainException('Korekta musi zawierać co najmniej jedną pozycję.');
-        }
-
-        foreach ($operation->getOperationLines() as $line) {
-            if (null === $line->getQuantity()) {
-                throw new \DomainException(sprintf('Ilość jest wymagana dla pozycji "%s".', $line->getProduct()->getName()));
             }
 
             $hasLocationFrom = null !== $line->getLocationFrom();
