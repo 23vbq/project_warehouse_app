@@ -104,6 +104,7 @@ class OperationController extends AbstractController
             Operation::TYPE_RECEIPT => 'operation/print/receipt.html.twig',
             Operation::TYPE_RELEASE => 'operation/print/release.html.twig',
             Operation::TYPE_RELOCATION => 'operation/print/relocation.html.twig',
+            Operation::TYPE_ADJUSTMENT => 'operation/print/adjustment.html.twig',
             default => throw new \InvalidArgumentException('Invalid document type: '.$operation->getDocumentType()),
         };
 
