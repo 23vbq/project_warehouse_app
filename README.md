@@ -54,6 +54,29 @@ On first start the entrypoint script will install Composer dependencies, run Doc
 
 ---
 
+## Demo Data (Fixtures)
+
+The project ships with data fixtures that populate the database with a realistic warehouse scenario for presentation purposes.
+
+```bash
+docker-compose exec app bin/console doctrine:fixtures:load --no-interaction
+```
+
+**What gets loaded:**
+
+| Type | Count | Details |
+|---|---|---|
+| Users | 2 | `manager` / `manager123` (ROLE_WAREHOUSE_MANAGER), `pracownik` / `pracownik123` (ROLE_WAREHOUSE_EMPLOYEE) |
+| Locations | 30 | Zones A-01…A-10 (raw materials), B-01…B-10 (semi-finished), C-01…C-10 (finished goods) |
+| Products | 12 | 3 finished goods, 2 semi-finished, 3 raw materials, 4 consumables |
+| Documents | 6 | 3× PZ, 1× MM, 2× WZ — all confirmed, spread over the last 30 days |
+
+The documents are confirmed in a logical order — receipts build up stock, the relocation moves semi-finished goods between zones, and releases reduce finished goods inventory.
+
+> **Warning:** `doctrine:fixtures:load` **purges the entire database** before loading. Do not run on production.
+
+---
+
 ## Creating the First User
 
 There is no self-registration and no user management UI in the application. Users can only be created via the Symfony console command:
