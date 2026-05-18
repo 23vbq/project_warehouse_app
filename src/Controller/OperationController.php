@@ -12,6 +12,7 @@ use App\Form\CorrectionType;
 use App\Form\ReceiptType;
 use App\Form\ReleaseType;
 use App\Form\RelocationType;
+use App\Repository\CorrectionRepository;
 use App\Repository\OperationRepository;
 use App\Service\CorrectionService;
 use App\Service\OperationService;
@@ -65,10 +66,16 @@ class OperationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_operation_show', requirements: ['id' => '\d+'])]
-    public function show(Operation $operation): Response
+    public function show(Operation $operation, CorrectionRepository $correctionRepository): Response
     {
+        $corrections = $correctionRepository->findBy(
+            ['correctedOperation' => $operation],
+            ['createdAt' => 'DESC']
+        );
+
         return $this->render('operation/show.html.twig', [
             'operation' => $operation,
+            'corrections' => $corrections,
         ]);
     }
 

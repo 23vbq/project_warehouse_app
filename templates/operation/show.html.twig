@@ -98,6 +98,14 @@
     </div>
 </div>
 
+{% if corrections is defined and corrections|length > 0 %}
+    <div class="flex items-center gap-3 px-4 py-3 mb-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[13px] text-amber-400">
+        <span class="shrink-0 w-4 h-4">{{ source('svg/alert-triangle.svg') }}</span>
+        <span class="font-medium">Operacja posiada {{ corrections|length == 1 ? 'korektę' : 'korekty' }} ({{ corrections|length }})</span>
+        <span class="text-amber-500/70">— stan magazynowy mógł ulec zmianie</span>
+    </div>
+{% endif %}
+
 {% if operation.documentType == 'receipt' %}
     {{ include('operation/_partials/receipt_show_meta.html.twig', {operation: operation}) }}
 {% elseif operation.documentType == 'release' %}
@@ -126,6 +134,50 @@
         {% else %}
             {{ include('operation/_partials/relocation_show_details.html.twig', {operation: operation}) }}
             {{ include('operation/_partials/relocation_show_lines.html.twig', {operation: operation}) }}
+        {% endif %}
+
+        {% if corrections is defined and corrections|length > 0 %}
+            <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden mt-3.5">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-stroke">
+                    <div class="text-[14px] font-semibold text-content-50">Korekty dokumentu</div>
+                    <span class="text-[12px] text-content-500">{{ corrections|length }} {{ corrections|length == 1 ? 'korekta' : 'korekty' }}</span>
+                </div>
+                <table class="w-full text-[13px]">
+                    <thead>
+                        <tr class="border-b border-stroke bg-surface-800/50">
+                            <th class="px-4 py-2.5 text-left text-[11px] font-medium text-content-500">Numer</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-medium text-content-500">Data dokumentu</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-medium text-content-500">Status</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-medium text-content-500">Operator</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-medium text-content-500">Pozycji</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for correction in corrections %}
+                            <tr class="border-b border-stroke last:border-0 hover:bg-surface-800/40 transition-colors">
+                                <td class="px-4 py-3">
+                                    <a
+                                        href="{{ path('app_operation_show', {id: correction.id}) }}"
+                                        class="font-mono font-medium text-brand-400 hover:text-brand-300 transition-colors"
+                                    >{{ correction.fullNumber }}</a>
+                                </td>
+                                <td class="px-4 py-3 text-content-300">
+                                    {{ correction.documentDate ? correction.documentDate|date('d.m.Y') : '—' }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    {{ include('operation/_partials/status.html.twig', {operation: correction}) }}
+                                </td>
+                                <td class="px-4 py-3 text-content-300">
+                                    {{ correction.createdBy ? correction.createdBy.getUserIdentifier() : '—' }}
+                                </td>
+                                <td class="px-4 py-3 text-content-300 font-mono">
+                                    {{ correction.operationLines|length }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% endif %}
     </div>
 
