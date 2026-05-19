@@ -85,17 +85,14 @@ class OperationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getLastNumber(
-        string $type,
-        string $year,
-        string $month,
-    ): int {
+    public function getLastNumber(string $prefix, string $year, string $month): int
+    {
         $max = $this->createQueryBuilder('o')
             ->select('MAX(o.number)')
-            ->where('o INSTANCE OF :type')
+            ->andWhere('o.fullNumber LIKE :prefix')
             ->andWhere('YEAR(o.documentDate) = :year')
             ->andWhere('MONTH(o.documentDate) = :month')
-            ->setParameter('type', $type)
+            ->setParameter('prefix', $prefix.'/%')
             ->setParameter('year', $year)
             ->setParameter('month', $month)
             ->getQuery()

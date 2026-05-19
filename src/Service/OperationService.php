@@ -51,9 +51,9 @@ class OperationService
 
         $documentDate = $operation->getDocumentDate();
         $nextNumber = $this->operationRepository->getLastNumber(
-            $documentType,
+            $prefix,
             $documentDate->format('Y'),
-            $documentDate->format('m')
+            $documentDate->format('m'),
         ) + 1;
 
         $operation->setNumber($nextNumber);

@@ -5,7 +5,7 @@ namespace App\Twig;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-class PluralizExtension extends AbstractExtension
+class PluralizeExtension extends AbstractExtension
 {
     public function getFunctions(): array
     {

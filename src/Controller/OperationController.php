@@ -307,15 +307,22 @@ class OperationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $correctionService->buildLines($correction, $correctedOperation);
-            $operationService->generateNumber($correction);
+            $desiredLines = array_values($correction->getOperationLines()->toArray());
+            $computed = $correctionService->computeLines($desiredLines, $correctedOperation);
 
-            $em->persist($correction);
-            $em->flush();
+            if (empty($computed)) {
+                $this->addFlash('error', 'Korekta nie zawiera żadnych zmian względem oryginału.');
+            } else {
+                $correctionService->buildLines($correction, $correctedOperation);
+                $operationService->generateNumber($correction);
 
-            $this->addFlash('success', sprintf('Korekta %s została utworzona.', $correction->getFullNumber()));
+                $em->persist($correction);
+                $em->flush();
 
-            return $this->redirectToRoute('app_operation_show', ['id' => $correction->getId()]);
+                $this->addFlash('success', sprintf('Korekta %s została utworzona.', $correction->getFullNumber()));
+
+                return $this->redirectToRoute('app_operation_show', ['id' => $correction->getId()]);
+            }
         }
 
         return $this->render('operation/correction_form.html.twig', [
