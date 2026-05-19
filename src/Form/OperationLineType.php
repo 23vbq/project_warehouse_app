@@ -43,7 +43,7 @@ class OperationLineType extends AbstractType
             ],
         ]);
 
-        if (Operation::TYPE_RELOCATION !== $operationType) {
+        if (!in_array($operationType, [Operation::TYPE_RELOCATION, Operation::TYPE_CORRECTION], true)) {
             $builder->add('unitPrice', NumberType::class, [
                 'required' => false,
                 'scale' => OperationLine::PRICE_SCALE,
@@ -58,7 +58,10 @@ class OperationLineType extends AbstractType
             FormEvents::POST_SET_DATA,
             function (FormEvent $event) use ($operationType): void {
                 $line = $event->getData();
-                if (!$line instanceof OperationLine || null === $line->getId()) {
+                if (!$line instanceof OperationLine) {
+                    return;
+                }
+                if (null === $line->getProduct() && null === $line->getLocationFrom() && null === $line->getLocationTo()) {
                     return;
                 }
 
@@ -87,6 +90,7 @@ class OperationLineType extends AbstractType
             Operation::TYPE_RECEIPT,
             Operation::TYPE_RELEASE,
             Operation::TYPE_RELOCATION,
+            Operation::TYPE_CORRECTION,
         ]);
     }
 
@@ -119,9 +123,10 @@ class OperationLineType extends AbstractType
             ],
         ]);
 
-        if (in_array($operationType, [Operation::TYPE_RELEASE, Operation::TYPE_RELOCATION], true)) {
+        if (in_array($operationType, [Operation::TYPE_RELEASE, Operation::TYPE_RELOCATION, Operation::TYPE_CORRECTION], true)) {
             $form->add('locationFrom', EntityType::class, [
                 'class' => Location::class,
+                'required' => Operation::TYPE_CORRECTION !== $operationType,
                 'choice_label' => fn (Location $l) => $l->getCode().($l->getName() ? ' — '.$l->getName() : ''),
                 'choice_loader' => new CallbackChoiceLoader(function () use ($locationFromId): array {
                     if (!$locationFromId) {
@@ -135,15 +140,16 @@ class OperationLineType extends AbstractType
                     return $queryBuilder->getQuery()->getResult();
                 }),
                 'placeholder' => 'Lokalizacja źródłowa...',
-                'constraints' => [
+                'constraints' => Operation::TYPE_CORRECTION === $operationType ? [] : [
                     new NotBlank(message: 'Lokalizacja źródłowa jest wymagana.'),
                 ],
             ]);
         }
 
-        if (in_array($operationType, [Operation::TYPE_RECEIPT, Operation::TYPE_RELOCATION], true)) {
+        if (in_array($operationType, [Operation::TYPE_RECEIPT, Operation::TYPE_RELOCATION, Operation::TYPE_CORRECTION], true)) {
             $form->add('locationTo', EntityType::class, [
                 'class' => Location::class,
+                'required' => Operation::TYPE_CORRECTION !== $operationType,
                 'choice_label' => fn (Location $l) => $l->getCode().($l->getName() ? ' — '.$l->getName() : ''),
                 'choice_loader' => new CallbackChoiceLoader(function () use ($locationToId): array {
                     if (!$locationToId) {
@@ -157,7 +163,7 @@ class OperationLineType extends AbstractType
                     return $queryBuilder->getQuery()->getResult();
                 }),
                 'placeholder' => 'Lokalizacja docelowa...',
-                'constraints' => [
+                'constraints' => Operation::TYPE_CORRECTION === $operationType ? [] : [
                     new NotBlank(message: 'Lokalizacja docelowa jest wymagana.'),
                 ],
             ]);

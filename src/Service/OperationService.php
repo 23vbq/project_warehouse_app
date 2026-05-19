@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Adjustment;
+use App\Entity\Correction;
 use App\Entity\Operation;
 use App\Entity\Receipt;
 use App\Entity\Release;
@@ -16,6 +17,7 @@ class OperationService
     public function __construct(
         private readonly OperationRepository $operationRepository,
         private readonly StockService $stockService,
+        private readonly CorrectionService $correctionService,
     ) {
     }
 
@@ -34,20 +36,29 @@ class OperationService
 
         $documentType = $operation->getDocumentType();
 
-        if (!isset($prefixMap[$documentType])) {
+        if ($operation instanceof Correction) {
+            $correctedType = $operation->getCorrectedOperation()->getDocumentType();
+            if (!isset($prefixMap[$correctedType])) {
+                throw new \InvalidArgumentException('Invalid corrected document type: '.$correctedType);
+            }
+            $correctionPrefix = 'K';
+            $prefix = $correctionPrefix.$prefixMap[$correctedType];
+        } elseif (isset($prefixMap[$documentType])) {
+            $prefix = $prefixMap[$documentType];
+        } else {
             throw new \InvalidArgumentException('Invalid document type: '.$documentType);
         }
 
         $documentDate = $operation->getDocumentDate();
         $nextNumber = $this->operationRepository->getLastNumber(
-            $documentType,
+            $prefix,
             $documentDate->format('Y'),
-            $documentDate->format('m')
+            $documentDate->format('m'),
         ) + 1;
 
         $operation->setNumber($nextNumber);
 
-        $fullNumber = sprintf('%s/%s/%s/%04d', $prefixMap[$documentType], $documentDate->format('Y'), $documentDate->format('m'), $nextNumber);
+        $fullNumber = sprintf('%s/%s/%s/%04d', $prefix, $documentDate->format('Y'), $documentDate->format('m'), $nextNumber);
         $operation->setFullNumber($fullNumber);
 
         return $operation;
@@ -65,6 +76,8 @@ class OperationService
             $this->confirmRelocation($operation);
         } elseif ($operation instanceof Adjustment) {
             $this->confirmAdjustment($operation);
+        } elseif ($operation instanceof Correction) {
+            $this->correctionService->confirm($operation);
         }
 
         $operation->setStatus(OperationStatus::CONFIRMED);
@@ -143,6 +156,8 @@ class OperationService
             $this->validateRelocationForConfirmation($operation);
         } elseif ($operation instanceof Adjustment) {
             $this->validateAdjustmentForConfirmation($operation);
+        } elseif ($operation instanceof Correction) {
+            $this->correctionService->validateForConfirmation($operation);
         }
     }
 

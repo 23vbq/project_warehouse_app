@@ -1,0 +1,10 @@
+<div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden mt-3.5">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-stroke">
+        <div>
+            <div class="text-[14px] font-semibold text-content-50">Pozycje po korektach</div>
+            <div class="text-[12px] text-content-500 mt-0.5">Wynikowy stan ruchów po uwzględnieniu potwierdzonych korekt</div>
+        </div>
+        <span class="text-[12px] text-content-500">{{ effectiveLines|length }} {{ pluralize(effectiveLines|length, 'pozycja', 'pozycje', 'pozycji') }}</span>
+    </div>
+    {{ include('operation/_partials/effective_lines_relocation_table.html.twig', {effectiveLines: effectiveLines}) }}
+</div>

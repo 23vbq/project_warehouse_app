@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
     Operation::TYPE_RELEASE => Release::class,
     Operation::TYPE_RELOCATION => Relocation::class,
     Operation::TYPE_ADJUSTMENT => Adjustment::class,
+    Operation::TYPE_CORRECTION => Correction::class,
 ])]
 abstract class Operation
 {
@@ -23,6 +24,7 @@ abstract class Operation
     public const TYPE_RELEASE = 'release';
     public const TYPE_RELOCATION = 'relocation';
     public const TYPE_ADJUSTMENT = 'adjustment';
+    public const TYPE_CORRECTION = 'correction';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

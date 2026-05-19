@@ -1,0 +1,38 @@
+<turbo-frame id="{{ turboFrameId }}" class="relative block">
+    {% if corrections|length > 0 %}
+        <div class="flex items-center gap-3 px-4 py-2.5 border-b border-amber-500/20 bg-amber-500/10 text-[12.5px] text-amber-400">
+            <span class="shrink-0 w-4 h-4">{{ source('svg/alert-triangle.svg') }}</span>
+            <span class="font-medium">Operacja posiada {{ corrections|length }} {{ pluralize(corrections|length, 'korektę', 'korekty', 'korekt') }}</span>
+            <span class="text-amber-500/70">— stan magazynowy mógł ulec zmianie</span>
+        </div>
+    {% endif %}
+    {{ linesTable|raw }}
+
+    {% if effectiveLines|length > 0 %}
+        <div class="flex items-center gap-3 px-4 py-2 border-t border-stroke bg-surface-800/60">
+            <span class="text-[10.5px] uppercase tracking-[0.08em] font-semibold text-content-500">Po korektach</span>
+            <span class="flex-1 h-px bg-stroke"></span>
+            <span class="text-[11px] text-content-700">{{ effectiveLines|length }} {{ pluralize(effectiveLines|length, 'pozycja', 'pozycje', 'pozycji') }}</span>
+        </div>
+
+        {% if operation.documentType == 'receipt' %}
+            {{ include('operation/_partials/effective_lines_inout.html.twig', {
+                effectiveLines: effectiveLines,
+                locationHeader: 'Lokalizacja docelowa',
+                locationField: 'locationTo',
+                quantitySign: '+',
+                quantityColor: 'text-emerald-400',
+            }) }}
+        {% elseif operation.documentType == 'release' %}
+            {{ include('operation/_partials/effective_lines_inout.html.twig', {
+                effectiveLines: effectiveLines,
+                locationHeader: 'Lokalizacja źródłowa',
+                locationField: 'locationFrom',
+                quantitySign: '−',
+                quantityColor: 'text-violet-400',
+            }) }}
+        {% elseif operation.documentType == 'relocation' %}
+            {{ include('operation/_partials/effective_lines_relocation_table.html.twig', {effectiveLines: effectiveLines}) }}
+        {% endif %}
+    {% endif %}
+</turbo-frame>

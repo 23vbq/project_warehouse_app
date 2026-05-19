@@ -55,7 +55,7 @@
             Lokalizacje
         </div>
         <div class="font-mono text-[22px] font-semibold text-content-50 tabular-nums leading-none mt-2">
-            {{ kpi.locationCount ?? 0 }}<span class="text-[12px] font-medium text-content-500 ml-1">{{ kpi.locationCount == 1 ? 'miejsce' : (kpi.locationCount < 5 ? 'miejsca' : 'miejsc') }}</span>
+            {{ kpi.locationCount ?? 0 }}<span class="text-[12px] font-medium text-content-500 ml-1">{{ pluralize(kpi.locationCount, 'miejsce', 'miejsca', 'miejsc') }}</span>
         </div>
         <div class="text-[11.5px] text-content-700 mt-1.5">w magazynie</div>
     </div>

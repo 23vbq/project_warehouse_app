@@ -18,9 +18,11 @@ A warehouse management system for tracking inventory, processing warehouse docum
   - **PZ** (Receipt) — incoming goods
   - **WZ** (Release) — outgoing goods
   - **MM** (Relocation) — inter-location transfers
-- **Print view** — printable layout for warehouse documents
+  - **INW** (Adjustment) — inventory adjustment (stock increase or decrease per location)
+  - **KPZ / KWZ / KMM / KINW** (Correction) — corrective document issued against a confirmed PZ/WZ/MM/INW; reverses stock effects partially or fully while preserving the original document
+- **Print view** — printable layout for all warehouse document types
 - **Dashboard** — inventory overview (in progress)
-- **Auto-numbering** — sequential document numbers per type/month (e.g. `PZ/2025/05/0001`)
+- **Auto-numbering** — sequential document numbers per type/month (e.g. `PZ/2025/05/0001`, `KPZ/2025/05/0001`)
 - **Role-based access** — `ROLE_WAREHOUSE_EMPLOYEE` and `ROLE_WAREHOUSE_MANAGER` (every user also receives `ROLE_USER` automatically)
 
 ---
@@ -97,6 +99,7 @@ src/
 ├── Repository/     # Custom query logic per entity
 ├── Service/        # Business logic
 │   ├── OperationService.php   # Document numbering, draft→confirmed transition
+│   ├── CorrectionService.php  # Correction delta computation and stock application
 │   └── StockService.php       # Inventory math with bcmath precision
 ├── Enum/           # ProductType, OperationStatus
 └── Command/        # CLI commands (create-user)
@@ -109,11 +112,17 @@ migrations/         # Doctrine migration files
 
 ## Operations Model
 
-Operations use Doctrine JOINED inheritance with a `type` discriminator column. Three types are supported:
+Operations use Doctrine JOINED inheritance with a `type` discriminator column. Five types are supported:
 
 - **PZ — Receipt** — incoming goods; confirming increases stock at the target location
-- **WZ — Release** — outgoing goods; confirming decreases stock (availability is validated before confirmation)
+- **WZ — Release** — outgoing goods; confirming decreases stock at the source location
 - **MM — Relocation** — inter-location transfer; confirming decreases stock at the source and increases it at the destination
+- **INW — Adjustment** — manual stock correction per location; a line with only `locationTo` adds stock, a line with only `locationFrom` removes it
+- **Correction (KPZ / KWZ / KMM / KINW)** — corrective document issued against a confirmed PZ/WZ/MM/INW. The original document is never modified (full audit trail). The correction computes the delta between the original lines and the desired state entered in the form:
+  - Same product + same location → single delta line (quantity difference applied in the appropriate direction)
+  - Changed product or location → full reversal of the original line + application of the desired line
+  - Line removed from the form → full reversal of the original line
+  - Extra lines beyond the original → passed through as-is
 
 All operations start in `DRAFT` status. Once all required data is present the operation can be confirmed, transitioning it to `CONFIRMED` and triggering the stock update via `StockService`.
 
@@ -127,6 +136,8 @@ Document numbers are generated automatically on creation, scoped per type and ca
 PZ/2025/05/0001
 WZ/2025/05/0003
 MM/2025/05/0001
+INW/2025/05/0001
+KPZ/2025/05/0001
 ```
 
 The sequence resets at the start of each month.

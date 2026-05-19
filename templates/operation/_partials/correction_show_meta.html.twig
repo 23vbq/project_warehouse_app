@@ -1,0 +1,46 @@
+<div class="grid grid-cols-4 border border-stroke rounded-xl overflow-hidden bg-surface-900 mb-4">
+
+    <div class="flex gap-3 p-4 border-r border-stroke min-w-0">
+        <div class="w-7 h-7 rounded-lg bg-surface-700 border border-stroke text-content-500 grid place-items-center shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+        </div>
+        <div class="min-w-0">
+            <div class="text-[10.5px] uppercase tracking-[0.06em] font-semibold text-content-700">Korygowany dokument</div>
+            <a
+                href="{{ path('app_operation_show', {id: operation.correctedOperation.id}) }}"
+                class="text-[13px] font-mono font-medium text-brand-400 hover:text-brand-300 transition-colors mt-0.5 block truncate"
+            >{{ operation.correctedOperation.fullNumber }}</a>
+        </div>
+    </div>
+
+    <div class="flex gap-3 p-4 border-r border-stroke min-w-0">
+        <div class="w-7 h-7 rounded-lg bg-surface-700 border border-stroke text-content-500 grid place-items-center shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>
+        </div>
+        <div class="min-w-0">
+            <div class="text-[10.5px] uppercase tracking-[0.06em] font-semibold text-content-700">Powód korekty</div>
+            <div class="text-[13px] text-content-50 font-medium mt-0.5 truncate">{{ operation.reason ?: '—' }}</div>
+        </div>
+    </div>
+
+    <div class="flex gap-3 p-4 border-r border-stroke min-w-0">
+        <div class="w-7 h-7 rounded-lg bg-surface-700 border border-stroke text-content-500 grid place-items-center shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        </div>
+        <div class="min-w-0">
+            <div class="text-[10.5px] uppercase tracking-[0.06em] font-semibold text-content-700">Data dokumentu</div>
+            <div class="text-[13px] text-content-50 font-medium mt-0.5">{{ operation.documentDate|date('d.m.Y') }}</div>
+        </div>
+    </div>
+
+    <div class="flex gap-3 p-4 min-w-0">
+        <div class="w-7 h-7 rounded-lg bg-surface-700 border border-stroke text-content-500 grid place-items-center shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
+        <div class="min-w-0">
+            <div class="text-[10.5px] uppercase tracking-[0.06em] font-semibold text-content-700">Operator</div>
+            <div class="text-[13px] text-content-50 font-medium mt-0.5 truncate">{{ operation.createdBy ? operation.createdBy.getUserIdentifier() : '—' }}</div>
+        </div>
+    </div>
+
+</div>

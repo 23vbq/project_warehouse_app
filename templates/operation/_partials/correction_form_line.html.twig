@@ -1,0 +1,64 @@
+<tr data-line class="border-b border-stroke last:border-0">
+    <td class="px-3 py-2 text-content-700 text-[12px] font-mono text-center">
+        {{ loop.index ?? '__name__' }}
+    </td>
+    <td class="px-2 py-2">
+        {{ form_widget(line.product, {attr: {
+            'data-controller': 'tom-select',
+            'data-tom-select-template-value': 'products',
+            'data-tom-select-fetch-url-value': path('app_api_product_search'),
+        }}) }}
+        {% for error in line.product.vars.errors %}
+            <p class="text-[11px] mt-0.5 text-danger-500">{{ error.message }}</p>
+        {% endfor %}
+    </td>
+    {% if showFrom ?? true %}
+        <td class="px-2 py-2">
+            {{ form_widget(line.locationFrom, {attr: {
+                'data-controller': 'tom-select',
+                'data-tom-select-template-value': 'locations',
+                'data-tom-select-fetch-url-value': path('app_api_location_search'),
+            }}) }}
+            {% for error in line.locationFrom.vars.errors %}
+                <p class="text-[11px] mt-0.5 text-danger-500">{{ error.message }}</p>
+            {% endfor %}
+        </td>
+    {% else %}
+        {% do line.locationFrom.setRendered() %}
+    {% endif %}
+    {% if showTo ?? true %}
+        <td class="px-2 py-2">
+            {{ form_widget(line.locationTo, {attr: {
+                'data-controller': 'tom-select',
+                'data-tom-select-template-value': 'locations',
+                'data-tom-select-fetch-url-value': path('app_api_location_search'),
+            }}) }}
+            {% for error in line.locationTo.vars.errors %}
+                <p class="text-[11px] mt-0.5 text-danger-500">{{ error.message }}</p>
+            {% endfor %}
+        </td>
+    {% else %}
+        {% do line.locationTo.setRendered() %}
+    {% endif %}
+    <td class="px-2 py-2">
+        {% if originalQuantity is defined and originalQuantity is not null %}
+            <div class="text-[10px] text-content-700 mb-1 text-right">oryg. {{ originalQuantity|number_format(3, ',', ' ') }}</div>
+        {% endif %}
+        <span class="input-wrap h-[34px] {{ line.quantity.vars.errors|length ? 'input-wrap--error' }}">
+            {{ form_widget(line.quantity, {attr: {class: 'text-right', placeholder: '0.000', step: '0.001'}}) }}
+        </span>
+    </td>
+    <td class="px-2 py-2 text-center">
+        {% if not (isOriginalLine ?? false) %}
+            <button
+                type="button"
+                data-action="click->form-collection#removeLine"
+                class="w-6 h-6 rounded flex items-center justify-center text-content-700 hover:text-danger-500 hover:bg-danger-500/10 transition-colors cursor-pointer"
+                title="Usuń pozycję"
+            >
+                <div class="w-3.5 h-3.5">{{ source('svg/x.svg') }}</div>
+            </button>
+        {% endif %}
+    </td>
+    {{ form_rest(line) }}
+</tr>

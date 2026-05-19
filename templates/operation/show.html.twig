@@ -47,6 +47,15 @@
 
     <div class="flex items-center gap-2 shrink-0">
         {% if operation.isConfirmed %}
+            {% if operation.documentType in ['receipt', 'release', 'relocation', 'adjustment'] and is_granted('ROLE_WAREHOUSE_EMPLOYEE') %}
+                <a
+                    href="{{ path('app_operation_new_correction', {id: operation.id}) }}"
+                    class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors"
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                    Utwórz korektę
+                </a>
+            {% endif %}
             <a
                 href="{{ path('app_operation_print', {id: operation.id}) }}"
                 target="_blank"
@@ -67,13 +76,15 @@
                         Usuń
                     </button>
                 </form>
-                <a
-                    href="{{ path('app_operation_edit', {id: operation.id}) }}"
-                    class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors"
-                >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                    Edytuj
-                </a>
+                {% if operation.documentType != 'correction' %}
+                    <a
+                        href="{{ path('app_operation_edit', {id: operation.id}) }}"
+                        class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        Edytuj
+                    </a>
+                {% endif %}
                 <form method="post" action="{{ path('app_operation_confirm', {id: operation.id}) }}" data-turbo-frame="_top">
                     <input type="hidden" name="_token" value="{{ csrf_token('confirm_operation_' ~ operation.id) }}">
                     <button
@@ -89,12 +100,22 @@
     </div>
 </div>
 
+{% if corrections is defined and corrections|length > 0 %}
+    <div class="flex items-center gap-3 px-4 py-3 mb-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[13px] text-amber-400">
+        <span class="shrink-0 w-4 h-4">{{ source('svg/alert-triangle.svg') }}</span>
+        <span class="font-medium">Operacja posiada {{ corrections|length }} {{ pluralize(corrections|length, 'korektę', 'korekty', 'korekt') }}</span>
+        <span class="text-amber-500/70">— stan magazynowy mógł ulec zmianie</span>
+    </div>
+{% endif %}
+
 {% if operation.documentType == 'receipt' %}
     {{ include('operation/_partials/receipt_show_meta.html.twig', {operation: operation}) }}
 {% elseif operation.documentType == 'release' %}
     {{ include('operation/_partials/release_show_meta.html.twig', {operation: operation}) }}
 {% elseif operation.documentType == 'adjustment' %}
     {{ include('operation/_partials/adjustment_show_meta.html.twig', {operation: operation}) }}
+{% elseif operation.documentType == 'correction' %}
+    {{ include('operation/_partials/correction_show_meta.html.twig', {operation: operation}) }}
 {% else %}
     {{ include('operation/_partials/relocation_show_meta.html.twig', {operation: operation}) }}
 {% endif %}
@@ -110,9 +131,66 @@
             {{ include('operation/_partials/release_show_lines.html.twig', {operation: operation}) }}
         {% elseif operation.documentType == 'adjustment' %}
             {{ include('operation/_partials/adjustment_show_lines.html.twig', {operation: operation}) }}
+        {% elseif operation.documentType == 'correction' %}
+            {{ include('operation/_partials/correction_show_lines.html.twig', {operation: operation}) }}
         {% else %}
             {{ include('operation/_partials/relocation_show_details.html.twig', {operation: operation}) }}
             {{ include('operation/_partials/relocation_show_lines.html.twig', {operation: operation}) }}
+        {% endif %}
+
+        {% if corrections is defined and corrections|length > 0 %}
+            <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden mt-3.5">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-stroke">
+                    <div class="text-[14px] font-semibold text-content-50">Korekty dokumentu</div>
+                    <span class="text-[12px] text-content-500">{{ corrections|length }} {{ pluralize(corrections|length, 'korekta', 'korekty', 'korekt') }}</span>
+                </div>
+                <table class="w-full text-[13px]">
+                    <thead>
+                        <tr class="border-b border-stroke bg-surface-800/50">
+                            <th class="px-4 py-2.5 text-left text-[11px] font-medium text-content-500">Numer</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-medium text-content-500">Data dokumentu</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-medium text-content-500">Status</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-medium text-content-500">Operator</th>
+                            <th class="px-4 py-2.5 text-left text-[11px] font-medium text-content-500">Pozycji</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for correction in corrections %}
+                            <tr class="border-b border-stroke last:border-0 hover:bg-surface-800/40 transition-colors">
+                                <td class="px-4 py-3">
+                                    <a
+                                        href="{{ path('app_operation_show', {id: correction.id}) }}"
+                                        class="font-mono font-medium text-brand-400 hover:text-brand-300 transition-colors"
+                                    >{{ correction.fullNumber }}</a>
+                                </td>
+                                <td class="px-4 py-3 text-content-300">
+                                    {{ correction.documentDate ? correction.documentDate|date('d.m.Y') : '—' }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    {{ include('operation/_partials/status.html.twig', {operation: correction}) }}
+                                </td>
+                                <td class="px-4 py-3 text-content-300">
+                                    {{ correction.createdBy ? correction.createdBy.getUserIdentifier() : '—' }}
+                                </td>
+                                <td class="px-4 py-3 text-content-300 font-mono">
+                                    {{ correction.operationLines|length }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {% if effectiveLines is defined and effectiveLines|length > 0 %}
+            {% set effectiveTemplate = {
+                receipt: 'operation/_partials/effective_lines_receipt.html.twig',
+                release: 'operation/_partials/effective_lines_release.html.twig',
+                relocation: 'operation/_partials/effective_lines_relocation.html.twig',
+            }[operation.documentType] ?? null %}
+            {% if effectiveTemplate %}
+                {{ include(effectiveTemplate, {effectiveLines: effectiveLines}) }}
+            {% endif %}
         {% endif %}
     </div>
 
