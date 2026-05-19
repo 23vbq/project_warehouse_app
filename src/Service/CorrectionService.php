@@ -146,7 +146,7 @@ class CorrectionService
      */
     public function computeEffectiveLines(Operation $operation, array $corrections): array
     {
-        $confirmedCorrections = array_filter($corrections, fn(Correction $c) => $c->isConfirmed());
+        $confirmedCorrections = array_filter($corrections, fn (Correction $c) => $c->isConfirmed());
 
         if (empty($confirmedCorrections)) {
             return [];
@@ -229,7 +229,7 @@ class CorrectionService
         $allPids = array_unique(array_merge(array_keys($positive), array_keys($negative)));
 
         foreach ($allPids as $pid) {
-            $plusList  = $positive[$pid] ?? [];
+            $plusList = $positive[$pid] ?? [];
             $minusList = $negative[$pid] ?? [];
             $pi = 0;
             $mi = 0;
@@ -246,7 +246,7 @@ class CorrectionService
                 $paired->setLocationTo($plusList[$pi]['location']);
                 $result[] = $paired;
 
-                $plusList[$pi]['qty']  = bcsub($pqty, $pairedQty, OperationLine::QUANTITY_SCALE);
+                $plusList[$pi]['qty'] = bcsub($pqty, $pairedQty, OperationLine::QUANTITY_SCALE);
                 $minusList[$mi]['qty'] = bcsub($mqty, $pairedQty, OperationLine::QUANTITY_SCALE);
 
                 if (0 === bccomp($plusList[$pi]['qty'], '0', OperationLine::QUANTITY_SCALE)) {

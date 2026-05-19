@@ -184,9 +184,9 @@
 
         {% if effectiveLines is defined and effectiveLines|length > 0 %}
             {% set effectiveTemplate = {
-                'receipt':   'operation/_partials/effective_lines_receipt.html.twig',
-                'release':   'operation/_partials/effective_lines_release.html.twig',
-                'relocation': 'operation/_partials/effective_lines_relocation.html.twig',
+                receipt: 'operation/_partials/effective_lines_receipt.html.twig',
+                release: 'operation/_partials/effective_lines_release.html.twig',
+                relocation: 'operation/_partials/effective_lines_relocation.html.twig',
             }[operation.documentType] ?? null %}
             {% if effectiveTemplate %}
                 {{ include(effectiveTemplate, {effectiveLines: effectiveLines}) }}
