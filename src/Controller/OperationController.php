@@ -66,16 +66,19 @@ class OperationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_operation_show', requirements: ['id' => '\d+'])]
-    public function show(Operation $operation, CorrectionRepository $correctionRepository): Response
+    public function show(Operation $operation, CorrectionRepository $correctionRepository, CorrectionService $correctionService): Response
     {
         $corrections = $correctionRepository->findBy(
             ['correctedOperation' => $operation],
             ['createdAt' => 'DESC']
         );
 
+        $effectiveLines = $correctionService->computeEffectiveLines($operation, $corrections);
+
         return $this->render('operation/show.html.twig', [
             'operation' => $operation,
             'corrections' => $corrections,
+            'effectiveLines' => $effectiveLines,
         ]);
     }
 
