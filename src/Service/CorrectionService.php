@@ -102,7 +102,12 @@ class CorrectionService
         }
 
         foreach (array_slice($desiredLines, count($originalLines)) as $extraLine) {
-            $result[] = $extraLine;
+            array_push($result, ...$this->createSplitLines(
+                $extraLine->getProduct(),
+                $extraLine->getQuantity(),
+                $extraLine->getLocationFrom(),
+                $extraLine->getLocationTo()
+            ));
         }
 
         return $result;

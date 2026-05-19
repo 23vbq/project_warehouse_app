@@ -345,6 +345,12 @@ class OperationController extends AbstractController
             return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
         }
 
+        if ($operation instanceof Correction) {
+            $this->addFlash('error', 'Korekty nie można edytować. Usuń ją i utwórz nową.');
+
+            return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
+        }
+
         if ($operation instanceof Receipt) {
             $form = $this->createForm(ReceiptType::class, $operation);
             $template = 'operation/receipt_form.html.twig';
