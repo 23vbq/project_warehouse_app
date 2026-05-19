@@ -16,7 +16,7 @@ class CorrectionService
     }
 
     /**
-     * @param OperationLine[]|null $computed Pre-computed lines from computeLines(); pass null to let buildLines compute them.
+     * @param OperationLine[]|null $computed pre-computed lines from computeLines(); pass null to let buildLines compute them
      */
     public function buildLines(Correction $correction, Operation $correctedOperation, ?array $computed = null): void
     {
