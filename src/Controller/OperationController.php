@@ -316,7 +316,7 @@ class OperationController extends AbstractController
             if (empty($computed)) {
                 $this->addFlash('error', 'Korekta nie zawiera żadnych zmian względem oryginału.');
             } else {
-                $correctionService->buildLines($correction, $correctedOperation);
+                $correctionService->buildLines($correction, $correctedOperation, $computed);
                 $operationService->generateNumber($correction);
 
                 $em->persist($correction);

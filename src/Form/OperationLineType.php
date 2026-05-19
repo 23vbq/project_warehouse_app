@@ -126,7 +126,7 @@ class OperationLineType extends AbstractType
         if (in_array($operationType, [Operation::TYPE_RELEASE, Operation::TYPE_RELOCATION, Operation::TYPE_CORRECTION], true)) {
             $form->add('locationFrom', EntityType::class, [
                 'class' => Location::class,
-                'required' => Operation::TYPE_CORRECTION === $operationType ? false : true,
+                'required' => Operation::TYPE_CORRECTION !== $operationType,
                 'choice_label' => fn (Location $l) => $l->getCode().($l->getName() ? ' — '.$l->getName() : ''),
                 'choice_loader' => new CallbackChoiceLoader(function () use ($locationFromId): array {
                     if (!$locationFromId) {
@@ -149,7 +149,7 @@ class OperationLineType extends AbstractType
         if (in_array($operationType, [Operation::TYPE_RECEIPT, Operation::TYPE_RELOCATION, Operation::TYPE_CORRECTION], true)) {
             $form->add('locationTo', EntityType::class, [
                 'class' => Location::class,
-                'required' => Operation::TYPE_CORRECTION === $operationType ? false : true,
+                'required' => Operation::TYPE_CORRECTION !== $operationType,
                 'choice_label' => fn (Location $l) => $l->getCode().($l->getName() ? ' — '.$l->getName() : ''),
                 'choice_loader' => new CallbackChoiceLoader(function () use ($locationToId): array {
                     if (!$locationToId) {

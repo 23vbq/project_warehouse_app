@@ -103,12 +103,6 @@
     {% set showFrom = correctedType in ['receipt', 'relocation', 'adjustment'] %}
     {% set showTo = correctedType in ['release', 'relocation', 'adjustment'] %}
 
-    {# Build original lines array for reference quantities #}
-    {% set origLines = [] %}
-    {% for ol in correctedOperation.operationLines %}
-        {% set origLines = origLines|merge([ol]) %}
-    {% endfor %}
-
     {# Lines card #}
     <div
         class="bg-surface-900 border border-stroke rounded-xl overflow-hidden"
@@ -164,8 +158,8 @@
                     loop: loop,
                     showFrom: showFrom,
                     showTo: showTo,
-                    originalQuantity: origLines[loop.index0].quantity ?? null,
-                    isOriginalLine: loop.index0 < origLines|length,
+                    originalQuantity: correctedOperation.operationLines[loop.index0].quantity ?? null,
+                    isOriginalLine: loop.index0 < correctedOperation.operationLines|length,
                 }) }}
             {% endfor %}
             </tbody>

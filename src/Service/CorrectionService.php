@@ -15,10 +15,15 @@ class CorrectionService
     ) {
     }
 
-    public function buildLines(Correction $correction, Operation $correctedOperation): void
+    /**
+     * @param OperationLine[]|null $computed Pre-computed lines from computeLines(); pass null to let buildLines compute them.
+     */
+    public function buildLines(Correction $correction, Operation $correctedOperation, ?array $computed = null): void
     {
-        $desiredLines = array_values($correction->getOperationLines()->toArray());
-        $computed = $this->computeLines($desiredLines, $correctedOperation);
+        if (null === $computed) {
+            $desiredLines = array_values($correction->getOperationLines()->toArray());
+            $computed = $this->computeLines($desiredLines, $correctedOperation);
+        }
 
         foreach ($correction->getOperationLines()->toArray() as $line) {
             $correction->removeOperationLine($line);
@@ -306,8 +311,12 @@ class CorrectionService
             $hasLocationFrom = null !== $line->getLocationFrom();
             $hasLocationTo = null !== $line->getLocationTo();
 
-            if ($hasLocationFrom === $hasLocationTo) {
-                throw new \DomainException(sprintf('Pozycja "%s" musi mieć ustawioną dokładnie jedną lokalizację (źródłową lub docelową).', $line->getProduct()->getName()));
+            if (!$hasLocationFrom && !$hasLocationTo) {
+                throw new \DomainException(sprintf('Pozycja "%s" nie ma ustawionej żadnej lokalizacji — wymagana jest lokalizacja źródłowa lub docelowa.', $line->getProduct()->getName()));
+            }
+
+            if ($hasLocationFrom && $hasLocationTo) {
+                throw new \DomainException(sprintf('Pozycja "%s" ma ustawione obie lokalizacje jednocześnie — dozwolona jest tylko jedna (źródłowa lub docelowa).', $line->getProduct()->getName()));
             }
         }
     }
