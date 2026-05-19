@@ -83,15 +83,19 @@ class OperationController extends AbstractController
     }
 
     #[Route('/{id}/lines', name: 'app_operation_lines_details', requirements: ['id' => '\d+'])]
-    public function linesDetails(Request $request, Operation $operation): Response
-    {
+    public function linesDetails(
+        Request $request,
+        Operation $operation,
+        CorrectionRepository $correctionRepository,
+        CorrectionService $correctionService,
+    ): Response {
         if (!$request->headers->has('Turbo-Frame')) {
             return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
         }
 
         $documentType = $operation->getDocumentType();
 
-        $view = match ($documentType) {
+        $linesTableView = match ($documentType) {
             Operation::TYPE_RECEIPT => 'operation/_partials/receipt_show_lines_table.html.twig',
             Operation::TYPE_RELEASE => 'operation/_partials/release_show_lines_table.html.twig',
             Operation::TYPE_RELOCATION => 'operation/_partials/relocation_show_lines_table.html.twig',
@@ -99,9 +103,23 @@ class OperationController extends AbstractController
             default => throw new \InvalidArgumentException('Invalid document type: '.$documentType),
         };
 
-        return $this->render('layout/_partials/turbo_frame_wrapper.html.twig', [
+        $corrections = [];
+        $effectiveLines = [];
+        $correctableTypes = [Operation::TYPE_RECEIPT, Operation::TYPE_RELEASE, Operation::TYPE_RELOCATION];
+        if (in_array($documentType, $correctableTypes, true)) {
+            $corrections = $correctionRepository->findBy(
+                ['correctedOperation' => $operation],
+                ['createdAt' => 'DESC']
+            );
+            $effectiveLines = $correctionService->computeEffectiveLines($operation, $corrections);
+        }
+
+        return $this->render('operation/_partials/lines_details_accordion.html.twig', [
             'turboFrameId' => 'operation-lines-details-'.$operation->getId(),
-            'content' => $this->renderView($view, ['operation' => $operation]),
+            'operation' => $operation,
+            'linesTable' => $this->renderView($linesTableView, ['operation' => $operation]),
+            'corrections' => $corrections,
+            'effectiveLines' => $effectiveLines,
         ]);
     }
 
