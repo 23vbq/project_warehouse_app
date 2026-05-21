@@ -104,27 +104,13 @@
     {% set showTo = correctedType in ['release', 'relocation', 'adjustment'] %}
 
     {# Lines card #}
-    <div
-        class="bg-surface-900 border border-stroke rounded-xl overflow-hidden"
-        data-controller="form-collection"
-    >
-        <template data-form-collection-target="prototype">
-            {{ include('operation/_partials/correction_form_line.html.twig', {line: form.operationLines.vars.prototype, loop: {index: null}, showFrom: showFrom, showTo: showTo}) }}
-        </template>
+    <div class="bg-surface-900 border border-stroke rounded-xl overflow-hidden">
 
         <div class="flex items-center justify-between px-5 py-4 border-b border-stroke">
             <div>
                 <div class="text-[14px] font-semibold text-content-50">Pozycje dokumentu</div>
                 <div class="text-[12px] text-content-500 mt-0.5">Korekta pozycji z dokumentu {{ correctedOperation.fullNumber }}</div>
             </div>
-            <button
-                type="button"
-                data-action="click->form-collection#addLine"
-                class="flex items-center gap-1.5 h-[30px] px-3 text-[12.5px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors cursor-pointer"
-            >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
-                Dodaj pozycję
-            </button>
         </div>
 
         <table class="w-full text-[13px] table-fixed">
@@ -139,7 +125,6 @@
                     <col class="w-[22%]">
                 {% endif %}
                 <col class="w-[16%]">
-                <col class="w-10">
             </colgroup>
             <thead>
                 <tr class="border-b border-stroke bg-surface-800/50">
@@ -148,10 +133,9 @@
                     {% if showFrom %}<th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Skąd</th>{% endif %}
                     {% if showTo %}<th class="px-3 py-2.5 text-left text-[11px] font-medium text-content-500">Dokąd</th>{% endif %}
                     <th class="px-3 py-2.5 text-right text-[11px] font-medium text-content-500">Ilość</th>
-                    <th class="px-3 py-2.5"></th>
                 </tr>
             </thead>
-            <tbody data-form-collection-target="list">
+            <tbody>
             {% for line in form.operationLines %}
                 {{ include('operation/_partials/correction_form_line.html.twig', {
                     line: line,
@@ -159,7 +143,6 @@
                     showFrom: showFrom,
                     showTo: showTo,
                     originalQuantity: correctedOperation.operationLines[loop.index0].quantity ?? null,
-                    isOriginalLine: loop.index0 < correctedOperation.operationLines|length,
                 }) }}
             {% endfor %}
             </tbody>

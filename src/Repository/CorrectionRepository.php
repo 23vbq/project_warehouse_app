@@ -34,6 +34,6 @@ class CorrectionRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
 
-        return array_column($rows, 'lineCount', 'id');
+        return array_map('intval', array_column($rows, 'lineCount', 'id'));
     }
 }

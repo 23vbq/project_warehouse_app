@@ -30,7 +30,8 @@ class CorrectionService
     {
         if (null === $computed) {
             $desiredLines = array_values($correction->getOperationLines()->toArray());
-            $computed = $this->computeLines($desiredLines, $correctedOperation);
+            $baseLines = array_values($correctedOperation->getOperationLines()->toArray());
+            $computed = $this->computeLines($desiredLines, $baseLines, $correctedOperation->getDocumentType());
         }
 
         foreach ($correction->getOperationLines()->toArray() as $line) {
@@ -42,25 +43,28 @@ class CorrectionService
     }
 
     /**
-     * Pure computation: given the desired state per line (from the form) and the original operation,
+     * Pure computation: given the desired state per line (from the form) and the base lines,
      * returns the actual correction OperationLines to be persisted.
      *
+     * $baseLines should be the effective lines (original + all prior confirmed corrections) so that
+     * successive corrections always work against the current warehouse state, not the original document.
+     * Pass original operation lines when no confirmed corrections exist yet.
+     *
      * Same product + same location → delta line(s) (quantity difference).
-     * Changed product or location  → full reversal of original + application of desired.
-     * Line removed from form       → full reversal of original.
-     * Extra lines beyond original  → passed through as-is.
+     * Changed product or location  → full reversal of base line + application of desired.
+     * Line removed from form       → full reversal of base line.
      *
      * Relocation lines always produce two XOR lines (subtract + add) to satisfy the
      * constraint that every OperationLine has exactly one location set.
      *
      * @param OperationLine[] $desiredLines
+     * @param OperationLine[] $baseLines    effective lines or original operation lines
      *
      * @return OperationLine[]
      */
-    public function computeLines(array $desiredLines, Operation $correctedOperation): array
+    public function computeLines(array $desiredLines, array $baseLines, string $documentType): array
     {
-        $originalLines = array_values($correctedOperation->getOperationLines()->toArray());
-        $documentType = $correctedOperation->getDocumentType();
+        $originalLines = array_values($baseLines);
         $result = [];
 
         foreach ($originalLines as $i => $originalLine) {
@@ -128,15 +132,6 @@ class CorrectionService
             }
 
             array_push($result, ...$deltaLines);
-        }
-
-        foreach (array_slice($desiredLines, count($originalLines)) as $extraLine) {
-            array_push($result, ...$this->createSplitLines(
-                $extraLine->getProduct(),
-                $extraLine->getQuantity(),
-                $extraLine->getLocationFrom(),
-                $extraLine->getLocationTo()
-            ));
         }
 
         return $result;

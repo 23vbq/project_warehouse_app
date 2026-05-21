@@ -279,6 +279,7 @@ class OperationController extends AbstractController
         Operation $correctedOperation,
         OperationService $operationService,
         CorrectionService $correctionService,
+        CorrectionRepository $correctionRepository,
         EntityManagerInterface $em,
     ): Response {
         if (!$correctedOperation->isConfirmed() || !in_array($correctedOperation->getDocumentType(), CorrectionService::CORRECTABLE_TYPES, true)) {
@@ -287,30 +288,31 @@ class OperationController extends AbstractController
             return $this->redirectToRoute('app_operation_show', ['id' => $correctedOperation->getId()]);
         }
 
+        $existingCorrections = $correctionRepository->findBy(
+            ['correctedOperation' => $correctedOperation],
+            ['createdAt' => 'ASC']
+        );
+        $effectiveLines = $correctionService->computeEffectiveLines($correctedOperation, $existingCorrections);
+
+        // Use effective lines when confirmed corrections exist; fall back to original document lines.
+        // Effective lines represent the current warehouse state attributed to this operation,
+        // so successive corrections always work against the actual stock reality.
+        $baseLines = !empty($effectiveLines)
+            ? $effectiveLines
+            : array_values($correctedOperation->getOperationLines()->toArray());
+
         $correction = new Correction();
         $correction->setCreatedBy($this->getUser());
         $correction->setCorrectedOperation($correctedOperation);
 
-        foreach ($correctedOperation->getOperationLines() as $originalLine) {
+        foreach ($baseLines as $baseLine) {
             $line = new OperationLine();
-            $line->setProduct($originalLine->getProduct());
-            $line->setQuantity($originalLine->getQuantity());
-
-            if ($correctedOperation instanceof Receipt) {
-                $line->setLocationFrom($originalLine->getLocationTo());
-            } elseif ($correctedOperation instanceof Release) {
-                $line->setLocationTo($originalLine->getLocationFrom());
-            } elseif ($correctedOperation instanceof Relocation) {
-                $line->setLocationFrom($originalLine->getLocationTo());
-                $line->setLocationTo($originalLine->getLocationFrom());
-            } elseif ($correctedOperation instanceof Adjustment) {
-                if (null !== $originalLine->getLocationTo()) {
-                    $line->setLocationFrom($originalLine->getLocationTo());
-                } else {
-                    $line->setLocationTo($originalLine->getLocationFrom());
-                }
-            }
-
+            $line->setProduct($baseLine->getProduct());
+            $line->setQuantity($baseLine->getQuantity());
+            // Universal from↔to swap: works for all document types and for both
+            // original lines and effective XOR/paired lines.
+            $line->setLocationFrom($baseLine->getLocationTo());
+            $line->setLocationTo($baseLine->getLocationFrom());
             $correction->addOperationLine($line);
         }
 
@@ -319,7 +321,7 @@ class OperationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $desiredLines = array_values($correction->getOperationLines()->toArray());
-            $computed = $correctionService->computeLines($desiredLines, $correctedOperation);
+            $computed = $correctionService->computeLines($desiredLines, $baseLines, $correctedOperation->getDocumentType());
 
             if (empty($computed)) {
                 $this->addFlash('error', 'Korekta nie zawiera żadnych zmian względem oryginału.');

@@ -149,25 +149,38 @@ The sequence resets at the start of each month.
 
 A correction (korekta) is a document issued against an already-confirmed PZ, WZ, MM, or INW. The original document is never modified — full audit trail is preserved.
 
+### Base lines and successive corrections
+
+When a new correction is created, the system first computes the **effective lines** — the net state of the original operation after all previously confirmed corrections. This effective state is used as the base for both the correction form pre-fill and the delta computation.
+
+This means successive corrections always work against the current warehouse reality, not the original document:
+
+```
+PZ:  Product A, B-01, qty 10
+KPZ1 (confirmed): reduces to qty 7   → effective: qty 7
+KPZ2 (new):       user enters qty 5  → delta against qty 7 = subtract 2 (not subtract 5)
+```
+
+When no confirmed corrections exist the original document lines are used as the base, producing the same result as before.
+
 ### Delta computation
 
-`CorrectionService::computeLines()` determines the actual stock-adjustment lines from the desired state entered in the correction form:
+`CorrectionService::computeLines()` determines the actual stock-adjustment lines from the desired state entered in the correction form and the base lines:
 
 | Scenario | Result |
 |---|---|
 | Same product + same location, different quantity | Single delta line in the appropriate direction |
-| Changed product or location | Full reversal of the original line + application of the desired line |
-| Line removed from the form | Full reversal of the original line |
-| Extra lines beyond the original | Passed through as-is |
+| Changed product or location | Full reversal of the base line + application of the desired line |
+| Line removed from the form | Full reversal of the base line |
 | No net change detected | Form submission is rejected — no no-op corrections are persisted |
 
 Relocation corrections are handled differently: the form pre-fills locations already reversed (correction direction), so the desired line is used directly rather than going through reversal + application.
 
-### Effective state
+### Effective state display
 
-`CorrectionService::computeEffectiveLines()` aggregates the original operation lines and all its **confirmed** corrections into a single signed accumulator, then converts the result back to XOR `OperationLine` objects (exactly one location set, always positive quantity). Lines that cancel out to zero are omitted.
+`CorrectionService::computeEffectiveLines()` aggregates the original operation lines and all its **confirmed** corrections into a single signed accumulator, then converts the result back to XOR `OperationLine` objects (exactly one location set, always positive quantity). Lines that cancel out to zero are omitted. For relocations the XOR lines are re-paired into `from → to` entries for display.
 
-The effective state is displayed on the operation show page and in the operations list accordion whenever at least one confirmed correction exists. An amber banner indicates that confirmed corrections have altered the stock state. Draft corrections do not trigger the banner.
+The effective state is shown on the operation show page and in the operations list accordion whenever at least one confirmed correction exists. An amber banner indicates that the stock state has changed. Draft corrections do not trigger the banner.
 
 ### Constraints
 
