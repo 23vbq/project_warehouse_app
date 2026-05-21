@@ -18,7 +18,8 @@ class CorrectionRepository extends ServiceEntityRepository
     }
 
     /**
-     * Returns corrections for the given operation with createdBy eagerly loaded to avoid N+1 queries.
+     * Returns corrections for the given operation with createdBy and operationLines eagerly loaded
+     * to avoid N+1 queries when iterating lines (e.g. in computeEffectiveLines).
      *
      * @return Correction[]
      */
@@ -27,6 +28,8 @@ class CorrectionRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('c')
             ->leftJoin('c.createdBy', 'u')
             ->addSelect('u')
+            ->leftJoin('c.operationLines', 'l')
+            ->addSelect('l')
             ->where('c.correctedOperation = :operation')
             ->setParameter('operation', $operation)
             ->orderBy('c.createdAt', $order)

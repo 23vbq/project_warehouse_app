@@ -19,12 +19,10 @@
     <div class="flex flex-col gap-2 p-3">
         {% if linesTableTemplate %}
             <div class="rounded-lg border border-stroke overflow-hidden bg-surface-900">
-                {% if effectiveLines|length > 0 %}
-                    <div class="flex items-center gap-3 px-4 py-2 border-b border-stroke bg-surface-800/60">
-                        <span class="text-[10.5px] uppercase tracking-[0.08em] font-semibold text-content-500">Pozycje dokumentu</span>
-                        <span class="flex-1 h-px bg-stroke"></span>
-                    </div>
-                {% endif %}
+                <div class="flex items-center gap-3 px-4 py-2 border-b border-stroke bg-surface-800/60">
+                    <span class="text-[10.5px] uppercase tracking-[0.08em] font-semibold text-content-500">Pozycje dokumentu</span>
+                    <span class="flex-1 h-px bg-stroke"></span>
+                </div>
                 {{ include(linesTableTemplate, {operation: operation}) }}
             </div>
         {% endif %}

@@ -282,10 +282,7 @@ class OperationController extends AbstractController
             return $this->redirectToRoute('app_operation_show', ['id' => $correctedOperation->getId()]);
         }
 
-        $existingCorrections = $correctionRepository->findBy(
-            ['correctedOperation' => $correctedOperation],
-            ['createdAt' => 'ASC']
-        );
+        $existingCorrections = $correctionRepository->findByCorrectedOperationWithUsers($correctedOperation, 'ASC');
         $effectiveLines = $correctionService->computeEffectiveLines($correctedOperation, $existingCorrections);
 
         // Use effective lines when confirmed corrections exist; fall back to original document lines.
@@ -320,7 +317,7 @@ class OperationController extends AbstractController
             if (empty($computed)) {
                 $this->addFlash('error', 'Korekta nie zawiera żadnych zmian względem oryginału.');
             } else {
-                $correctionService->buildLines($correction, $correctedOperation, $computed);
+                $correctionService->buildLines($correction, $computed);
                 $operationService->generateNumber($correction);
 
                 $em->persist($correction);

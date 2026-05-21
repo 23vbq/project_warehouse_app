@@ -24,16 +24,15 @@ class CorrectionService
     }
 
     /**
-     * @param OperationLine[]|null $computed pre-computed lines from computeLines(); pass null to let buildLines compute them
+     * Replaces the correction's operationLines with the given pre-computed lines.
+     * Always call computeLines() first (passing effective lines as base when prior confirmed
+     * corrections exist) and pass the result here — do not re-derive lines from the corrected
+     * operation directly, as that would ignore the effective state from prior corrections.
+     *
+     * @param OperationLine[] $computed result of computeLines()
      */
-    public function buildLines(Correction $correction, Operation $correctedOperation, ?array $computed = null): void
+    public function buildLines(Correction $correction, array $computed): void
     {
-        if (null === $computed) {
-            $desiredLines = array_values($correction->getOperationLines()->toArray());
-            $baseLines = array_values($correctedOperation->getOperationLines()->toArray());
-            $computed = $this->computeLines($desiredLines, $baseLines, $correctedOperation->getDocumentType());
-        }
-
         foreach ($correction->getOperationLines()->toArray() as $line) {
             $correction->removeOperationLine($line);
         }
@@ -86,8 +85,12 @@ class CorrectionService
                 if (Operation::TYPE_RELOCATION === $documentType) {
                     // For relocations the form is pre-filled in correction direction (locations already reversed).
                     // The desired line is therefore already the correction — use it directly.
-                    // If the product also changed we additionally need to undo the old product.
-                    if (!$sameProduct) {
+                    // Reversal of the base is needed when the product changed OR when the source location
+                    // changed (user picked a different source than the expected one). Without reversal the
+                    // original source's stock contribution would remain unaddressed, producing wrong totals.
+                    // When only the destination changes the source stays the same so no reversal is needed.
+                    $sourceChanged = $desiredLine->getLocationFrom()?->getId() !== $expectedFrom?->getId();
+                    if (!$sameProduct || $sourceChanged) {
                         array_push($result, ...$this->createReversalLines($originalLine, $documentType));
                     }
                     array_push($result, ...$this->createSplitLines(
