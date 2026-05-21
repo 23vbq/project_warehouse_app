@@ -13,6 +13,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\ChoiceList\Loader\CallbackChoiceLoader;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
@@ -77,6 +78,24 @@ class OperationLineType extends AbstractType
             FormEvents::PRE_SUBMIT,
             fn (FormEvent $event) => $this->addEntityChoices($event->getForm(), $operationType, $event->getData())
         );
+
+        if (Operation::TYPE_CORRECTION === $operationType) {
+            $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event): void {
+                $line = $event->getData();
+                if (!$line instanceof OperationLine) {
+                    return;
+                }
+
+                $hasFrom = null !== $line->getLocationFrom();
+                $hasTo = null !== $line->getLocationTo();
+
+                if (!$hasFrom && !$hasTo) {
+                    $event->getForm()->addError(new FormError('Wymagana jest lokalizacja źródłowa lub docelowa.'));
+                } elseif ($hasFrom && $hasTo) {
+                    $event->getForm()->addError(new FormError('Można ustawić tylko jedną lokalizację — źródłową lub docelową.'));
+                }
+            });
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void

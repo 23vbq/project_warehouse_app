@@ -7,11 +7,12 @@
 }[operation.documentType] ?? null %}
 
 <turbo-frame id="{{ turboFrameId }}" class="relative block">
-    {% if corrections|length > 0 %}
+    {% if effectiveLines|length > 0 %}
+        {% set confirmedCount = corrections|filter(c => c.isConfirmed)|length %}
         <div class="flex items-center gap-3 px-4 py-2.5 border-b border-amber-500/20 bg-amber-500/10 text-[12.5px] text-amber-400">
             <span class="shrink-0 w-4 h-4">{{ source('svg/alert-triangle.svg') }}</span>
-            <span class="font-medium">Operacja posiada {{ corrections|length }} {{ pluralize(corrections|length, 'korektę', 'korekty', 'korekt') }}</span>
-            <span class="text-amber-500/70">— stan magazynowy mógł ulec zmianie</span>
+            <span class="font-medium">{{ confirmedCount }} potwierdzon{{ pluralize(confirmedCount, 'a korekta', 'e korekty', 'ych korekt') }}</span>
+            <span class="text-amber-500/70">— stan magazynowy uległ zmianie</span>
         </div>
     {% endif %}
 
@@ -54,6 +55,8 @@
                     }) }}
                 {% elseif operation.documentType == 'relocation' %}
                     {{ include('operation/_partials/effective_lines_relocation_table.html.twig', {effectiveLines: effectiveLines}) }}
+                {% elseif operation.documentType == 'adjustment' %}
+                    {{ include('operation/_partials/effective_lines_adjustment_table.html.twig', {effectiveLines: effectiveLines}) }}
                 {% endif %}
             </div>
         {% endif %}
