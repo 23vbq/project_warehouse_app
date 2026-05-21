@@ -17,7 +17,7 @@
                 +{{ trendStats.totalReceived ? trendStats.totalReceived|number_format(3, ',', ' ') : '0,000' }}
                 <span class="text-[11px] font-medium text-content-500">{{ product.unit }}</span>
             </div>
-            <div class="text-[11px] text-content-700 mt-0.5">{{ trendStats.receiptsCount }} {{ trendStats.receiptsCount == 1 ? 'dokument' : 'dokumentów' }}</div>
+            <div class="text-[11px] text-content-700 mt-0.5">{{ trendStats.receiptsCount }} {{ pluralize(trendStats.receiptsCount, 'dokument', 'dokumenty', 'dokumentów') }}</div>
         </div>
 
         {# Wydania 30d #}
@@ -27,7 +27,7 @@
                 −{{ trendStats.totalReleased ? trendStats.totalReleased|number_format(3, ',', ' ') : '0,000' }}
                 <span class="text-[11px] font-medium text-content-500">{{ product.unit }}</span>
             </div>
-            <div class="text-[11px] text-content-700 mt-0.5">{{ trendStats.releasesCount }} {{ trendStats.releasesCount == 1 ? 'dokument' : 'dokumentów' }}</div>
+            <div class="text-[11px] text-content-700 mt-0.5">{{ trendStats.releasesCount }} {{ pluralize(trendStats.releasesCount, 'dokument', 'dokumenty', 'dokumentów') }}</div>
         </div>
 
         {# Śr. dzienna #}

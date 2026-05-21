@@ -83,8 +83,10 @@ class OperationLineRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('ol')
             ->innerJoin('ol.operation', 'o')
             ->where('ol.product = :product')
+            ->andWhere('o.status = :status')
             ->orderBy('o.documentDate', 'DESC')
             ->addOrderBy('o.id', 'DESC')
-            ->setParameter('product', $product);
+            ->setParameter('product', $product)
+            ->setParameter('status', OperationStatus::CONFIRMED);
     }
 }

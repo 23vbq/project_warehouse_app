@@ -3,6 +3,7 @@
     release: {label: 'WZ', icon: 'svg/wz.svg', class: 'text-violet-400 bg-violet-500/10 border-violet-500/20'},
     relocation: {label: 'MM', icon: 'svg/mm.svg', class: 'text-amber-400 bg-amber-500/10 border-amber-500/20'},
     adjustment: {label: 'INW', icon: 'svg/inw.svg', class: 'text-orange-400 bg-orange-500/10 border-orange-500/20'},
+    correction: {label: 'KOR', icon: 'svg/revert.svg', class: 'text-rose-400 bg-rose-500/10 border-rose-500/20'},
 } %}
 {% set layout = layout is defined ? layout : 'badge' %}
 {% set type = types[operation.documentType] ?? null %}
