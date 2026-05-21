@@ -91,8 +91,6 @@ class OperationLineType extends AbstractType
 
                 if (!$hasFrom && !$hasTo) {
                     $event->getForm()->addError(new FormError('Wymagana jest lokalizacja źródłowa lub docelowa.'));
-                } elseif ($hasFrom && $hasTo) {
-                    $event->getForm()->addError(new FormError('Można ustawić tylko jedną lokalizację — źródłową lub docelową.'));
                 }
             });
         }
