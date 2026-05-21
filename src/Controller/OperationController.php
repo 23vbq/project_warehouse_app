@@ -2,15 +2,19 @@
 
 namespace App\Controller;
 
+use App\Entity\Correction;
 use App\Entity\Operation;
 use App\Entity\OperationLine;
 use App\Entity\Receipt;
 use App\Entity\Release;
 use App\Entity\Relocation;
+use App\Form\CorrectionType;
 use App\Form\ReceiptType;
 use App\Form\ReleaseType;
 use App\Form\RelocationType;
+use App\Repository\CorrectionRepository;
 use App\Repository\OperationRepository;
+use App\Service\CorrectionService;
 use App\Service\OperationService;
 use App\Traits\TurboTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -62,32 +66,46 @@ class OperationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_operation_show', requirements: ['id' => '\d+'])]
-    public function show(Operation $operation): Response
+    public function show(Operation $operation, CorrectionRepository $correctionRepository, CorrectionService $correctionService): Response
     {
+        $corrections = $correctionRepository->findByCorrectedOperationWithUsers($operation);
+
+        $effectiveLines = $correctionService->computeEffectiveLines($operation, $corrections);
+        $correctionLineCounts = $corrections ? $correctionRepository->countLinesByCorrectedOperation($operation) : [];
+
         return $this->render('operation/show.html.twig', [
             'operation' => $operation,
+            'corrections' => $corrections,
+            'effectiveLines' => $effectiveLines,
+            'correctionLineCounts' => $correctionLineCounts,
         ]);
     }
 
     #[Route('/{id}/lines', name: 'app_operation_lines_details', requirements: ['id' => '\d+'])]
-    public function linesDetails(Request $request, Operation $operation): Response
-    {
+    public function linesDetails(
+        Request $request,
+        Operation $operation,
+        CorrectionRepository $correctionRepository,
+        CorrectionService $correctionService,
+    ): Response {
         if (!$request->headers->has('Turbo-Frame')) {
             return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
         }
 
         $documentType = $operation->getDocumentType();
 
-        $view = match ($documentType) {
-            Operation::TYPE_RECEIPT => 'operation/_partials/receipt_show_lines_table.html.twig',
-            Operation::TYPE_RELEASE => 'operation/_partials/release_show_lines_table.html.twig',
-            Operation::TYPE_RELOCATION => 'operation/_partials/relocation_show_lines_table.html.twig',
-            default => throw new \InvalidArgumentException('Invalid document type: '.$documentType),
-        };
+        $corrections = [];
+        $effectiveLines = [];
+        if (in_array($documentType, CorrectionService::CORRECTABLE_TYPES, true)) {
+            $corrections = $correctionRepository->findByCorrectedOperationWithUsers($operation);
+            $effectiveLines = $correctionService->computeEffectiveLines($operation, $corrections);
+        }
 
-        return $this->render('layout/_partials/turbo_frame_wrapper.html.twig', [
+        return $this->render('operation/_partials/lines_details_accordion.html.twig', [
             'turboFrameId' => 'operation-lines-details-'.$operation->getId(),
-            'content' => $this->renderView($view, ['operation' => $operation]),
+            'operation' => $operation,
+            'corrections' => $corrections,
+            'effectiveLines' => $effectiveLines,
         ]);
     }
 
@@ -104,6 +122,8 @@ class OperationController extends AbstractController
             Operation::TYPE_RECEIPT => 'operation/print/receipt.html.twig',
             Operation::TYPE_RELEASE => 'operation/print/release.html.twig',
             Operation::TYPE_RELOCATION => 'operation/print/relocation.html.twig',
+            Operation::TYPE_ADJUSTMENT => 'operation/print/adjustment.html.twig',
+            Operation::TYPE_CORRECTION => 'operation/print/correction.html.twig',
             default => throw new \InvalidArgumentException('Invalid document type: '.$operation->getDocumentType()),
         };
 
@@ -246,12 +266,97 @@ class OperationController extends AbstractController
         ]);
     }
 
+    #[Route('/new/correction/{id}', name: 'app_operation_new_correction', requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_WAREHOUSE_EMPLOYEE')]
+    public function newCorrection(
+        Request $request,
+        Operation $correctedOperation,
+        OperationService $operationService,
+        CorrectionService $correctionService,
+        CorrectionRepository $correctionRepository,
+        EntityManagerInterface $em,
+    ): Response {
+        if (!$correctedOperation->isConfirmed() || !in_array($correctedOperation->getDocumentType(), CorrectionService::CORRECTABLE_TYPES, true)) {
+            $this->addFlash('error', 'Można korygować tylko potwierdzone dokumenty PZ, WZ, MM i INW.');
+
+            return $this->redirectToRoute('app_operation_show', ['id' => $correctedOperation->getId()]);
+        }
+
+        $existingCorrections = $correctionRepository->findByCorrectedOperationWithUsers($correctedOperation, 'ASC');
+        $effectiveLines = $correctionService->computeEffectiveLines($correctedOperation, $existingCorrections);
+
+        // Use effective lines when confirmed corrections exist; fall back to original document lines.
+        // Effective lines represent the current warehouse state attributed to this operation,
+        // so successive corrections always work against the actual stock reality.
+        $baseLines = !empty($effectiveLines)
+            ? $effectiveLines
+            : array_values($correctedOperation->getOperationLines()->toArray());
+
+        $correction = new Correction();
+        $correction->setCreatedBy($this->getUser());
+        $correction->setCorrectedOperation($correctedOperation);
+
+        foreach ($baseLines as $baseLine) {
+            $line = new OperationLine();
+            $line->setProduct($baseLine->getProduct());
+            $line->setQuantity($baseLine->getQuantity());
+            // Universal from↔to swap: works for all document types and for both
+            // original lines and effective XOR/paired lines.
+            $line->setLocationFrom($baseLine->getLocationTo());
+            $line->setLocationTo($baseLine->getLocationFrom());
+            $correction->addOperationLine($line);
+        }
+
+        $form = $this->createForm(CorrectionType::class, $correction);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $desiredLines = array_values($correction->getOperationLines()->toArray());
+            $computed = $correctionService->computeLines($desiredLines, $baseLines, $correctedOperation->getDocumentType());
+
+            if (empty($computed)) {
+                $this->addFlash('error', 'Korekta nie zawiera żadnych zmian względem oryginału.');
+            } else {
+                $correctionService->buildLines($correction, $computed);
+                $operationService->generateNumber($correction);
+
+                $em->persist($correction);
+                $em->flush();
+
+                $this->addFlash('success', sprintf('Korekta %s została utworzona.', $correction->getFullNumber()));
+
+                return $this->redirectToRoute('app_operation_show', ['id' => $correction->getId()]);
+            }
+        }
+
+        $baseQuantities = array_map(
+            static fn (OperationLine $line) => $line->getQuantity(),
+            array_values($baseLines)
+        );
+
+        return $this->render('operation/correction_form.html.twig', [
+            'form' => $form,
+            'correction' => $correction,
+            'correctedOperation' => $correctedOperation,
+            'baseQuantities' => $baseQuantities,
+            'pageTitle' => sprintf('Korekta do %s', $correctedOperation->getFullNumber()),
+            'formAction' => $this->generateUrl('app_operation_new_correction', ['id' => $correctedOperation->getId()]),
+            'cancelUrl' => $this->generateUrl('app_operation_show', ['id' => $correctedOperation->getId()]),
+        ]);
+    }
+
     #[Route('/{id}/edit', name: 'app_operation_edit', requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_WAREHOUSE_EMPLOYEE')]
     public function edit(Request $request, Operation $operation, EntityManagerInterface $em): Response
     {
         if ($operation->isConfirmed()) {
             $this->addFlash('error', 'Nie można edytować zatwierdzonej operacji.');
+
+            return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
+        }
+
+        if ($operation instanceof Correction) {
+            $this->addFlash('error', 'Korekty nie można edytować. Usuń ją i utwórz nową.');
 
             return $this->redirectToRoute('app_operation_show', ['id' => $operation->getId()]);
         }

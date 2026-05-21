@@ -1,0 +1,90 @@
+{% extends 'base_print.html.twig' %}
+
+{% block title %}{{ operation.fullNumber }}{% endblock %}
+
+{% block content %}
+
+{% set gains = operation.operationLines|filter(l => l.locationTo is not null)|length %}
+{% set losses = operation.operationLines|filter(l => l.locationFrom is not null)|length %}
+
+<div class="document-header">
+    <div>
+        <div class="document-number">{{ operation.fullNumber }}</div>
+        <div class="document-type">Korekta inwentaryzacyjna (INW)</div>
+    </div>
+    <div class="document-meta">
+        <div>Data dokumentu: <strong>{{ operation.documentDate|date('d.m.Y') }}</strong></div>
+        <div>Zatwierdzono: <strong>{{ operation.confirmedAt ? operation.confirmedAt|date('d.m.Y H:i') : '—' }}</strong></div>
+        <div>Zatwierdził: <strong>{{ operation.confirmedBy ? operation.confirmedBy.getUserIdentifier() : '—' }}</strong></div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="info-grid">
+        <div class="info-item">
+            <dt>Inwentaryzacja</dt>
+            <dd>{{ operation.stocktaking ? '#' ~ operation.stocktaking.id : '—' }}</dd>
+        </div>
+        <div class="info-item">
+            <dt>Operator</dt>
+            <dd>{{ operation.createdBy ? operation.createdBy.getUserIdentifier() : '—' }}</dd>
+        </div>
+        <div class="info-item">
+            <dt>Utworzono</dt>
+            <dd>{{ operation.createdAt|date('d.m.Y H:i') }}</dd>
+        </div>
+        <div class="info-item">
+            <dt>Liczba pozycji</dt>
+            <dd>{{ operation.operationLines|length }}</dd>
+        </div>
+        <div class="info-item">
+            <dt>Zyski</dt>
+            <dd>{{ gains }}</dd>
+        </div>
+        <div class="info-item">
+            <dt>Straty</dt>
+            <dd>{{ losses }}</dd>
+        </div>
+        {% if operation.stocktaking and operation.stocktaking.notes %}
+            <div class="info-item info-item--full">
+                <dt>Uwagi</dt>
+                <dd>{{ operation.stocktaking.notes }}</dd>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="section">
+    <h2>Pozycje korekty</h2>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:30px">#</th>
+                <th>Produkt</th>
+                <th>SKU</th>
+                <th>Lokalizacja</th>
+                <th class="text-right">Korekta</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in operation.operationLines %}
+                {% set isGain = line.locationTo is not null %}
+                {% set location = isGain ? line.locationTo : line.locationFrom %}
+                <tr>
+                    <td class="font-mono">{{ loop.index }}</td>
+                    <td>{{ line.product ? line.product.name : '—' }}</td>
+                    <td class="font-mono">{{ line.product ? line.product.sku : '—' }}</td>
+                    <td class="font-mono">{{ location ? location.code : '—' }}</td>
+                    <td class="text-right font-mono">{{ isGain ? '+' : '−' }}{{ line.quantity|number_format(3, ',', ' ') }} {{ line.product ? line.product.unit : '' }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="signatures">
+    <div class="signature-line">Sporządził</div>
+    <div class="signature-line">Zatwierdził</div>
+</div>
+
+{% endblock %}

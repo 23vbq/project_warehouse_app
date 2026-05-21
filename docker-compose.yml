@@ -1,7 +1,10 @@
 services:
 
   app:
-    build: .
+    build:
+      context: .
+      args:
+        BUILD_ENV: dev
     volumes:
       - .:/var/www/html
     ports:
