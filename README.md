@@ -11,7 +11,7 @@ A warehouse management system for tracking inventory, processing warehouse docum
 
 ## Features
 
-- **Product catalog** — manage SKU/EAN registry with product types (finished goods, semi-finished, raw materials, consumables) and minimum stock level alerts
+- **Product catalog** — manage SKU/EAN registry with product types (finished goods, semi-finished, raw materials, consumables) and minimum stock level alerts; each product has a detail page with a KPI strip (total stock, unit price, total value, min level), stock breakdown per location, and a lazy-loaded paginated movement history
 - **Warehouse locations** — define and manage storage zones
 - **Stock tracking** — real-time inventory state per product/location pair using decimal precision (bcmath)
 - **Warehouse documents** — create and confirm:
@@ -19,10 +19,13 @@ A warehouse management system for tracking inventory, processing warehouse docum
   - **WZ** (Release) — outgoing goods
   - **MM** (Relocation) — inter-location transfers
   - **INW** (Adjustment) — inventory adjustment (stock increase or decrease per location)
-  - **KPZ / KWZ / KMM / KINW** (Correction) — corrective document issued against a confirmed PZ/WZ/MM/INW; reverses stock effects partially or fully while preserving the original document
+  - **KPZ / KWZ / KMM / KI** (Correction) — corrective document issued against a confirmed PZ/WZ/MM/INW; reverses stock effects partially or fully while preserving the original document
+- **Post-correction effective state** — when confirmed corrections exist, the operation show page and the list accordion display a computed net state ("Pozycje po korektach") alongside an amber warning banner; the banner is suppressed for draft-only corrections
+- **Operations list accordion** — clicking any row in the operations list expands an inline detail panel showing document lines and, where applicable, the post-correction net lines; data is loaded lazily via Turbo Frame
+- **Stocktaking** — dedicated counting module; manager creates a stocktaking session which snapshots current stock levels, warehouse employees enter counted quantities inline (Turbo Stream, no page reload), and on completion the system generates an INW adjustment document and updates stock accordingly
 - **Print view** — printable layout for all warehouse document types
 - **Dashboard** — inventory overview (in progress)
-- **Auto-numbering** — sequential document numbers per type/month (e.g. `PZ/2025/05/0001`, `KPZ/2025/05/0001`)
+- **Auto-numbering** — sequential document numbers per prefix and calendar month (e.g. `PZ/2025/05/0001`, `KPZ/2025/05/0001`); each prefix sequences independently
 - **Role-based access** — `ROLE_WAREHOUSE_EMPLOYEE` and `ROLE_WAREHOUSE_MANAGER` (every user also receives `ROLE_USER` automatically)
 
 ---
@@ -93,15 +96,17 @@ docker-compose exec app bin/console app:create-user
 
 ```
 src/
-├── Controller/     # HTTP layer (Product, Location, Operation, Dashboard, API, Security, Default)
-├── Entity/         # Doctrine entities (User, Product, Location, Stock, Operation hierarchy)
+├── Controller/     # HTTP layer (Product, Location, Operation, Stocktaking, Dashboard, API, Security)
+├── Entity/         # Doctrine entities (User, Product, Location, Stock, Operation hierarchy, Stocktaking)
 ├── Form/           # Symfony form types
 ├── Repository/     # Custom query logic per entity
 ├── Service/        # Business logic
-│   ├── OperationService.php   # Document numbering, draft→confirmed transition
-│   ├── CorrectionService.php  # Correction delta computation and stock application
-│   └── StockService.php       # Inventory math with bcmath precision
-├── Enum/           # ProductType, OperationStatus
+│   ├── OperationService.php    # Document numbering, draft→confirmed transition
+│   ├── CorrectionService.php   # Correction delta computation, effective-state aggregation
+│   ├── StocktakingService.php  # Stocktaking lifecycle (snapshot, save line, complete)
+│   └── StockService.php        # Inventory math with bcmath precision
+├── Twig/           # Custom Twig extensions (pluralize)
+├── Enum/           # ProductType, OperationStatus, StocktakingStatus
 └── Command/        # CLI commands (create-user)
 
 templates/          # Twig views per feature module
@@ -118,11 +123,7 @@ Operations use Doctrine JOINED inheritance with a `type` discriminator column. F
 - **WZ — Release** — outgoing goods; confirming decreases stock at the source location
 - **MM — Relocation** — inter-location transfer; confirming decreases stock at the source and increases it at the destination
 - **INW — Adjustment** — manual stock correction per location; a line with only `locationTo` adds stock, a line with only `locationFrom` removes it
-- **Correction (KPZ / KWZ / KMM / KINW)** — corrective document issued against a confirmed PZ/WZ/MM/INW. The original document is never modified (full audit trail). The correction computes the delta between the original lines and the desired state entered in the form:
-  - Same product + same location → single delta line (quantity difference applied in the appropriate direction)
-  - Changed product or location → full reversal of the original line + application of the desired line
-  - Line removed from the form → full reversal of the original line
-  - Extra lines beyond the original → passed through as-is
+- **Correction (KPZ / KWZ / KMM / KI)** — corrective document issued against a confirmed PZ/WZ/MM/INW; see [Corrections](#corrections) below
 
 All operations start in `DRAFT` status. Once all required data is present the operation can be confirmed, transitioning it to `CONFIRMED` and triggering the stock update via `StockService`.
 
@@ -130,7 +131,7 @@ All operations start in `DRAFT` status. Once all required data is present the op
 DRAFT → (validate) → CONFIRMED
 ```
 
-Document numbers are generated automatically on creation, scoped per type and calendar month, and are unique within the system:
+Document numbers are generated automatically on creation, scoped per prefix and calendar month. Each prefix has its own independent sequence:
 
 ```
 PZ/2025/05/0001
@@ -141,6 +142,58 @@ KPZ/2025/05/0001
 ```
 
 The sequence resets at the start of each month.
+
+---
+
+## Corrections
+
+A correction (korekta) is a document issued against an already-confirmed PZ, WZ, MM, or INW. The original document is never modified — full audit trail is preserved.
+
+### Delta computation
+
+`CorrectionService::computeLines()` determines the actual stock-adjustment lines from the desired state entered in the correction form:
+
+| Scenario | Result |
+|---|---|
+| Same product + same location, different quantity | Single delta line in the appropriate direction |
+| Changed product or location | Full reversal of the original line + application of the desired line |
+| Line removed from the form | Full reversal of the original line |
+| Extra lines beyond the original | Passed through as-is |
+| No net change detected | Form submission is rejected — no no-op corrections are persisted |
+
+Relocation corrections are handled differently: the form pre-fills locations already reversed (correction direction), so the desired line is used directly rather than going through reversal + application.
+
+### Effective state
+
+`CorrectionService::computeEffectiveLines()` aggregates the original operation lines and all its **confirmed** corrections into a single signed accumulator, then converts the result back to XOR `OperationLine` objects (exactly one location set, always positive quantity). Lines that cancel out to zero are omitted.
+
+The effective state is displayed on the operation show page and in the operations list accordion whenever at least one confirmed correction exists. An amber banner indicates that confirmed corrections have altered the stock state. Draft corrections do not trigger the banner.
+
+### Constraints
+
+- Corrections can only be created against confirmed PZ / WZ / MM / INW documents
+- A correction document itself cannot be edited after creation — delete it and create a new one
+- Each correction line must have exactly one location set (source or destination, not both)
+
+---
+
+## Stocktaking
+
+Stocktaking is a standalone module for conducting physical inventory counts.
+
+### Workflow
+
+```
+open → in_progress → completed
+                   → cancelled
+```
+
+1. **Create** — manager opens a new stocktaking session; the system immediately snapshots current stock levels into `StocktakingLine` records (`expectedQuantity`)
+2. **Count** — warehouse employees enter counted quantities inline; each row save is a Turbo Stream partial update (no page reload); status transitions from `open` to `in_progress` on the first save
+3. **Complete** — manager confirms; the system computes the delta per line, generates an INW adjustment document, confirms it (updating stock), and links it to the stocktaking session
+4. **Cancel** — session is closed without generating any adjustment
+
+Lines with no `countedQuantity` are skipped on completion — the count is effectively partial.
 
 ---
 
