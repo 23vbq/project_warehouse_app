@@ -30,8 +30,8 @@ class CorrectionType extends AbstractType
             ->add('operationLines', CollectionType::class, [
                 'entry_type' => OperationLineType::class,
                 'entry_options' => ['operation_type' => Operation::TYPE_CORRECTION],
-                'allow_add' => true,
-                'allow_delete' => true,
+                'allow_add' => false,
+                'allow_delete' => false,
                 'by_reference' => false,
                 'error_bubbling' => false,
                 'constraints' => [

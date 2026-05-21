@@ -68,10 +68,7 @@ class OperationController extends AbstractController
     #[Route('/{id}', name: 'app_operation_show', requirements: ['id' => '\d+'])]
     public function show(Operation $operation, CorrectionRepository $correctionRepository, CorrectionService $correctionService): Response
     {
-        $corrections = $correctionRepository->findBy(
-            ['correctedOperation' => $operation],
-            ['createdAt' => 'DESC']
-        );
+        $corrections = $correctionRepository->findByCorrectedOperationWithUsers($operation);
 
         $effectiveLines = $correctionService->computeEffectiveLines($operation, $corrections);
         $correctionLineCounts = $corrections ? $correctionRepository->countLinesByCorrectedOperation($operation) : [];
@@ -100,10 +97,7 @@ class OperationController extends AbstractController
         $corrections = [];
         $effectiveLines = [];
         if (in_array($documentType, CorrectionService::CORRECTABLE_TYPES, true)) {
-            $corrections = $correctionRepository->findBy(
-                ['correctedOperation' => $operation],
-                ['createdAt' => 'DESC']
-            );
+            $corrections = $correctionRepository->findByCorrectedOperationWithUsers($operation);
             $effectiveLines = $correctionService->computeEffectiveLines($operation, $corrections);
         }
 
@@ -338,10 +332,16 @@ class OperationController extends AbstractController
             }
         }
 
+        $baseQuantities = array_map(
+            static fn (OperationLine $line) => $line->getQuantity(),
+            array_values($baseLines)
+        );
+
         return $this->render('operation/correction_form.html.twig', [
             'form' => $form,
             'correction' => $correction,
             'correctedOperation' => $correctedOperation,
+            'baseQuantities' => $baseQuantities,
             'pageTitle' => sprintf('Korekta do %s', $correctedOperation->getFullNumber()),
             'formAction' => $this->generateUrl('app_operation_new_correction', ['id' => $correctedOperation->getId()]),
             'cancelUrl' => $this->generateUrl('app_operation_show', ['id' => $correctedOperation->getId()]),

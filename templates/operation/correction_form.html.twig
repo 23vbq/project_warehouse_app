@@ -142,7 +142,7 @@
                     loop: loop,
                     showFrom: showFrom,
                     showTo: showTo,
-                    originalQuantity: correctedOperation.operationLines[loop.index0].quantity ?? null,
+                    baseQuantity: baseQuantities[loop.index0] ?? null,
                 }) }}
             {% endfor %}
             </tbody>

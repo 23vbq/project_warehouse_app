@@ -18,6 +18,23 @@ class CorrectionRepository extends ServiceEntityRepository
     }
 
     /**
+     * Returns corrections for the given operation with createdBy eagerly loaded to avoid N+1 queries.
+     *
+     * @return Correction[]
+     */
+    public function findByCorrectedOperationWithUsers(Operation $operation, string $order = 'DESC'): array
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.createdBy', 'u')
+            ->addSelect('u')
+            ->where('c.correctedOperation = :operation')
+            ->setParameter('operation', $operation)
+            ->orderBy('c.createdAt', $order)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Returns a map of [correctionId => lineCount] for all corrections of the given operation.
      * Use this instead of accessing correction.operationLines|length in Twig to avoid N+1 queries.
      *

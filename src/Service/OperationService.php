@@ -37,7 +37,11 @@ class OperationService
         $documentType = $operation->getDocumentType();
 
         if ($operation instanceof Correction) {
-            $correctedType = $operation->getCorrectedOperation()->getDocumentType();
+            $correctedOperation = $operation->getCorrectedOperation();
+            if (null === $correctedOperation) {
+                throw new \InvalidArgumentException('Cannot generate a number for a Correction without a corrected operation.');
+            }
+            $correctedType = $correctedOperation->getDocumentType();
             if (!isset($prefixMap[$correctedType])) {
                 throw new \InvalidArgumentException('Invalid corrected document type: '.$correctedType);
             }
