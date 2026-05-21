@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Correction;
+use App\Entity\Operation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -14,5 +15,25 @@ class CorrectionRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Correction::class);
+    }
+
+    /**
+     * Returns a map of [correctionId => lineCount] for all corrections of the given operation.
+     * Use this instead of accessing correction.operationLines|length in Twig to avoid N+1 queries.
+     *
+     * @return array<int, int>
+     */
+    public function countLinesByCorrectedOperation(Operation $operation): array
+    {
+        $rows = $this->createQueryBuilder('c')
+            ->select('c.id, COUNT(l.id) as lineCount')
+            ->leftJoin('c.operationLines', 'l')
+            ->where('c.correctedOperation = :operation')
+            ->setParameter('operation', $operation)
+            ->groupBy('c.id')
+            ->getQuery()
+            ->getResult();
+
+        return array_column($rows, 'lineCount', 'id');
     }
 }

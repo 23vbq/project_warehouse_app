@@ -52,7 +52,7 @@
                     href="{{ path('app_operation_new_correction', {id: operation.id}) }}"
                     class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors"
                 >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                    <span class="w-[14px] h-[14px] shrink-0">{{ source('svg/revert.svg') }}</span>
                     Utwórz korektę
                 </a>
             {% endif %}
@@ -174,7 +174,7 @@
                                     {{ correction.createdBy ? correction.createdBy.getUserIdentifier() : '—' }}
                                 </td>
                                 <td class="px-4 py-3 text-content-300 font-mono">
-                                    {{ correction.operationLines|length }}
+                                    {{ correctionLineCounts[correction.id] ?? 0 }}
                                 </td>
                             </tr>
                         {% endfor %}

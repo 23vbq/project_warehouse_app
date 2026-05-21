@@ -74,11 +74,13 @@ class OperationController extends AbstractController
         );
 
         $effectiveLines = $correctionService->computeEffectiveLines($operation, $corrections);
+        $correctionLineCounts = $corrections ? $correctionRepository->countLinesByCorrectedOperation($operation) : [];
 
         return $this->render('operation/show.html.twig', [
             'operation' => $operation,
             'corrections' => $corrections,
             'effectiveLines' => $effectiveLines,
+            'correctionLineCounts' => $correctionLineCounts,
         ]);
     }
 

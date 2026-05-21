@@ -19,7 +19,7 @@ A warehouse management system for tracking inventory, processing warehouse docum
   - **WZ** (Release) — outgoing goods
   - **MM** (Relocation) — inter-location transfers
   - **INW** (Adjustment) — inventory adjustment (stock increase or decrease per location)
-  - **KPZ / KWZ / KMM / KI** (Correction) — corrective document issued against a confirmed PZ/WZ/MM/INW; reverses stock effects partially or fully while preserving the original document
+  - **KPZ / KWZ / KMM / KINW** (Correction) — corrective document issued against a confirmed PZ/WZ/MM/INW; reverses stock effects partially or fully while preserving the original document
 - **Post-correction effective state** — when confirmed corrections exist, the operation show page and the list accordion display a computed net state ("Pozycje po korektach") alongside an amber warning banner; the banner is suppressed for draft-only corrections
 - **Operations list accordion** — clicking any row in the operations list expands an inline detail panel showing document lines and, where applicable, the post-correction net lines; data is loaded lazily via Turbo Frame
 - **Stocktaking** — dedicated counting module; manager creates a stocktaking session which snapshots current stock levels, warehouse employees enter counted quantities inline (Turbo Stream, no page reload), and on completion the system generates an INW adjustment document and updates stock accordingly
@@ -123,7 +123,7 @@ Operations use Doctrine JOINED inheritance with a `type` discriminator column. F
 - **WZ — Release** — outgoing goods; confirming decreases stock at the source location
 - **MM — Relocation** — inter-location transfer; confirming decreases stock at the source and increases it at the destination
 - **INW — Adjustment** — manual stock correction per location; a line with only `locationTo` adds stock, a line with only `locationFrom` removes it
-- **Correction (KPZ / KWZ / KMM / KI)** — corrective document issued against a confirmed PZ/WZ/MM/INW; see [Corrections](#corrections) below
+- **Correction (KPZ / KWZ / KMM / KINW)** — corrective document issued against a confirmed PZ/WZ/MM/INW; see [Corrections](#corrections) below
 
 All operations start in `DRAFT` status. Once all required data is present the operation can be confirmed, transitioning it to `CONFIRMED` and triggering the stock update via `StockService`.
 
