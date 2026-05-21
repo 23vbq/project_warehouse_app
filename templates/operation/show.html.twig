@@ -47,7 +47,7 @@
 
     <div class="flex items-center gap-2 shrink-0">
         {% if operation.isConfirmed %}
-            {% if operation.documentType in ['receipt', 'release', 'relocation', 'adjustment'] and is_granted('ROLE_WAREHOUSE_EMPLOYEE') %}
+            {% if operation.documentType in constant('App\\Service\\CorrectionService::CORRECTABLE_TYPES') and is_granted('ROLE_WAREHOUSE_EMPLOYEE') %}
                 <a
                     href="{{ path('app_operation_new_correction', {id: operation.id}) }}"
                     class="flex items-center gap-2 h-[34px] px-3 text-[13px] font-medium text-content-300 bg-surface-800 border border-stroke rounded-lg hover:bg-surface-700 hover:text-content-50 transition-colors"

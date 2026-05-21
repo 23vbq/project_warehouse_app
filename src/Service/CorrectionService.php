@@ -10,6 +10,14 @@ use App\Entity\Product;
 
 class CorrectionService
 {
+    /** Document types that can have corrections created against them. */
+    public const CORRECTABLE_TYPES = [
+        Operation::TYPE_RECEIPT,
+        Operation::TYPE_RELEASE,
+        Operation::TYPE_RELOCATION,
+        Operation::TYPE_ADJUSTMENT,
+    ];
+
     public function __construct(
         private readonly StockService $stockService,
     ) {

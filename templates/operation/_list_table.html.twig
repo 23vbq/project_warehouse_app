@@ -100,7 +100,7 @@
                     {{ include('operation/_partials/status.html.twig', {operation: operation}) }}
                 </td>
             </tr>
-            <tr id="operation-lines-{{ operation.id }}" class="hidden bg-surface-800/30">
+            <tr id="operation-lines-{{ operation.id }}" class="hidden bg-black/40 border-t border-stroke">
                 <td colspan="100%" class="p-0">
                     <turbo-frame id="operation-lines-details-{{ operation.id }}" class="relative block min-h-[60px]">
                         {{ include('layout/_partials/loader.html.twig') }}

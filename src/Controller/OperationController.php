@@ -95,18 +95,9 @@ class OperationController extends AbstractController
 
         $documentType = $operation->getDocumentType();
 
-        $linesTableView = match ($documentType) {
-            Operation::TYPE_RECEIPT => 'operation/_partials/receipt_show_lines_table.html.twig',
-            Operation::TYPE_RELEASE => 'operation/_partials/release_show_lines_table.html.twig',
-            Operation::TYPE_RELOCATION => 'operation/_partials/relocation_show_lines_table.html.twig',
-            Operation::TYPE_CORRECTION => 'operation/_partials/correction_show_lines_table.html.twig',
-            default => throw new \InvalidArgumentException('Invalid document type: '.$documentType),
-        };
-
         $corrections = [];
         $effectiveLines = [];
-        $correctableTypes = [Operation::TYPE_RECEIPT, Operation::TYPE_RELEASE, Operation::TYPE_RELOCATION];
-        if (in_array($documentType, $correctableTypes, true)) {
+        if (in_array($documentType, CorrectionService::CORRECTABLE_TYPES, true)) {
             $corrections = $correctionRepository->findBy(
                 ['correctedOperation' => $operation],
                 ['createdAt' => 'DESC']
@@ -117,7 +108,6 @@ class OperationController extends AbstractController
         return $this->render('operation/_partials/lines_details_accordion.html.twig', [
             'turboFrameId' => 'operation-lines-details-'.$operation->getId(),
             'operation' => $operation,
-            'linesTable' => $this->renderView($linesTableView, ['operation' => $operation]),
             'corrections' => $corrections,
             'effectiveLines' => $effectiveLines,
         ]);
@@ -289,9 +279,7 @@ class OperationController extends AbstractController
         CorrectionService $correctionService,
         EntityManagerInterface $em,
     ): Response {
-        $correctableTypes = [Operation::TYPE_RECEIPT, Operation::TYPE_RELEASE, Operation::TYPE_RELOCATION, Operation::TYPE_ADJUSTMENT];
-
-        if (!$correctedOperation->isConfirmed() || !in_array($correctedOperation->getDocumentType(), $correctableTypes, true)) {
+        if (!$correctedOperation->isConfirmed() || !in_array($correctedOperation->getDocumentType(), CorrectionService::CORRECTABLE_TYPES, true)) {
             $this->addFlash('error', 'Można korygować tylko potwierdzone dokumenty PZ, WZ, MM i INW.');
 
             return $this->redirectToRoute('app_operation_show', ['id' => $correctedOperation->getId()]);
