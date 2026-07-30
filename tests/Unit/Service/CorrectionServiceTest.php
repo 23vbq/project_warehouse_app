@@ -43,8 +43,6 @@ final class CorrectionServiceTest extends TestCase
         ]);
     }
 
-    // ---- buildLines() ----
-
     public function testBuildLinesReplacesExistingLinesWithComputedOnes(): void
     {
         $correction = CorrectionFactory::createOne();
@@ -72,8 +70,6 @@ final class CorrectionServiceTest extends TestCase
 
         self::assertCount(0, $correction->getOperationLines());
     }
-
-    // ---- computeLines() — line removed from form ----
 
     public function testComputeLinesReceiptRemovedLineProducesSingleReversalLine(): void
     {
@@ -136,8 +132,6 @@ final class CorrectionServiceTest extends TestCase
         self::assertSame('3.000', $result[0]->getQuantity());
     }
 
-    // ---- computeLines() — same product/location ----
-
     public function testComputeLinesNoChangeWhenQuantityAndLocationMatchExpectedShape(): void
     {
         $product = ProductFactory::createOne();
@@ -186,8 +180,6 @@ final class CorrectionServiceTest extends TestCase
         $locationA = LocationFactory::createOne();
         $locationB = LocationFactory::createOne();
         $original = $this->line($product, '10.000', from: $locationA, to: $locationB);
-        // For Relocation, the "unchanged location" shape is swapped relative to the original
-        // (from = original's `to`, to = original's `from`) — see getReversalLocations()'s default case.
         $desired = $this->line($product, '6.000', from: $locationB, to: $locationA);
 
         $result = $this->service->computeLines([$desired], [$original], Operation::TYPE_RELOCATION);
@@ -200,8 +192,6 @@ final class CorrectionServiceTest extends TestCase
         self::assertSame($locationA, $result[1]->getLocationTo());
         self::assertSame('4.000', $result[1]->getQuantity());
     }
-
-    // ---- computeLines() — product or location changed (non-relocation) ----
 
     public function testComputeLinesProductChangeProducesReversalAndApplicationLines(): void
     {
@@ -240,8 +230,6 @@ final class CorrectionServiceTest extends TestCase
         self::assertSame($locationY, $result[1]->getLocationTo());
         self::assertSame('10.000', $result[1]->getQuantity());
     }
-
-    // ---- computeLines() — Relocation "changed" branch ----
 
     public function testComputeLinesRelocationDestinationChangeOnlyProducesDesiredSplitWithoutReversal(): void
     {
@@ -285,8 +273,6 @@ final class CorrectionServiceTest extends TestCase
         self::assertSame($locationA, $result[3]->getLocationTo());
     }
 
-    // ---- computeLines() — multiple base lines ----
-
     public function testComputeLinesProcessesMultipleBaseLinesIndependently(): void
     {
         $product = ProductFactory::createOne();
@@ -312,8 +298,6 @@ final class CorrectionServiceTest extends TestCase
         self::assertSame('4.000', $result[1]->getQuantity());
         self::assertSame($locationX, $result[1]->getLocationFrom());
     }
-
-    // ---- computeEffectiveLines() ----
 
     public function testComputeEffectiveLinesReturnsEmptyWithNoCorrectionsAtAll(): void
     {
@@ -411,8 +395,6 @@ final class CorrectionServiceTest extends TestCase
         self::assertCount(1, $result);
         self::assertSame('8.000', $result[0]->getQuantity());
     }
-
-    // ---- computeEffectiveLines() — Relocation pairing ----
 
     public function testComputeEffectiveLinesPairsEqualRelocationQuantities(): void
     {
@@ -517,8 +499,6 @@ final class CorrectionServiceTest extends TestCase
         self::assertSame('8.000', $byProductId[$productQ->getId()]->getQuantity());
     }
 
-    // ---- confirm() ----
-
     public function testConfirmDispatchesAddOrSubtractPerLineDirection(): void
     {
         $productA = ProductFactory::createOne();
@@ -546,8 +526,6 @@ final class CorrectionServiceTest extends TestCase
 
         self::assertSame(['add', 'subtract'], $calls);
     }
-
-    // ---- validateForConfirmation() ----
 
     public function testValidateForConfirmationThrowsWhenNoLines(): void
     {

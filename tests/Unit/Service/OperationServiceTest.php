@@ -44,8 +44,6 @@ final class OperationServiceTest extends TestCase
         );
     }
 
-    // ---- generateNumber() ----
-
     public function testGenerateNumberThrowsWhenNumberAlreadySet(): void
     {
         $receipt = ReceiptFactory::createOne(['number' => 5]);
@@ -173,8 +171,6 @@ final class OperationServiceTest extends TestCase
         self::assertSame('PZ/2026/01/12345', $receipt->getFullNumber());
     }
 
-    // ---- confirm() — common guards ----
-
     public function testConfirmThrowsWhenStatusIsNotDraft(): void
     {
         $receipt = ReceiptFactory::createOne();
@@ -199,8 +195,6 @@ final class OperationServiceTest extends TestCase
 
         $this->service->confirm($receipt, UserFactory::createOne());
     }
-
-    // ---- confirm() — Receipt ----
 
     public function testConfirmReceiptThrowsWhenSupplierMissing(): void
     {
@@ -304,8 +298,6 @@ final class OperationServiceTest extends TestCase
         ], $calls);
     }
 
-    // ---- confirm() — Release ----
-
     public function testConfirmReleaseThrowsWhenRecipientMissing(): void
     {
         $release = ReleaseFactory::createOne(['recipient' => null]);
@@ -398,8 +390,6 @@ final class OperationServiceTest extends TestCase
         self::assertSame(OperationStatus::CONFIRMED, $release->getStatus());
         self::assertSame($user, $release->getConfirmedBy());
     }
-
-    // ---- confirm() — Relocation ----
 
     public function testConfirmRelocationThrowsWhenLineQuantityMissing(): void
     {
@@ -498,8 +488,6 @@ final class OperationServiceTest extends TestCase
         ], $calls);
     }
 
-    // ---- confirm() — Adjustment ----
-
     public function testConfirmAdjustmentThrowsWhenLineHasBothLocations(): void
     {
         $product = ProductFactory::createOne(['name' => 'Śruba M6']);
@@ -534,11 +522,6 @@ final class OperationServiceTest extends TestCase
 
     public function testConfirmAdjustmentSkipsLineValidationWhenQuantityMissingButCrashesOnExecution(): void
     {
-        // validateAdjustmentForConfirmation() explicitly `continue`s past lines with a null
-        // quantity, regardless of their locations — but confirmAdjustment() has no matching
-        // guard and forwards the null straight to StockService::add()/subtract(), whose
-        // $quantity parameter is a non-nullable string. This documents a real inconsistency
-        // between validation and execution, not an intended contract.
         $adjustment = AdjustmentFactory::createOne();
         $adjustment->addOperationLine(OperationLineFactory::createOne([
             'quantity' => force(null),
@@ -584,8 +567,6 @@ final class OperationServiceTest extends TestCase
 
         $this->service->confirm($adjustment, UserFactory::createOne());
     }
-
-    // ---- confirm() — Correction ----
 
     public function testConfirmCorrectionDelegatesValidationAndConfirmationToCorrectionService(): void
     {
