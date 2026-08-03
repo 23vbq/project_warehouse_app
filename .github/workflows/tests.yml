@@ -1,5 +1,5 @@
+# Run the PHPUnit test suite
 name: Tests
-description: Run the PHPUnit test suite
 
 on:
   pull_request:
@@ -20,7 +20,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: bcmath, ctype
+          extensions: bcmath, ctype, iconv
           cache: composer
 
       - name: Install dependencies
